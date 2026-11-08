@@ -1,0 +1,2000 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F1FF; --surface:#FFFFFF; --ink:#1E1B3A; --muted:#5E5882; --line:#D9D3F2;
+  --cobalt:#2B44D6; --on-cobalt:#FFFFFF; --shadow:#1E1B3A;
+  --sun:#FFC83D; --pink:#F0588F; --mint:#1FA874; --red:#E2453C;
+  --card-bg:#FFFDF7; --card-ink:#1E1B3A;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141228; --surface:#201D3C; --ink:#F1EEFF; --muted:#A8A2CE; --line:#363160;
+    --cobalt:#7186FF; --on-cobalt:#0E0C20; --shadow:#000000; --card-bg:#F3F0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141228; --surface:#201D3C; --ink:#F1EEFF; --muted:#A8A2CE; --line:#363160;
+  --cobalt:#7186FF; --on-cobalt:#0E0C20; --shadow:#000000; --card-bg:#F3F0FF;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);
+  font-family:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:20px 18px 40px}
+h1,h2,h3{margin:0;line-height:1.1}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px;border-radius:10px}
+
+/* Home */
+.hero{padding:18px 0 22px}
+.hero h1{font-size:clamp(48px,14vw,72px);font-weight:800;letter-spacing:-.035em;font-variation-settings:"opsz" 96}
+.hero p{margin-top:10px;color:var(--muted);max-width:34ch}
+.home-grid{display:grid;gap:18px}
+.game-tile{display:block;width:100%;text-align:left;border:3px solid #1E1B3A;border-radius:24px;box-shadow:7px 7px 0 var(--shadow);padding:22px;color:#1E1B3A}
+.game-tile.act{background:var(--sun)}
+.game-tile.taboo{background:var(--pink)}
+.game-tile h2{font-size:34px;font-weight:800;letter-spacing:-.03em}
+.game-tile p{margin-top:8px;font-weight:500;opacity:.85}
+.game-tile .go{display:inline-block;margin-top:14px;font-weight:800}
+.game-tile:active{transform:translate(3px,3px);box-shadow:4px 4px 0 var(--shadow)}
+.game-tile{position:relative}
+.home-head h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.home-head p{color:var(--muted);font-weight:500;margin-top:2px}
+.game-tile h2,.game-tile p{padding-right:78px}
+.tile-icon{position:absolute;top:16px;right:16px;width:68px;height:68px}
+.setup-icon{display:block;width:76px;height:76px;margin-bottom:14px}
+.tile-icon svg,.setup-icon svg{display:block;width:100%;height:100%}
+
+/* Setup */
+.back{color:var(--muted);font-weight:700;padding:6px 0}
+.block{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.block h2{font-size:20px;font-weight:700;margin-bottom:12px}
+.player-row{display:flex;gap:8px;margin-bottom:8px}
+.player-row input{flex:1;min-width:0}
+input[type=text],textarea{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+textarea{resize:vertical;font-size:15px}
+.icon-btn{width:44px;flex:none;border-radius:12px;border:2px solid var(--line);font-size:20px;color:var(--muted)}
+.ghost{border:2px dashed var(--line);border-radius:12px;padding:10px 14px;width:100%;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{border:2px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-weight:800;font-size:18px}
+.seg button small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.seg button[aria-pressed="true"] small{color:var(--on-cobalt);opacity:.85}
+details.custom{margin-top:14px}
+summary{font-weight:600;cursor:pointer;padding:4px 0}
+.hint{font-size:14px;color:var(--muted);margin:6px 0 8px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.setting + .setting{border-top:1px solid var(--line)}
+.setting small{display:block;color:var(--muted);font-size:13px}
+.stepper{display:flex;align-items:center;gap:4px;flex:none}
+.stepper button{width:40px;height:40px;border-radius:12px;border:2px solid var(--line);font-size:20px;font-weight:700}
+.stepper output{min-width:48px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.toggle{width:56px;height:32px;border-radius:999px;background:var(--line);position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--surface);transition:transform .15s}
+.toggle[aria-checked="true"]{background:var(--mint)}
+.toggle[aria-checked="true"]::after{transform:translateX(24px)}
+.rules{margin:10px 0 0;padding-left:20px}
+.rules li{margin:8px 0}
+.primary{display:block;width:100%;background:var(--cobalt);color:var(--on-cobalt);font-weight:800;font-size:20px;
+  padding:16px;border-radius:16px;box-shadow:0 5px 0 var(--shadow);margin-top:6px}
+.primary:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+.error{color:var(--red);font-weight:600;margin-top:10px;min-height:1.4em}
+
+/* Pass */
+.center{text-align:center}
+.eyebrow{color:var(--muted);font-weight:600}
+.big-name{font-size:clamp(44px,13vw,64px);font-weight:800;letter-spacing:-.03em;margin:6px 0 4px;word-break:break-word}
+.scores{list-style:none;padding:0;margin:22px 0}
+.scores li{display:flex;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--line);font-size:19px}
+.scores li.me{font-weight:800}
+.scores b{font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:15px;margin-bottom:16px}
+
+/* Shared game bits */
+.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-weight:600;color:var(--muted)}
+.bar .pts{color:var(--ink);font-weight:800}
+.pause{border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700;color:var(--ink)}
+.card{position:relative;background:var(--card-bg);color:var(--card-ink);border:3px solid #1E1B3A;border-radius:24px;
+  box-shadow:7px 7px 0 var(--shadow);overflow:hidden;min-height:min(58vh,440px);display:flex;flex-direction:column}
+.skip{border:2px solid var(--line)}
+.got-btn{background:var(--mint);color:#fff;box-shadow:0 5px 0 var(--shadow)}
+.got-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+button:disabled{opacity:.4}
+
+/* Act it out */
+.pick-card{display:grid;grid-template-rows:1fr 1fr}
+.side{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:20px;text-align:center;color:#1E1B3A}
+.side.easy{background:var(--sun)}
+.side.hard{background:var(--pink)}
+.side .w{font-size:clamp(28px,8vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.side .meta{font-size:15px;font-weight:600;opacity:.8}
+.pick-card.single{grid-template-rows:1fr}
+.pick-card.single .hard{display:none}
+.side:active{filter:brightness(.95)}
+.act-card{justify-content:center;align-items:center;text-align:center;padding:28px 22px}
+.fill{position:absolute;inset:0;transform-origin:bottom;background:var(--sun)}
+.act-card.is-hard .fill{background:var(--pink)}
+.act-card.low .fill{background:#FF8A6B}
+.act-card > *:not(.fill){position:relative}
+.act-word{font-size:clamp(36px,11vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1.02;word-break:break-word}
+.act-time{font-size:clamp(72px,24vw,120px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;margin-top:18px;letter-spacing:-.04em}
+.act-tag{font-weight:700;font-size:15px;margin-bottom:12px;opacity:.75}
+.act-card.paused .act-time{opacity:.35}
+.act-card > .flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,60px);
+  font-weight:800;color:#fff;opacity:0;pointer-events:none;letter-spacing:-.02em}
+.act-card.timesup .flash{background:var(--red);opacity:1}
+.act-card.got .flash{background:var(--mint);opacity:1}
+.actions{display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-top:22px}
+.actions button{padding:18px;border-radius:16px;font-weight:800;font-size:20px}
+
+/* Describe it */
+.tbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.track{flex:1;height:12px;border-radius:999px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;background:var(--cobalt);transform-origin:left}
+.track.low i{background:var(--red)}
+.tsec{font-weight:800;font-variant-numeric:tabular-nums;min-width:3ch;text-align:right;font-size:24px}
+.t-card{min-height:0}
+.t-word{background:#2B44D6;color:#fff;padding:28px 18px;text-align:center;font-size:clamp(34px,10vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1.05;word-break:break-word}
+.t-dont{padding:14px 18px 20px;text-align:center}
+.t-dont p{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;opacity:.6;margin-bottom:4px}
+.t-dont ul{list-style:none;margin:0;padding:0}
+.t-dont li{font-size:clamp(22px,6vw,28px);font-weight:700;padding:7px 0;border-top:1px solid #E2DEF5}
+.t-dont li:first-child{border-top:0}
+.t-paused{position:absolute;inset:0;background:var(--card-bg);display:none;align-items:center;justify-content:center;font-size:40px;font-weight:800}
+.t-card.paused .t-paused{display:flex}
+.pop{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,58px);font-weight:800;color:#fff;opacity:0;pointer-events:none}
+.pop.green{background:var(--mint)} .pop.red{background:var(--red)} .pop.gray{background:#7C76A3}
+.pop.go{animation:pop .6s ease-out}
+.pop.hold{opacity:1}
+@keyframes pop{0%,60%{opacity:1}100%{opacity:0}}
+.t-actions{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:10px;margin-top:22px}
+.t-actions button{padding:18px 8px;border-radius:16px;font-weight:800;font-size:19px}
+.buzz{background:var(--red);color:#fff}
+
+/* Imposter */
+.game-tile.imp{background:#8FE3C0}
+.role-card{width:100%;min-height:min(46vh,360px);padding:30px 20px;text-align:center;align-items:center;justify-content:center;margin-top:12px}
+.role-card.imposter{background:var(--red);color:#fff}
+.role-tag{font-weight:700;opacity:.75}
+.role-word{font-size:clamp(40px,12vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:6px 0 10px;word-break:break-word}
+.role-hint{font-weight:600;opacity:.85}
+.order{padding-left:30px;margin:18px 0 22px;font-size:19px}
+.order li{padding:6px 0}
+.order li:first-child{font-weight:800}
+.disc{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.disc small{display:block;color:var(--muted);font-size:13px}
+.disc-time{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums}
+.vote-list{display:grid;gap:10px;margin:20px 0}
+.vote-list button{border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:700;font-size:19px;text-align:left}
+.vote-list button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.vote-list .name-btn{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface)}
+.name-btn small{font-weight:600;font-size:14px;color:var(--cobalt);flex:none}
+.vote-list .name-btn.seen{border-color:var(--mint)}
+.name-btn.seen small{color:var(--mint)}
+
+/* Sketch chain */
+.game-tile.tele{background:#A9B8FF}
+.draw-prompt{font-size:clamp(30px,9vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:2px 0 6px;word-break:break-word}
+#pad{display:block;width:100%;aspect-ratio:1;background:#fff;border:3px solid #1E1B3A;border-radius:20px;touch-action:none;box-shadow:5px 5px 0 var(--shadow);margin-top:8px}
+.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tools .spacer{flex:1}
+.swatch{width:36px;height:36px;border-radius:50%;border:3px solid var(--line)}
+.swatch[aria-pressed="true"]{border-color:var(--ink);transform:scale(1.12)}
+.tool{border:2px solid var(--line);border-radius:12px;padding:7px 12px;font-weight:700;font-size:15px}
+.tool[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.sketch{display:block;width:100%;aspect-ratio:1;background:#fff;border:3px solid #1E1B3A;border-radius:20px;margin:8px 0 16px;object-fit:contain}
+#tgInput{font-size:20px}
+.chain{display:grid;gap:14px;margin:18px 0 22px}
+.chain-item{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px}
+.chain-item small{display:block;color:var(--muted);font-weight:700;margin-bottom:6px}
+.chain-item .txt{font-size:26px;font-weight:800;letter-spacing:-.02em;word-break:break-word}
+.chain-item img{display:block;width:100%;border-radius:12px;background:#fff;border:2px solid var(--line)}
+.chain-item.first{background:var(--sun);border-color:var(--sun);color:#1E1B3A}
+.chain-item.first small{color:#1E1B3A;opacity:.7}
+
+/* Mind dial */
+.game-tile.wave{background:#FFB347}
+.game-tile.fb{background:#C9A7FF}
+.game-tile.spy{background:#8CD3E6}
+.spy-grid{display:grid;gap:6px;margin:12px 0}
+.spy-grid.c4{grid-template-columns:repeat(4,1fr)}
+.spy-grid.c5{grid-template-columns:repeat(5,1fr)}
+.spy-card{display:grid;place-items:center;text-align:center;min-height:58px;padding:6px 3px;border:2px solid var(--line);border-radius:10px;background:var(--surface);font-weight:700;font-size:14px;line-height:1.15;overflow-wrap:anywhere;color:var(--ink)}
+.spy-grid.c5 .spy-card{font-size:12px;min-height:52px}
+.spy-card:disabled{opacity:1}
+.spy-card.sel{border-color:var(--cobalt);box-shadow:0 0 0 3px var(--cobalt)}
+.spy-card.r-0{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
+.spy-card.r-1{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
+.spy-card.r-by{background:#EDE6D6;border-color:#B9AE95;color:#1E1B3A}
+.spy-card.r-trap{background:#1E1B3A;border-color:#1E1B3A;color:#fff}
+.spy-card.done{opacity:.35;text-decoration:line-through}
+.turn-pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#1E1B3A}
+.turn-pill.t0{background:#BFD4FF}
+.turn-pill.t1{background:#FFC9C2}
+.spy-tools{display:flex;gap:10px}
+.spy-tools button{flex:1;padding:12px}
+.scores li small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.ends{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:8px 0 6px}
+.end{font-weight:800;font-size:18px;padding:6px 12px;border-radius:14px;max-width:48%;line-height:1.2;color:#1E1B3A}
+.end.l{background:#BFD4FF;text-align:left}
+.end.r{background:#FFC9C2;text-align:right}
+.dial{touch-action:none;user-select:none;-webkit-user-select:none;margin:4px 0}
+.dial svg{display:block;width:100%;height:auto}
+.nudge{display:flex;justify-content:space-between;margin:6px 0 12px}
+
+/* Summary + final */
+.result-list{list-style:none;padding:0;margin:18px 0 22px}
+.result-list li{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.mark{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff}
+.mark.y{background:var(--mint)} .mark.n{background:var(--red)}
+.result-list .w{flex:1}
+.result-list .p{color:var(--muted);font-weight:600;font-size:15px}
+h3.sub{font-size:20px;margin-top:26px}
+.review{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.review span{background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:600;font-size:15px}
+.restart{display:block;margin:28px auto 0;color:var(--muted);font-weight:600;font-size:15px;padding:10px 16px;border-radius:12px;border:2px solid var(--line)}
+.restart.confirm{border-color:var(--red);color:var(--red)}
+
+@media (prefers-reduced-motion:reduce){ .toggle::after{transition:none} }
+</style>
+</head>
+<body>
+<main>
+
+<section id="home">
+  <header class="hero">
+    <h1>Game night</h1>
+    <p>Pick a game. Everything runs on one phone, passed around the group.</p>
+  </header>
+  <div class="home-grid">
+    <div class="home-head"><h3>Classics</h3><p>Quick to learn party favorites</p></div>
+    <button class="game-tile act" id="goAct">
+      <span class="tile-icon" data-icon="act" aria-hidden="true"></span>
+      <h2>Act it out</h2>
+      <p>Charades against the clock. Every card has an easy and a hard word, and its own timer.</p>
+      <span class="go">Play →</span>
+    </button>
+    <button class="game-tile taboo" id="goTaboo">
+      <span class="tile-icon" data-icon="taboo" aria-hidden="true"></span>
+      <h2>Describe it</h2>
+      <p>Get your group to guess the word without saying it or any of the forbidden words. Three levels.</p>
+      <span class="go">Play →</span>
+    </button>
+    <button class="game-tile fb" id="goFb">
+      <span class="tile-icon" data-icon="fb" aria-hidden="true"></span>
+      <h2>Word bowl</h2>
+      <p>Everyone fills the bowl with words. Two teams race through them three times: describe, one word, then act.</p>
+      <span class="go">Play →</span>
+    </button>
+    <button class="game-tile tele" id="goTele">
+      <span class="tile-icon" data-icon="tele" aria-hidden="true"></span>
+      <h2>Pass the doodle</h2>
+      <p>Draw the word, guess the drawing, draw the guess. Watch the word change as it goes around.</p>
+      <span class="go">Play →</span>
+    </button>
+    <div class="home-head" style="margin-top:18px"><h3>Brain games</h3><p>Strategy, bluffing and teamwork</p></div>
+    <button class="game-tile wave" id="goWave">
+      <span class="tile-icon" data-icon="wave" aria-hidden="true"></span>
+      <h2>In the range</h2>
+      <p>One player knows where the hidden target is. They give a clue, and the group moves the dial to find it.</p>
+      <span class="go">Play →</span>
+    </button>
+    <button class="game-tile imp" id="goImp">
+      <span class="tile-icon" data-icon="imp" aria-hidden="true"></span>
+      <h2>Imposter</h2>
+      <p>Everyone gets the same secret word except the imposter. Give clues, find the faker.</p>
+      <span class="go">Play →</span>
+    </button>
+    <button class="game-tile spy" id="goSpy">
+      <span class="tile-icon" data-icon="spy" aria-hidden="true"></span>
+      <h2>Word spies</h2>
+      <p>Two teams, one secret key. Spymasters give one-word clues to help their team find their words.</p>
+      <span class="go">Play →</span>
+    </button>
+  </div>
+</section>
+
+<section id="setup" hidden>
+  <button class="back" id="toHome">← All games</button>
+  <header class="hero">
+    <span class="setup-icon" id="setupIcon" aria-hidden="true"></span>
+    <h1 id="setupTitle"></h1>
+    <p id="setupIntro"></p>
+  </header>
+
+  <div class="block">
+    <h2>Players</h2>
+    <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
+    <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
+    <p class="hint" data-for="fb" style="margin:-4px 0 12px">Teams are made for you: the 1st, 3rd, 5th… players are Team Blue, and the 2nd, 4th, 6th… are Team Pink. Sit so the teams alternate around the circle.</p>
+    <p class="hint" data-for="spy" style="margin:-4px 0 12px">Teams are made for you: the 1st, 3rd, 5th… players are Team Blue, and the 2nd, 4th, 6th… are Team Pink. The spymaster role rotates each game.</p>
+    <div id="players"></div>
+    <button id="addPlayer" class="ghost">Add player</button>
+  </div>
+
+  <div class="block" data-for="act">
+    <h2>Word packs</h2>
+    <div id="packs" class="chips"></div>
+    <details class="custom">
+      <summary>Add your own words</summary>
+      <p class="hint">One card per line. Write “easy | hard” for a two-sided card, or a single word for a one-sided card worth 1 point.</p>
+      <textarea id="custom" rows="6" placeholder="lighthouse | lighthouse keeper in a storm&#10;volcano"></textarea>
+    </details>
+  </div>
+
+  <div class="block" data-for="taboo">
+    <h2>Level</h2>
+    <div class="seg" id="levels">
+      <button data-level="1">1<small>Kids</small></button>
+      <button data-level="2">2<small>Medium</small></button>
+      <button data-level="3">3<small>Classic</small></button>
+    </div>
+    <p class="hint" id="levelHint" style="margin-top:10px"></p>
+  </div>
+
+  <div class="block">
+    <h2>Rules</h2>
+    <div id="settings"></div>
+    <div class="setting">
+      <span>Sound</span>
+      <button id="soundToggle" class="toggle" role="switch" aria-checked="true" aria-label="Sound"></button>
+    </div>
+  </div>
+
+  <div class="block" data-for="act">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>Every card has an easy word worth 1 point and a hard word worth 2. Pick one and act it out before the timer runs out.</li>
+        <li>Tap <b>Got it</b> when someone guesses the word.</li>
+        <li>Tap <b>Skip</b> to pass a word. Once you pass it, it’s gone. It won’t come back this turn.</li>
+        <li>If you skip a word or time runs out, you get no points for that card.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="taboo">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>Describe the word at the top so your group can guess it. Don’t say the word itself or any word under “Don’t say.”</li>
+        <li>No acting, pointing, or “sounds like.” Words only.</li>
+        <li>Tap <b>Got it</b> when someone guesses the word for 1 point.</li>
+        <li>Tap <b>Buzz</b> if you said a forbidden word, or <b>Skip</b> to pass. Either way the card is gone and scores no points.</li>
+        <li>One timer covers your whole turn, so get through as many cards as you can.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="imp">
+    <h2>Word categories</h2>
+    <div id="impPacks" class="chips"></div>
+  </div>
+
+  <div class="block" data-for="imp">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>Everyone secretly gets the same word, except the imposters. They only see “Imposter” (plus the category, if hints are on).</li>
+        <li>Pass the phone around. Each player taps their name to see their word, then taps the card to hide it. Forgot your word? Tap your name again before the clues start.</li>
+        <li>Starting with the first player, go around the circle. Each person says one word or a short clue about the secret word. Don’t make it too obvious, or the imposter will figure it out.</li>
+        <li>Go around once, then talk it over and vote on who you think the imposter is.</li>
+        <li>If the imposter gets caught, they get one guess at the secret word. If they guess it, they still win.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="tele">
+    <h2>Level</h2>
+    <div class="seg" id="teleLevels">
+      <button data-tlevel="1">1<small>Kids</small></button>
+      <button data-tlevel="2">2<small>Medium</small></button>
+      <button data-tlevel="3">3<small>Tricky</small></button>
+    </div>
+    <p class="hint" id="teleLevelHint" style="margin-top:10px"></p>
+  </div>
+
+  <div class="block" data-for="tele">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>The first player gets a secret word and draws it.</li>
+        <li>Pass the phone. The next player looks at the drawing and writes their guess of what it is by typing it into the box. They only see the drawing, never the word.</li>
+        <li>The next player sees only that guess and draws it. Keep switching between drawing and guessing until everyone has had a turn.</li>
+        <li>At the end, flip through the sketchbook page by page and see how the word changed along the way.</li>
+        <li>With more than one sketchbook, each one starts with a different player, and the screen always says who’s next.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="wave">
+    <h2>Level</h2>
+    <div class="seg" id="wLevels">
+      <button data-wlevel="1">1<small>Kids</small></button>
+      <button data-wlevel="2">2<small>Medium</small></button>
+      <button data-wlevel="3">3<small>Classic</small></button>
+    </div>
+    <p class="hint" id="wLevelHint" style="margin-top:10px"></p>
+  </div>
+
+  <div class="block" data-for="wave">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>Each turn, pass the phone to the clue giver. They see the two ends, like “cold” and “hot,” then swipe the dial to spin it and set a random hidden target. Only they see where it lands.</li>
+        <li>The clue giver says one clue that fits that spot. If the target is close to “hot,” you might say “soup.” Near the middle? Maybe “a sunny spring day.”</li>
+        <li>Pass the phone to the group. Talk it over and drag the dial to where you think the target is.</li>
+        <li>The closer you land, the more points: 4 for a bullseye, then 3, then 2. Everyone plays as one team and shares the score.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="fb">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>First, everyone fills the bowl: pass the phone around, tap your name, and secretly type in your words or short phrases. (Or switch off “Players write the words” and the game fills the bowl for you.)</li>
+        <li>Two teams take turns. On your turn, get your own team to guess as many words from the bowl as you can before time runs out.</li>
+        <li><b>Round 1, Describe it:</b> say anything except the word. <b>Round 2, One word:</b> you can say only one word. <b>Round 3, Act it out:</b> no talking at all.</li>
+        <li>The same words come back every round, so pay attention! A round ends when the bowl is empty.</li>
+        <li>Tap <b>Skip</b> to put a word back in the bowl. Each word guessed is 1 point, and the team with the most points after 3 rounds wins.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="block" data-for="spy">
+    <h2>Level</h2>
+    <div class="seg" id="spyLevels">
+      <button data-slevel="1">1<small>Kids</small></button>
+      <button data-slevel="2">2<small>Medium</small></button>
+      <button data-slevel="3">3<small>Classic</small></button>
+    </div>
+    <p class="hint" id="spyLevelHint" style="margin-top:10px"></p>
+  </div>
+
+  <div class="block" data-for="spy">
+    <details>
+      <summary style="font-size:20px;font-weight:700">How to play</summary>
+      <ul class="rules">
+        <li>Put the phone in the middle. There are two teams, and each has a spymaster. Only spymasters may look at the secret key, which shows which words belong to each team.</li>
+        <li>On your team’s turn, your spymaster gives a one-word clue and a number, like “ocean, 2,” to link that many of your team’s words.</li>
+        <li>Your team talks it over, taps a word, then taps Reveal. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap End turn.</li>
+        <li>Watch out for the trap card! Reveal it and your team loses right away.</li>
+        <li>The first team to find all its words wins.</li>
+      </ul>
+    </details>
+  </div>
+
+  <button id="startGame" class="primary">Start game</button>
+  <p id="setupError" class="error" role="alert"></p>
+</section>
+
+<section id="pass" class="center" hidden>
+  <p class="eyebrow" id="passRound"></p>
+  <p class="big-name" id="passName"></p>
+  <p class="note" id="passNote"></p>
+  <ul class="scores" id="passScores"></ul>
+  <button id="startTurn" class="primary">Start turn</button>
+</section>
+
+<section id="pick" hidden>
+  <div class="bar"><span id="pickCount"></span><span class="pts" id="pickPts"></span></div>
+  <div class="card pick-card" id="pickCard">
+    <button class="side easy" id="pickEasy"><span class="w"></span><span class="meta"></span></button>
+    <button class="side hard" id="pickHard"><span class="w"></span><span class="meta"></span></button>
+  </div>
+  <p class="note center" style="margin-top:18px">Pick a side. The timer starts right away.</p>
+</section>
+
+<section id="act" hidden>
+  <div class="bar"><span id="actCount"></span><button class="pause" id="pauseBtn">Pause</button></div>
+  <div class="card act-card" id="actCard">
+    <div class="fill" id="fill"></div>
+    <p class="act-tag" id="actTag"></p>
+    <p class="act-word" id="actWord"></p>
+    <p class="act-time" id="actTime" aria-live="off"></p>
+    <div class="flash" id="flash"></div>
+  </div>
+  <div class="actions">
+    <button class="skip" id="skipBtn">Skip</button>
+    <button class="got-btn" id="gotBtn">Got it</button>
+  </div>
+</section>
+
+<section id="tplay" hidden>
+  <div class="bar"><span class="pts" id="tPts"></span><button class="pause" id="tPause">Pause</button></div>
+  <div class="tbar"><div class="track" id="tTrack"><i id="tFill"></i></div><span class="tsec" id="tSec"></span></div>
+  <div class="card t-card" id="tCard">
+    <p class="t-word" id="tWord"></p>
+    <div class="t-dont"><p>Don’t say</p><ul id="tDont"></ul></div>
+    <div class="t-paused">Paused</div>
+    <div class="pop" id="tPop"></div>
+  </div>
+  <div class="t-actions">
+    <button class="skip" id="tSkip">Skip</button>
+    <button class="buzz" id="tBuzz">Buzz</button>
+    <button class="got-btn" id="tGot">Got it</button>
+  </div>
+</section>
+
+<section id="reveal" hidden>
+  <div id="revList">
+    <p class="big-name center" style="font-size:clamp(34px,10vw,48px)">Tap your name</p>
+    <p class="note center">See your word privately, then tap the card to hide it and pass the phone. Forgot your word? Tap your name again before the clues start.</p>
+    <div class="vote-list" id="nameList"></div>
+    <button id="toCluesBtn" class="primary" disabled>Start clues</button>
+    <p class="note center" id="revStatus" style="margin-top:12px"></p>
+  </div>
+  <div id="revCardWrap" hidden>
+    <p class="eyebrow center" id="revWho"></p>
+    <button class="card role-card" id="roleCard">
+      <p class="role-tag" id="roleTag"></p>
+      <p class="role-word" id="roleWord"></p>
+      <p class="role-hint" id="roleHint"></p>
+    </button>
+    <p class="note center" style="margin-top:20px">Tap the card to hide it.</p>
+  </div>
+</section>
+
+<section id="clues" hidden>
+  <p class="eyebrow center">Everyone has seen their word</p>
+  <p class="big-name center" id="firstName"></p>
+  <p class="note center">goes first. Go around once in this order, one clue each.</p>
+  <ol class="order" id="order"></ol>
+  <div class="block" id="discBlock">
+    <div class="disc"><div><b>Discussion timer</b><small>Optional, before the vote</small></div><span class="disc-time" id="discTime"></span></div>
+    <button id="discBtn" class="ghost" style="margin-top:12px;border-style:solid;color:var(--ink)">Start timer</button>
+  </div>
+  <button id="toVote" class="primary">Time to vote</button>
+</section>
+
+<section id="vote" hidden>
+  <p class="big-name center">Who’s the imposter?</p>
+  <p class="note center" id="voteNote"></p>
+  <div class="vote-list" id="voteList"></div>
+  <button id="revealBtn" class="primary" disabled>Reveal</button>
+</section>
+
+<section id="impResult" class="center" hidden>
+  <p class="eyebrow">The secret word was</p>
+  <p class="big-name" id="resWord"></p>
+  <p class="eyebrow" id="resCat"></p>
+  <h3 class="sub" id="resTitle" style="font-size:30px"></h3>
+  <ul class="result-list" id="resList" style="text-align:left"></ul>
+  <p class="note" id="resNote"></p>
+  <button id="impAgain" class="primary">Play again</button>
+</section>
+
+<section id="tpass" class="center" hidden>
+  <p class="eyebrow" id="tpStep"></p>
+  <p class="eyebrow" style="margin-top:18px">Pass the phone to</p>
+  <p class="big-name" id="tpName"></p>
+  <p class="note" id="tpWhat"></p>
+  <button id="tpGo" class="primary"></button>
+</section>
+
+<section id="tdraw" hidden>
+  <div class="bar"><span id="tdStep"></span><span class="tsec" id="tdSec"></span></div>
+  <p class="eyebrow" id="tdLabel"></p>
+  <p class="draw-prompt" id="tdPrompt"></p>
+  <button class="back" id="tdSwap" style="padding:0 0 4px;font-size:15px">Swap for a different word</button>
+  <canvas id="pad" aria-label="Drawing pad"></canvas>
+  <div class="tools">
+    <button class="swatch" data-color="#1E1B3A" style="background:#1E1B3A" aria-label="Black"></button>
+    <button class="swatch" data-color="#E2453C" style="background:#E2453C" aria-label="Red"></button>
+    <button class="swatch" data-color="#2B6BE6" style="background:#2B6BE6" aria-label="Blue"></button>
+    <button class="swatch" data-color="#1FA874" style="background:#1FA874" aria-label="Green"></button>
+    <button class="swatch" data-color="#F2A31B" style="background:#F2A31B" aria-label="Orange"></button>
+    <button class="swatch" data-color="#8B5CF6" style="background:#8B5CF6" aria-label="Purple"></button>
+  </div>
+  <div class="tools">
+    <button class="tool" data-size=".01">Thin</button>
+    <button class="tool" data-size=".028">Thick</button>
+    <button class="tool" data-color="#FFFFFF">Eraser</button>
+    <span class="spacer"></span>
+    <button class="tool" id="undoBtn">Undo</button>
+    <button class="tool" id="clearBtn">Clear</button>
+  </div>
+  <button id="tdDone" class="primary" style="margin-top:18px">Done drawing</button>
+</section>
+
+<section id="tguess" hidden>
+  <div class="bar"><span id="tgStep"></span></div>
+  <p class="eyebrow">What is this drawing? Write your guess in the box below.</p>
+  <img id="tgImg" class="sketch" alt="The drawing to guess">
+  <input type="text" id="tgInput" placeholder="Type your guess" maxlength="60" autocomplete="off" aria-label="Your guess">
+  <p class="error" id="tgErr" role="alert"></p>
+  <button id="tgDone" class="primary">Submit guess</button>
+</section>
+
+<section id="treveal" hidden>
+  <p class="eyebrow center" id="trBookNo"></p>
+  <p class="big-name center" id="trTitle" style="font-size:clamp(32px,9vw,44px)"></p>
+  <div class="chain" id="trList"></div>
+  <button id="trNext" class="primary"></button>
+  <button id="trAll" class="ghost" style="margin-top:12px;border-style:solid;color:var(--ink)">Show all pages</button>
+</section>
+
+<section id="wpass" class="center" hidden>
+  <p class="eyebrow" id="wpStep"></p>
+  <p class="eyebrow" style="margin-top:18px">Clue giver</p>
+  <p class="big-name" id="wpName"></p>
+  <p class="note">You’ll spin the dial to set a hidden target. Keep the screen to yourself.</p>
+  <p class="eyebrow" id="wpScore"></p>
+  <button id="wpGo" class="primary" style="margin-top:20px">I’m ready</button>
+</section>
+
+<section id="wpsy" hidden>
+  <div class="bar"><span id="wsStep"></span><button class="pause" id="wsSwap">New card</button></div>
+  <div class="ends"><span class="end l"></span><span class="end r"></span></div>
+  <div class="dial" id="wsDial" aria-label="Swipe to spin the dial"></div>
+  <p class="note center" id="wsSpinHint" style="margin:14px 0 10px;font-weight:700;color:var(--ink)">Swipe the dial to spin it and set a random target.</p>
+  <div id="wsAfter" hidden>
+    <p class="note center" style="margin:14px 0 10px">Think of something that belongs right at the target, between the two ends. Say your clue out loud.</p>
+    <input type="text" id="wClue" placeholder="Type your clue too (optional)" maxlength="60" autocomplete="off" aria-label="Your clue">
+    <button id="wsDone" class="primary" style="margin-top:16px">Hide target, pass to the group</button>
+  </div>
+</section>
+
+<section id="wguess" hidden>
+  <div class="bar"><span id="wgStep"></span><span class="pts" id="wgScore"></span></div>
+  <p class="eyebrow center" id="wgWho"></p>
+  <p class="draw-prompt center" id="wgClue"></p>
+  <div class="ends"><span class="end l"></span><span class="end r"></span></div>
+  <div class="dial" id="wgDial" aria-label="Drag to move the dial"></div>
+  <div class="nudge"><button class="tool" id="wgL">◀ Left</button><button class="tool" id="wgR">Right ▶</button></div>
+  <p class="note center">Talk it over, then drag the dial to where you think the target is.</p>
+  <button id="wgDone" class="primary">Lock it in</button>
+</section>
+
+<section id="wreveal" class="center" hidden>
+  <p class="eyebrow" id="wrStep"></p>
+  <p class="big-name" id="wrPts"></p>
+  <p class="note" id="wrMsg"></p>
+  <div class="ends"><span class="end l"></span><span class="end r"></span></div>
+  <div class="dial" id="wrDial"></div>
+  <p class="eyebrow" id="wrScore" style="margin:16px 0"></p>
+  <button id="wrNext" class="primary"></button>
+</section>
+
+<section id="wfinal" class="center" hidden>
+  <p class="eyebrow">Group score</p>
+  <p class="big-name" id="wfScore"></p>
+  <p class="note" id="wfMsg"></p>
+  <ul class="result-list" id="wfList" style="text-align:left"></ul>
+  <button id="wfAgain" class="primary">Play again</button>
+</section>
+
+<section id="fbsub" hidden>
+  <p class="big-name center" style="font-size:clamp(34px,10vw,48px)">Fill the bowl</p>
+  <p class="note center" id="fbsubNote"></p>
+  <div class="vote-list" id="fbNames"></div>
+  <button id="fbStart" class="primary" disabled>Start round 1</button>
+  <p class="note center" id="fbsubStatus" style="margin-top:12px"></p>
+</section>
+
+<section id="fbwrite" hidden>
+  <p class="eyebrow center">Add your words</p>
+  <p class="big-name center" id="fbwName" style="font-size:clamp(34px,10vw,48px)"></p>
+  <p class="note center">Keep them secret! Words or short phrases both work.</p>
+  <div id="fbInputs" style="display:grid;gap:10px"></div>
+  <p class="error" id="fbwErr" role="alert"></p>
+  <button id="fbwSave" class="primary">Put them in the bowl</button>
+</section>
+
+<section id="fbround" class="center" hidden>
+  <p class="eyebrow" id="frNo"></p>
+  <p class="big-name" id="frName"></p>
+  <p class="note" id="frRule" style="font-size:18px;color:var(--ink)"></p>
+  <ul class="scores" id="frScores" style="text-align:left"></ul>
+  <button id="frGo" class="primary">Start round</button>
+</section>
+
+<section id="fbpass" class="center" hidden>
+  <p class="eyebrow" id="fpRound"></p>
+  <p class="big-name" id="fpName"></p>
+  <p class="eyebrow" id="fpTeam"></p>
+  <p class="note" id="fpRule" style="margin-top:12px"></p>
+  <p class="eyebrow" id="fpLeft"></p>
+  <button id="fpGo" class="primary" style="margin-top:18px">Start turn</button>
+</section>
+
+<section id="fbplay" hidden>
+  <div class="bar"><span class="pts" id="fbRuleTag"></span><button class="pause" id="fbPause">Pause</button></div>
+  <div class="tbar"><div class="track" id="fbTrack"><i id="fbFill"></i></div><span class="tsec" id="fbSec"></span></div>
+  <div class="card t-card" id="fbCard">
+    <p class="t-word" id="fbWord" style="padding:48px 18px"></p>
+    <p class="center" id="fbLeft" style="margin:14px 0;font-weight:600;opacity:.7"></p>
+    <div class="t-paused">Paused</div>
+    <div class="pop" id="fbPop"></div>
+  </div>
+  <div class="actions">
+    <button class="skip" id="fbSkip">Skip</button>
+    <button class="got-btn" id="fbGot">Got it</button>
+  </div>
+</section>
+
+<section id="fbturn" hidden>
+  <p class="eyebrow center" id="ftRound"></p>
+  <p class="big-name center" id="ftTitle"></p>
+  <ul class="result-list" id="ftList"></ul>
+  <ul class="scores" id="ftScores"></ul>
+  <button id="ftNext" class="primary"></button>
+</section>
+
+<section id="spyround" class="center" hidden>
+  <p class="eyebrow">New board</p>
+  <p class="big-name" id="srFirst"></p>
+  <ul class="scores" id="srSpies" style="text-align:left"></ul>
+  <p class="note">Spymasters: tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
+  <button id="srGo" class="primary">Show the board</button>
+</section>
+
+<section id="spyboard" hidden>
+  <div class="bar"><span class="turn-pill" id="sbTurn"></span><span id="sbCount"></span></div>
+  <div class="spy-grid" id="sbGrid"></div>
+  <p class="note center" id="sbMsg" style="min-height:1.4em;margin:4px 0 10px"></p>
+  <button id="sbReveal" class="primary" hidden></button>
+  <div class="spy-tools" style="margin-top:12px"><button class="tool" id="sbKey">Spymaster key</button><button class="tool" id="sbEnd">End turn</button></div>
+</section>
+
+<section id="spykey" hidden>
+  <p class="eyebrow center">Spymasters only!</p>
+  <p class="big-name center" style="font-size:clamp(30px,9vw,42px)">The secret key</p>
+  <p class="note center" id="skWho"></p>
+  <div class="spy-grid" id="skGrid"></div>
+  <p class="note center">Blue words are Team Blue’s, pink are Team Pink’s, tan are nobody’s, and the dark card is the trap. Crossed-out cards are already revealed.</p>
+  <button id="skHide" class="primary">Hide key</button>
+</section>
+
+<section id="spyend" class="center" hidden>
+  <p class="eyebrow" id="seReason"></p>
+  <p class="big-name" id="seWin"></p>
+  <div class="spy-grid" id="seGrid"></div>
+  <button id="seAgain" class="primary" style="margin-top:12px">Play again</button>
+</section>
+
+<section id="summary" hidden>
+  <p class="eyebrow center" id="sumRound"></p>
+  <p class="big-name center" id="sumTitle"></p>
+  <ul class="result-list" id="sumList"></ul>
+  <button id="nextTurn" class="primary"></button>
+</section>
+
+<section id="final" hidden>
+  <p class="eyebrow center">Final scores</p>
+  <p class="big-name center" id="winner"></p>
+  <ul class="scores" id="finalScores"></ul>
+  <div id="reviewWrap">
+    <h3 class="sub">Words to talk through</h3>
+    <p class="note" style="margin-top:6px">Cards nobody guessed. Good ones to explain, use in a sentence, or try again.</p>
+    <div class="review" id="review"></div>
+  </div>
+  <button id="playAgain" class="primary" style="margin-top:24px">Play again</button>
+</section>
+
+<button id="startOver" class="restart" hidden>Start over</button>
+</main>
+<script>
+const PACKS = {
+  "Everyday actions": [["brush your teeth","untangle headphones"],["sleep","sleepwalk"],["eat","eat spaghetti"],["swim","synchronized swimming"],["laugh","try not to laugh"],["read","speed-read a book"],["cook","flip a pancake"],["dance","salsa dance"],["drive","parallel park"],["sneeze","hold in a sneeze"],["wave","wave goodbye from a train"],["clap","slow clap"],["cry","chop onions"],["jump","jump rope"],["climb","climb a volcano"],["sing","sing in the shower"],["write","sign an autograph"],["paint","paint your nails"],["sweep","mop a muddy floor"],["text","text with one thumb"]],
+  "School life": [["backpack","open a stuck locker"],["teacher","substitute teacher"],["homework","forget your homework"],["test","pop quiz"],["lunch","trade lunches"],["recess","fire drill"],["pencil","sharpen a pencil"],["science","science experiment"],["bus","miss the bus"],["math","long division"],["library","whisper in the library"],["presentation","nervous presentation"],["eraser","erase the whiteboard"],["uniform","tie a tie"],["gym class","dodgeball"],["calculator","solve an equation"],["map","find a country on a globe"],["microscope","look through a microscope"],["report card","hide a report card"],["group project","group project argument"]],
+  "Animals": [["giraffe","giraffe eating from a tall tree"],["gorilla","gorilla beating its chest"],["duck","duck waddling to a pond"],["cow","cow chewing grass"],["pig","pig rolling in mud"],["sheep","counting sheep to fall asleep"],["octopus","octopus juggling"],["spider","spider spinning a web"],["dolphin","dolphin jumping through a hoop"],["eagle","eagle catching a fish"],["flamingo","flamingo standing on one leg"],["sloth","sloth hanging from a branch"],["peacock","peacock showing off its feathers"],["mouse","mouse stealing cheese from a trap"],["squirrel","squirrel hiding nuts"],["jaguar","jaguar sneaking through the jungle"],["parrot","parrot copying words"],["camel","camel crossing the desert"],["whale","whale spouting water"],["bat","bat hanging upside down"],["goat","goat climbing a mountain"],["seal","seal balancing a ball"],["hippo","hippo yawning"],["zebra","zebra drinking at a river"],["ant","ants carrying a crumb"],["mosquito","swat a mosquito"],["worm","early bird catching a worm"],["donkey","stubborn donkey"],["deer","deer in headlights"],["fox","fox sneaking into a henhouse"],["koala","koala hugging a tree"],["crocodile","crocodile snapping its jaws"],["puppy","puppy chewing a shoe"],["hamster","hamster running on a wheel"],["rooster","rooster waking up the farm"],["jellyfish","jellyfish floating"],["woodpecker","woodpecker pecking a tree"],["toucan","toucan eating fruit"],["armadillo","armadillo rolling into a ball"],["iguana","iguana sunbathing on a rock"]],
+  "Sports & hobbies": [["baseball","hit a home run"],["boxing","boxing match"],["swimming","butterfly stroke"],["running","win a race at the finish line"],["gymnastics","cartwheel"],["ice skating","figure skating spin"],["rock climbing","climb a rock wall"],["archery","hit the bullseye"],["ping-pong","ping-pong rally"],["badminton","badminton birdie"],["drums","drum solo"],["violin","violin concert"],["knitting","knit a scarf"],["gardening","plant seeds"],["kite","fly a kite on a windy day"],["roller skating","roller skate backwards"],["horseback riding","horse jumping a fence"],["canoe","paddle a canoe"],["diving","cannonball into a pool"],["jump rope","double dutch"],["hula hoop","hula hoop contest"],["puzzle","finish a jigsaw puzzle"],["chess","checkmate"],["drawing","draw a portrait"],["juggling","juggle three balls"],["weightlifting","lift a heavy barbell"],["sledding","sled down a hill"],["hockey","hockey goalie"],["football","catch a touchdown pass"],["cheerleading","cheerleader pyramid"],["marathon","run a marathon in the rain"],["referee","referee giving a red card"],["scuba diving","scuba diving with sharks"],["water skiing","water ski behind a boat"],["bird watching","spot a bird with binoculars"],["cards","shuffle a deck of cards"],["magic","card trick"],["pottery","pottery wheel"],["sewing","sew on a button"],["trampoline","flip on a trampoline"]],
+  "Bible stories": [["Noah’s ark","animals two by two"],["David and Goliath","David’s slingshot"],["Jonah","Jonah inside the fish"],["Moses","parting the Red Sea"],["Daniel","Daniel in the lions’ den"],["Adam and Eve","the forbidden fruit"],["Jesus walks on water","Peter sinking in the water"],["feeding the 5,000","five loaves and two fish"],["the Good Samaritan","helping a stranger on the road"],["Zacchaeus","climbing a sycamore tree"],["the lost sheep","shepherd searching for a sheep"],["Joseph","coat of many colors"],["the prodigal son","father running to hug his son"],["Jericho","walls falling down"],["baby Moses","basket in the river"],["Jesus calms the storm","sleeping in a boat"],["Samson","Samson’s long hair"],["the wise men","following a star"],["Tower of Babel","everyone speaking different languages"],["Paul’s shipwreck","snake bite by the fire"]],
+  "Jobs": [["doctor","brain surgeon"],["chef","sushi chef"],["firefighter","rescue a cat from a tree"],["pilot","emergency landing"],["farmer","milk a cow"],["dentist","pull a tooth"],["police officer","direct traffic"],["artist","sculptor"],["builder","build a brick wall"],["mail carrier","dog chasing the mail carrier"],["singer","opera singer"],["photographer","wedding photographer"],["astronaut","spacewalk"],["waiter","balance too many plates"],["barber","give a bad haircut"],["scientist","mad scientist"],["mechanic","change a flat tire"],["lifeguard","rescue a swimmer"],["magician","saw someone in half"],["news reporter","report in a hurricane"]],
+  "Feelings": [["happy","overjoyed"],["sad","heartbroken"],["angry","furious"],["scared","terrified of a spider"],["tired","exhausted after a marathon"],["surprised","surprise party"],["bored","bored in a long meeting"],["nervous","first day of school"],["proud","proud of a trophy"],["confused","lost in a new city"],["embarrassed","trip in front of everyone"],["excited","open a present"],["shy","meet someone new"],["jealous","jealous of a friend’s new phone"],["grateful","thank someone for a gift"],["lonely","eat lunch alone"],["calm","relax by a lake"],["disgusted","smell sour milk"],["hopeful","wait for good news"],["brave","jump off a high dive"]]
+};
+
+const TABOO = {
+  1: [["apple",["red","fruit","tree"]],["dog",["bark","pet","puppy"]],["pizza",["cheese","slice","eat"]],["sun",["hot","sky","yellow"]],["rain",["water","wet","umbrella"]],["book",["read","pages","story"]],["ball",["throw","round","kick"]],["fish",["swim","water","ocean"]],["bed",["sleep","night","pillow"]],["shoe",["foot","wear","sock"]],["ice cream",["cold","cone","sweet"]],["car",["drive","wheels","road"]],["bird",["fly","wings","nest"]],["cake",["birthday","sweet","candles"]],["moon",["night","sky","stars"]],["teacher",["school","class","students"]],["banana",["yellow","monkey","fruit"]],["chair",["sit","table","legs"]],["milk",["cow","drink","white"]],["snow",["cold","white","winter"]],["cat",["meow","pet","kitten"]],["tree",["leaves","green","wood"]],["phone",["call","text","talk"]],["bus",["school","ride","yellow"]],["egg",["chicken","breakfast","shell"]],["flower",["garden","rose","smell"]],["toothbrush",["teeth","brush","clean"]],["clock",["time","hour","tick"]],["hat",["head","wear","cap"]],["rainbow",["colors","rain","sky"]],["bread",["sandwich","toast","bake"]],["horse",["ride","farm","gallop"]],["beach",["sand","ocean","waves"]],["doctor",["sick","hospital","nurse"]],["kite",["fly","wind","string"]],["pencil",["write","paper","eraser"]],["frog",["green","jump","pond"]],["star",["sky","night","shine"]],["boat",["water","sail","sea"]],["cookie",["chocolate","bake","sweet"]],["bike",["ride","pedal","wheels"]],["house",["home","live","roof"]],["baby",["small","cry","born"]],["lion",["king","roar","jungle"]],["water",["drink","wet","clear"]],["bath",["tub","wash","soap"]],["butterfly",["wings","fly","colors"]],["train",["tracks","ride","station"]],["robot",["machine","metal","beep"]],["birthday",["cake","party","presents"]],["pig",["farm","oink","pink"]],["cow",["milk","moo","farm"]],["duck",["quack","pond","bird"]],["monkey",["banana","tree","swing"]],["elephant",["trunk","big","gray"]],["bee",["honey","buzz","sting"]],["sock",["foot","shoe","pair"]],["spoon",["eat","soup","fork"]],["cup",["drink","mug","coffee"]],["door",["open","close","knock"]],["window",["glass","look","open"]],["hamburger",["meat","bun","eat"]],["orange",["fruit","color","juice"]],["grapes",["purple","fruit","bunch"]],["carrot",["orange","vegetable","rabbit"]],["corn",["yellow","popcorn","farm"]],["soup",["bowl","hot","spoon"]],["bubble",["soap","pop","blow"]],["swing",["playground","push","back"]],["slide",["playground","down","fun"]],["sand",["beach","castle","sandbox"]],["leaf",["tree","green","fall"]],["cloud",["sky","white","rain"]],["wind",["blow","air","kite"]],["fire",["hot","burn","smoke"]],["ice",["cold","freeze","cube"]],["candy",["sweet","sugar","treat"]],["pillow",["bed","sleep","soft"]],["blanket",["bed","warm","cover"]],["toothpaste",["teeth","brush","tube"]],["brush",["hair","teeth","paint"]],["soap",["wash","hands","bubbles"]],["towel",["dry","bath","shower"]],["crayon",["color","draw","wax"]],["glue",["sticky","paper","stick"]],["scissors",["cut","paper","sharp"]],["drum",["bang","music","beat"]],["piano",["keys","music","play"]],["violin",["music","strings","bow"]],["airplane",["fly","sky","pilot"]],["truck",["big","drive","road"]],["helicopter",["fly","blades","sky"]],["ladder",["climb","up","steps"]],["snail",["slow","shell","slimy"]],["owl",["night","hoot","bird"]],["shark",["ocean","teeth","fish"]],["whale",["ocean","big","swim"]],["zebra",["stripes","horse","black"]],["giraffe",["tall","neck","spots"]],["penguin",["cold","ice","bird"]],["teddy bear",["toy","soft","hug"]],["doll",["toy","play","dress"]],["jacket",["coat","wear","cold"]],["school",["teacher","learn","class"]],["park",["play","grass","trees"]]],
+  2: [["airport",["plane","fly","travel","gate"]],["volcano",["lava","mountain","erupt","hot"]],["library",["books","read","quiet","borrow"]],["passport",["travel","country","photo","airport"]],["thunderstorm",["rain","lightning","loud","clouds"]],["dentist",["teeth","doctor","cavity","brush"]],["calendar",["days","month","date","year"]],["hospital",["doctor","sick","nurse","emergency"]],["camping",["tent","outside","fire","woods"]],["museum",["art","history","visit","old"]],["sandwich",["bread","lunch","meat","cheese"]],["homework",["school","teacher","study","assignment"]],["umbrella",["rain","wet","open","cover"]],["popcorn",["movie","butter","corn","pop"]],["superhero",["power","cape","save","fly"]],["vacation",["holiday","trip","travel","relax"]],["refrigerator",["cold","kitchen","food","freezer"]],["earthquake",["shake","ground","building","disaster"]],["breakfast",["morning","eat","eggs","cereal"]],["guitar",["strings","music","play","instrument"]],["shadow",["dark","sun","light","follow"]],["wedding",["marry","bride","groom","ring"]],["dinosaur",["extinct","bones","big","T. rex"]],["mirror",["reflection","look","glass","face"]],["soccer",["ball","goal","kick","sport"]],["island",["water","ocean","land","beach"]],["pajamas",["sleep","bed","night","wear"]],["map",["directions","country","find","road"]],["chef",["cook","kitchen","food","restaurant"]],["coffee",["drink","morning","cup","hot"]],["telescope",["stars","see","space","far"]],["garden",["plants","flowers","grow","dirt"]],["spider",["web","legs","bug","eight"]],["Christmas",["December","tree","presents","Jesus"]],["photograph",["camera","picture","take","smile"]],["jungle",["trees","animals","forest","rain"]],["firefighter",["fire","truck","hose","rescue"]],["backpack",["school","carry","bag","books"]],["invitation",["party","invite","card","come"]],["recipe",["cook","ingredients","food","instructions"]],["sunglasses",["eyes","sun","wear","dark"]],["pirate",["ship","treasure","sea","parrot"]],["grandmother",["grandma","family","old","mother"]],["alarm clock",["wake","morning","ring","time"]],["zoo",["animals","cage","visit","lion"]],["astronaut",["space","rocket","moon","NASA"]],["chocolate",["sweet","candy","brown","cocoa"]],["bridge",["cross","river","road","over"]],["waterfall",["water","fall","river","cliff"]],["neighbor",["next","door","house","live"]],["playground",["swing","slide","kids","park"]],["skateboard",["wheels","ride","trick","board"]],["tornado",["wind","storm","spin","twister"]],["rainforest",["trees","rain","jungle","animals"]],["desert",["sand","hot","dry","camel"]],["octopus",["eight","arms","sea","tentacles"]],["pancakes",["breakfast","syrup","flat","flip"]],["tacos",["Mexican","shell","meat","cheese"]],["snowman",["snow","carrot","winter","cold"]],["fireworks",["sky","boom","colors","night"]],["parade",["march","street","floats","music"]],["circus",["clown","tent","show","elephant"]],["clown",["circus","funny","nose","makeup"]],["castle",["king","queen","tower","princess"]],["dragon",["fire","fly","wings","monster"]],["treasure",["gold","pirate","chest","map"]],["mermaid",["fish","tail","ocean","sea"]],["ghost",["boo","scary","white","sheet"]],["volleyball",["net","ball","beach","spike"]],["basketball",["hoop","ball","dribble","dunk"]],["swimming pool",["water","swim","dive","splash"]],["hammer",["nail","tool","hit","wood"]],["scientist",["lab","experiment","science","test"]],["pilot",["plane","fly","airport","cockpit"]],["farmer",["farm","cow","crops","tractor"]],["tractor",["farm","farmer","drive","field"]],["submarine",["underwater","sea","boat","navy"]],["rocket",["space","launch","fly","moon"]],["planet",["space","Earth","Mars","sun"]],["computer",["screen","keyboard","mouse","internet"]],["video game",["play","controller","screen","level"]],["television",["TV","watch","show","screen"]],["microwave",["heat","kitchen","food","beep"]],["toaster",["bread","toast","kitchen","hot"]],["vacuum",["clean","floor","dust","noise"]],["helmet",["head","bike","safe","wear"]],["glasses",["eyes","see","wear","lenses"]],["necklace",["neck","jewelry","wear","chain"]],["crown",["king","queen","head","gold"]],["wallet",["money","pocket","cards","cash"]],["suitcase",["travel","pack","clothes","trip"]],["tent",["camping","sleep","outside","poles"]],["flashlight",["light","dark","battery","night"]],["rain boots",["rain","feet","puddle","wear"]],["puddle",["rain","water","jump","splash"]],["sunflower",["yellow","flower","seeds","tall"]],["pumpkin",["orange","Halloween","pie","seeds"]],["strawberry",["red","fruit","seeds","sweet"]],["watermelon",["fruit","green","red","seeds"]],["pineapple",["fruit","yellow","spiky","sweet"]],["avocado",["green","guacamole","fruit","toast"]],["tortilla",["corn","flat","taco","bread"]],["market",["buy","sell","food","shop"]],["church",["pray","Sunday","God","worship"]],["choir",["sing","church","songs","group"]],["bakery",["bread","cake","bake","shop"]]],
+  3: [["procrastinate",["delay","later","wait","put off","tomorrow"]],["bargain",["deal","cheap","price","sale","shop"]],["nostalgia",["past","memory","remember","old","miss"]],["lighthouse",["light","ocean","ships","tower","coast"]],["password",["computer","secret","login","account","type"]],["traffic jam",["cars","road","stuck","slow","rush hour"]],["gravity",["fall","Newton","earth","pull","apple"]],["applause",["clap","hands","audience","cheer","show"]],["deadline",["due","date","time","finish","late"]],["thermometer",["temperature","fever","hot","cold","degrees"]],["parachute",["jump","plane","sky","fall","skydive"]],["interview",["job","questions","hire","answer","meeting"]],["avalanche",["snow","mountain","fall","slide","ski"]],["compass",["north","direction","needle","south","map"]],["hiccup",["breath","sound","stop","scare","water"]],["skyscraper",["tall","building","city","floors","high"]],["autograph",["sign","famous","name","celebrity","signature"]],["jealous",["envy","want","green","feeling","friend"]],["receipt",["store","buy","paper","proof","money"]],["eclipse",["sun","moon","dark","shadow","block"]],["sarcasm",["joke","mean","tone","funny","opposite"]],["budget",["money","spend","save","plan","cost"]],["campfire",["fire","camping","marshmallows","wood","night"]],["detective",["mystery","clues","solve","police","crime"]],["blizzard",["snow","storm","cold","wind","winter"]],["handshake",["hand","greet","meet","shake","hello"]],["subscription",["monthly","pay","sign up","magazine","cancel"]],["microscope",["small","science","lens","see","lab"]],["roller coaster",["ride","amusement park","loop","fast","scream"]],["hibernate",["sleep","winter","bear","cave","animal"]],["referee",["game","whistle","rules","sports","call"]],["fingerprint",["finger","police","unique","touch","print"]],["shipwreck",["boat","sink","ocean","sailors","crash"]],["selfie",["photo","phone","picture","yourself","camera"]],["origami",["paper","fold","Japan","crane","art"]],["echo",["repeat","sound","voice","cave","back"]],["hurricane",["storm","wind","rain","ocean","category"]],["graduation",["school","cap","gown","diploma","finish"]],["vending machine",["snacks","coins","buy","drink","button"]],["ventriloquist",["puppet","dummy","voice","talk","mouth"]],["sunburn",["sun","red","skin","beach","sunscreen"]],["boomerang",["throw","return","back","Australia","curve"]],["marathon",["run","race","miles","long","finish"]],["tsunami",["wave","ocean","earthquake","water","flood"]],["scarecrow",["crows","field","farm","straw","birds"]],["quicksand",["sand","sink","stuck","trap","desert"]],["kangaroo",["Australia","jump","pouch","hop","baby"]],["chopsticks",["eat","sticks","Chinese","food","two"]],["leftovers",["food","dinner","fridge","later","extra"]],["daydream",["dream","imagine","awake","think","distracted"]],["time zone",["hour","clock","country","different","travel"]],["homesick",["home","miss","family","away","sad"]],["curiosity",["curious","wonder","question","know","cat"]],["patience",["wait","patient","calm","time","slow"]],["generous",["give","share","kind","gift","money"]],["teamwork",["team","together","group","help","work"]],["brainstorm",["ideas","think","brain","storm","group"]],["volunteer",["help","free","work","serve","community"]],["allowance",["money","parents","weekly","chores","kids"]],["landlord",["rent","apartment","house","owner","tenant"]],["paycheck",["money","work","job","salary","pay"]],["resume",["job","work","paper","experience","apply"]],["customer",["store","buy","shop","service","client"]],["refund",["money","back","return","store","receipt"]],["warranty",["broken","fix","free","product","years"]],["traffic light",["red","green","yellow","stop","go"]],["crosswalk",["street","cross","walk","stripes","car"]],["seatbelt",["car","safe","buckle","seat","wear"]],["jet lag",["tired","flight","time","travel","sleep"]],["souvenir",["trip","gift","buy","remember","vacation"]],["tourist",["visit","travel","camera","trip","sightseeing"]],["recycling",["trash","bin","plastic","reuse","paper"]],["pollution",["dirty","air","smoke","trash","environment"]],["solar panel",["sun","energy","roof","electricity","power"]],["vaccine",["shot","doctor","sick","needle","flu"]],["microphone",["sing","speak","loud","stage","voice"]],["podcast",["listen","talk","episode","show","audio"]],["headline",["news","newspaper","title","story","top"]],["rumor",["gossip","secret","story","true","spread"]],["secret",["tell","hide","nobody","whisper","keep"]],["promise",["keep","word","swear","break","trust"]],["apology",["sorry","mistake","forgive","say","wrong"]],["compliment",["nice","praise","say","kind","pretty"]],["argument",["fight","disagree","yell","angry","debate"]],["tradition",["family","every year","old","holiday","culture"]],["anniversary",["year","wedding","married","celebrate","date"]],["neighborhood",["houses","street","live","area","neighbors"]],["rush hour",["traffic","morning","work","busy","cars"]],["snooze",["alarm","sleep","button","morning","more"]],["midnight",["twelve","night","clock","dark","late"]],["leap year",["February","29","calendar","extra","four"]],["sunrise",["morning","sun","early","sky","up"]],["horizon",["sky","line","far","sea","edge"]],["shortcut",["fast","quick","way","path","faster"]],["detour",["road","around","closed","long","way"]],["haircut",["barber","scissors","hair","short","salon"]],["breakfast in bed",["morning","tray","sleep","food","special"]],["sleepover",["friends","night","pajamas","party","stay"]],["pillow fight",["pillow","hit","bed","sleepover","feathers"]],["hide and seek",["hide","seek","find","count","game"]],["thumb war",["thumbs","hands","fight","game","wrestle"]],["tug of war",["rope","pull","team","win","game"]],["piggy bank",["money","save","pig","coins","bank"]],["knock-knock joke",["door","who","there","funny","joke"]],["tongue twister",["say","fast","words","hard","tongue"]],["spelling bee",["spell","words","contest","letters","school"]]]
+};
+const LEVEL_HINTS = {
+  1: "Simple everyday words for young kids. 3 forbidden words per card.",
+  2: "Trickier words for older kids and mixed groups. 4 forbidden words per card.",
+  3: "Closest to the real game. 5 forbidden words per card."
+};
+const INTROS = {
+  act: ["Act it out", "Charades against the clock. Every card has its own timer. When it runs out, the next card comes up whether you’re ready or not."],
+  taboo: ["Describe it", "Get your group to guess the word without saying it or any of the forbidden words. One timer covers your whole turn."]
+};
+
+const KEY = "actitout-v1";
+const S = { players:["Player 1","Player 2"], packs:["Everyday actions","School life","Animals"], easy:20, hard:30, perTurn:4, rounds:3, sound:true, custom:"", level:1, turnSec:60 };
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+const $ = id => document.getElementById(id);
+const G = { mode:"act", screen:"home", scores:[], deck:[], pool:[], round:1, turn:0, card:0, turnLog:[], missed:[], current:null, choice:null };
+const T = { end:0, total:0, remaining:0, paused:false, locked:true, raf:0, next:0, lastBeep:null, onTick:null, onEnd:null };
+
+/* ---------- Timer ---------- */
+function runTimer(ms, onTick, onEnd){
+  cancelAnimationFrame(T.raf); clearTimeout(T.next);
+  Object.assign(T, { total:ms, end:performance.now()+ms, paused:false, locked:false, lastBeep:null, onTick, onEnd });
+  loop();
+}
+function loop(){
+  if (T.paused || T.locked) return;
+  const rem = Math.max(0, T.end - performance.now());
+  T.onTick(rem);
+  const s = Math.ceil(rem / 1000);
+  if (s <= 5 && s > 0 && s !== T.lastBeep) { T.lastBeep = s; tone(700, .07, "square", .06); }
+  if (rem <= 0) { T.onEnd(); return; }
+  T.raf = requestAnimationFrame(loop);
+}
+function pauseTimer(){ T.paused = true; T.remaining = T.end - performance.now(); cancelAnimationFrame(T.raf); }
+function resumeTimer(){ T.paused = false; T.end = performance.now() + T.remaining; loop(); }
+function stopTimer(){ T.locked = true; T.paused = false; cancelAnimationFrame(T.raf); clearTimeout(T.next); }
+
+/* ---------- Navigation ---------- */
+function show(id){
+  document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== id);
+  G.screen = id;
+  $("startOver").hidden = id === "home" || id === "setup";
+  resetRestart(); window.scrollTo(0,0);
+}
+function openSetup(mode){
+  G.mode = mode;
+  $("setupTitle").textContent = INTROS[mode][0];
+  $("setupIcon").innerHTML = ICON[mode];
+  $("setupIcon").querySelector("rect").setAttribute("fill", ICON_BG[mode]);
+  $("setupIntro").textContent = INTROS[mode][1];
+  document.querySelectorAll("[data-for]").forEach(el => el.hidden = el.dataset.for !== mode);
+  renderSettings(); $("setupError").textContent = "";
+  show("setup");
+}
+$("goAct").onclick = () => openSetup("act");
+$("goTaboo").onclick = () => openSetup("taboo");
+$("toHome").onclick = () => show("home");
+
+/* ---------- Setup ---------- */
+function renderPlayers(){
+  const box = $("players"); box.innerHTML = "";
+  S.players.forEach((name,i) => {
+    const row = document.createElement("div"); row.className = "player-row";
+    const inp = document.createElement("input"); inp.type = "text"; inp.value = name; inp.maxLength = 24;
+    inp.setAttribute("aria-label", "Player " + (i+1) + " name");
+    inp.addEventListener("input", () => { S.players[i] = inp.value; save(); });
+    row.appendChild(inp);
+    if (S.players.length > 2) {
+      const rm = document.createElement("button"); rm.className = "icon-btn"; rm.textContent = "×";
+      rm.setAttribute("aria-label", "Remove " + (name || "player"));
+      rm.onclick = () => { S.players.splice(i,1); save(); renderPlayers(); };
+      row.appendChild(rm);
+    }
+    box.appendChild(row);
+  });
+  $("addPlayer").hidden = S.players.length >= 8;
+}
+$("addPlayer").onclick = () => { S.players.push("Player " + (S.players.length+1)); save(); renderPlayers(); };
+
+function renderPacks(){
+  const box = $("packs"); box.innerHTML = "";
+  Object.keys(PACKS).forEach(name => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = name;
+    b.setAttribute("aria-pressed", S.packs.includes(name));
+    b.onclick = () => {
+      S.packs = S.packs.includes(name) ? S.packs.filter(p => p !== name) : [...S.packs, name];
+      b.setAttribute("aria-pressed", S.packs.includes(name)); save();
+    };
+    box.appendChild(b);
+  });
+}
+function renderLevel(){
+  document.querySelectorAll("#levels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.level === S.level));
+  $("levelHint").textContent = LEVEL_HINTS[S.level];
+}
+document.querySelectorAll("#levels button").forEach(b => b.onclick = () => { S.level = +b.dataset.level; save(); renderLevel(); });
+
+const SETTINGS = {
+  act: [
+    { key:"easy", label:"Easy card timer", hint:"Worth 1 point", min:5, max:90, step:5, unit:"s" },
+    { key:"hard", label:"Hard card timer", hint:"Worth 2 points", min:5, max:120, step:5, unit:"s" },
+    { key:"perTurn", label:"Cards per turn", min:1, max:10, step:1 },
+    { key:"rounds", label:"Rounds", hint:"Everyone plays once per round", min:1, max:10, step:1 }
+  ],
+  taboo: [
+    { key:"turnSec", label:"Turn timer", hint:"For the whole turn", min:30, max:180, step:15, unit:"s" },
+    { key:"rounds", label:"Rounds", hint:"Everyone plays once per round", min:1, max:10, step:1 }
+  ]
+};
+function renderSettings(){
+  const box = $("settings"); box.innerHTML = "";
+  SETTINGS[G.mode].forEach(s => {
+    if (s.type === "toggle") {
+      const row = document.createElement("div"); row.className = "setting";
+      row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
+      const t = row.querySelector("button"); t.setAttribute("aria-label", s.label); t.setAttribute("aria-checked", S[s.key]);
+      t.onclick = () => { S[s.key] = !S[s.key]; t.setAttribute("aria-checked", S[s.key]); save(); };
+      box.appendChild(row); return;
+    }
+    const row = document.createElement("div"); row.className = "setting";
+    row.innerHTML = `<span>${s.label}${s.hint ? `<small>${s.hint}</small>` : ""}</span>
+      <span class="stepper"><button aria-label="Less">−</button><output></output><button aria-label="More">+</button></span>`;
+    const [minus, plus] = row.querySelectorAll("button"); const out = row.querySelector("output");
+    const draw = () => out.textContent = S[s.key] + (s.unit || "");
+    minus.onclick = () => { S[s.key] = Math.max(s.min, S[s.key] - s.step); draw(); save(); };
+    plus.onclick = () => { S[s.key] = Math.min(s.max, S[s.key] + s.step); draw(); save(); };
+    draw(); box.appendChild(row);
+  });
+}
+$("soundToggle").onclick = e => { S.sound = !S.sound; e.currentTarget.setAttribute("aria-checked", S.sound); save(); };
+$("custom").addEventListener("input", e => { S.custom = e.target.value; save(); });
+
+function parseCustom(){
+  return S.custom.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const [a,b] = l.split("|").map(x => x.trim());
+    return b ? [a,b] : [a,null];
+  }).filter(c => c[0]);
+}
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function draw(){ if (!G.deck.length) G.deck = shuffle(G.pool); return G.deck.pop(); }
+
+$("startGame").onclick = () => {
+  if (S.players.some(n => !n.trim())) { $("setupError").textContent = "Give every player a name."; return; }
+  if (G.mode === "act") {
+    G.pool = [...S.packs.flatMap(p => PACKS[p]), ...parseCustom()];
+    if (!G.pool.length) { $("setupError").textContent = "Pick at least one word pack or add your own words."; return; }
+  } else if (G.mode === "taboo") {
+    G.pool = TABOO[S.level];
+  } else if (G.mode === "spy") {
+    if (S.players.length < 4) { $("setupError").textContent = "Word spies needs at least 4 players, so each team has a spymaster and a guesser."; return; }
+    $("setupError").textContent = ""; unlockAudio(); spyStart(); return;
+  } else if (G.mode === "fb") {
+    if (S.players.length < 4) { $("setupError").textContent = "Word bowl needs at least 4 players, so each team has 2 or more."; return; }
+    $("setupError").textContent = ""; unlockAudio(); fbStart(); return;
+  } else if (G.mode === "wave") {
+    if (S.players.length < 2) { $("setupError").textContent = "In the range needs at least 2 players."; return; }
+    $("setupError").textContent = ""; unlockAudio(); waveStart(); return;
+  } else if (G.mode === "tele") {
+    const err = teleCheck(); if (err) { $("setupError").textContent = err; return; }
+    $("setupError").textContent = ""; unlockAudio(); teleStart(); return;
+  } else {
+    const err = impCheck(); if (err) { $("setupError").textContent = err; return; }
+    $("setupError").textContent = ""; unlockAudio(); impStart(); return;
+  }
+  $("setupError").textContent = "";
+  unlockAudio(); newGame();
+};
+
+/* ---------- Shared game flow ---------- */
+function newGame(){
+  G.scores = S.players.map(() => 0); G.deck = shuffle(G.pool);
+  G.round = 1; G.turn = 0; G.missed = []; toPass();
+}
+function name(i){ return S.players[i].trim(); }
+function renderScores(el, highlight){
+  el.innerHTML = "";
+  S.players.map((_,i) => i).sort((a,b) => highlight === "rank" ? G.scores[b]-G.scores[a] : a-b).forEach(i => {
+    const li = document.createElement("li"); if (i === highlight) li.className = "me";
+    const n = document.createElement("span"); n.textContent = name(i);
+    const b = document.createElement("b"); b.textContent = G.scores[i];
+    li.append(n,b); el.appendChild(li);
+  });
+}
+function toPass(){
+  $("passRound").textContent = `Round ${G.round} of ${S.rounds}`;
+  $("passName").textContent = name(G.turn);
+  $("passNote").textContent = G.mode === "act" ? "You’re acting. Keep the screen to yourself." : "You’re describing. Keep the screen to yourself.";
+  renderScores($("passScores"), G.turn);
+  show("pass");
+}
+$("startTurn").onclick = () => {
+  G.turnLog = [];
+  if (G.mode === "act") { G.card = 1; toPick(); } else tabooStart();
+};
+function turnPts(){ return G.turnLog.reduce((s,r) => s + (r.got ? r.pts : 0), 0); }
+
+/* ---------- Act it out ---------- */
+function toPick(){
+  G.current = draw();
+  const [easy, hard] = G.current;
+  $("pickCount").textContent = `Card ${G.card} of ${S.perTurn}`;
+  $("pickPts").textContent = `${turnPts()} pts this turn`;
+  $("pickEasy").querySelector(".w").textContent = easy;
+  $("pickEasy").querySelector(".meta").textContent = `Easy, 1 point, ${S.easy} seconds`;
+  $("pickCard").classList.toggle("single", !hard);
+  if (hard) {
+    $("pickHard").querySelector(".w").textContent = hard;
+    $("pickHard").querySelector(".meta").textContent = `Hard, 2 points, ${S.hard} seconds`;
+  }
+  show("pick");
+}
+$("pickEasy").onclick = () => startCard("easy");
+$("pickHard").onclick = () => startCard("hard");
+
+function startCard(choice){
+  G.choice = choice;
+  const isHard = choice === "hard";
+  $("actCard").className = "card act-card" + (isHard ? " is-hard" : "");
+  $("actTag").textContent = isHard ? "Hard, 2 points" : "Easy, 1 point";
+  $("actWord").textContent = isHard ? G.current[1] : G.current[0];
+  $("actCount").textContent = `Card ${G.card} of ${S.perTurn}`;
+  $("pauseBtn").textContent = "Pause";
+  $("gotBtn").disabled = $("skipBtn").disabled = false;
+  show("act");
+  runTimer((isHard ? S.hard : S.easy) * 1000, rem => {
+    const secs = Math.ceil(rem / 1000);
+    $("fill").style.transform = `scaleY(${rem / T.total})`;
+    $("actTime").textContent = secs;
+    $("actCard").classList.toggle("low", secs <= 5);
+  }, () => finishCard(false));
+}
+$("pauseBtn").onclick = () => {
+  if (T.locked) return;
+  const off = !T.paused;
+  if (off) pauseTimer(); else resumeTimer();
+  $("pauseBtn").textContent = off ? "Resume" : "Pause";
+  $("actCard").classList.toggle("paused", off);
+  $("gotBtn").disabled = $("skipBtn").disabled = off;
+};
+$("gotBtn").onclick = () => finishCard(true);
+$("skipBtn").onclick = () => finishCard(false, true);
+
+function finishCard(got, skipped){
+  if (T.locked) return;
+  T.locked = true; cancelAnimationFrame(T.raf);
+  $("gotBtn").disabled = $("skipBtn").disabled = true;
+  const isHard = G.choice === "hard";
+  const word = isHard ? G.current[1] : G.current[0];
+  const pts = isHard ? 2 : 1;
+  G.turnLog.push({ word, got, pts, kind: got ? "got" : skipped ? "skip" : "time" });
+  if (got) G.scores[G.turn] += pts; else G.missed.push(word);
+  const card = $("actCard");
+  if (got) { card.classList.add("got"); $("flash").textContent = `+${pts}`; ding(); }
+  else if (skipped) { card.classList.add("timesup"); $("flash").textContent = "Skipped"; tone(300,.2,"triangle",.12); }
+  else { card.classList.add("timesup"); $("flash").textContent = "Time’s up"; buzzer(); }
+  T.next = setTimeout(() => { if (G.card < S.perTurn) { G.card++; toPick(); } else toSummary(); }, got ? 650 : 1200);
+}
+
+/* ---------- Describe it ---------- */
+function tabooStart(){
+  $("tCard").classList.remove("paused");
+  $("tPop").className = "pop";
+  $("tPause").textContent = "Pause";
+  setTButtons(true);
+  tabooDeal();
+  show("tplay");
+  runTimer(S.turnSec * 1000, rem => {
+    const s = Math.ceil(rem / 1000);
+    $("tFill").style.transform = `scaleX(${rem / T.total})`;
+    $("tSec").textContent = s;
+    $("tTrack").classList.toggle("low", s <= 10);
+  }, tabooEnd);
+}
+function tabooDeal(){
+  G.current = draw();
+  $("tWord").textContent = G.current[0];
+  const ul = $("tDont"); ul.innerHTML = "";
+  G.current[1].forEach(w => { const li = document.createElement("li"); li.textContent = w; ul.appendChild(li); });
+  $("tPts").textContent = `${name(G.turn)}: ${turnPts()} pts`;
+}
+function setTButtons(on){ ["tGot","tSkip","tBuzz"].forEach(id => $(id).disabled = !on); }
+function popFx(text, color, hold){
+  const p = $("tPop"); p.textContent = text;
+  p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go");
+}
+function tabooMark(kind){
+  if (T.locked || T.paused) return;
+  const got = kind === "got";
+  G.turnLog.push({ word:G.current[0], got, pts:1, kind });
+  if (got) { G.scores[G.turn] += 1; ding(); popFx("+1","green"); }
+  else {
+    G.missed.push(G.current[0]);
+    if (kind === "buzz") { tone(180,.35,"sawtooth",.16); popFx("Buzz!","red"); }
+    else { tone(300,.15,"triangle",.1); popFx("Skipped","gray"); }
+  }
+  tabooDeal();
+}
+$("tGot").onclick = () => tabooMark("got");
+$("tBuzz").onclick = () => tabooMark("buzz");
+$("tSkip").onclick = () => tabooMark("skip");
+$("tPause").onclick = () => {
+  if (T.locked) return;
+  const off = !T.paused;
+  if (off) pauseTimer(); else resumeTimer();
+  $("tPause").textContent = off ? "Resume" : "Pause";
+  $("tCard").classList.toggle("paused", off);
+  setTButtons(!off);
+};
+function tabooEnd(){
+  T.locked = true; setTButtons(false);
+  G.turnLog.push({ word:G.current[0], got:false, pts:1, kind:"time" });
+  G.missed.push(G.current[0]);
+  buzzer(); popFx("Time’s up","red",true);
+  T.next = setTimeout(toSummary, 1400);
+}
+
+/* ---------- Imposter ---------- */
+const IMP_WORDS = {
+  "Food": ["pizza","tacos","pancakes","sushi","ice cream","popcorn","spaghetti","hamburger","tamales","watermelon","chocolate","sandwich","soup","cereal","french fries","avocado","birthday cake","hot dog","rice and beans","cookies","mango","cheese","eggs","banana","tortillas"],
+  "Animals": ["dog","cat","elephant","giraffe","penguin","shark","monkey","lion","snake","horse","rabbit","turtle","butterfly","owl","frog","dolphin","cow","chicken","bear","kangaroo","zebra","parrot","spider","octopus","quetzal"],
+  "Places": ["beach","school","hospital","airport","zoo","library","church","supermarket","park","restaurant","movie theater","swimming pool","farm","museum","volcano","jungle","desert","bakery","playground","train station","mountain","island","stadium","bus stop","kitchen"],
+  "Things at home": ["bed","toothbrush","refrigerator","sofa","lamp","mirror","pillow","television","washing machine","clock","umbrella","blanket","oven","broom","shower","window","door","chair","phone charger","backpack","spoon","towel","keys","plant","alarm clock"],
+  "Jobs": ["doctor","teacher","chef","firefighter","pilot","farmer","dentist","police officer","artist","builder","singer","photographer","astronaut","waiter","barber","scientist","mechanic","lifeguard","pastor","nurse","bus driver","baker","vet","soccer player","mail carrier"],
+  "Sports & games": ["soccer","basketball","baseball","tennis","swimming","volleyball","hide and seek","tag","chess","jump rope","bowling","skateboarding","surfing","karate","gymnastics","ping-pong","hockey","golf","running","dodgeball","video games","puzzles","cycling","skiing","hopscotch"],
+  "Bible": ["Noah","Moses","David","Goliath","Jonah","Daniel","Mary","Peter","Paul","Abraham","Joseph","Esther","Adam","Eve","Samson","Ruth","Zacchaeus","Elijah","Gideon","Joshua","the ark","the manger","the Red Sea","Garden of Eden","Jericho"]
+};
+INTROS.imp = ["Imposter", "Everyone gets the same secret word except the imposter. Give clues, find the faker, and don’t give the word away."];
+for (const [k,v] of Object.entries({ impPacks:["Food","Animals","Places"], imposters:1, impHint:true, impFirst:true, discSec:120, discOn:true, impRandOrder:false })) if (S[k] === undefined) S[k] = v;
+SETTINGS.imp = [
+  { key:"imposters", label:"Imposters", hint:"Picked at random each game", min:1, max:3, step:1 },
+  { type:"toggle", key:"discOn", label:"Discussion timer", hint:"Show a timer before the vote" },
+  { key:"discSec", label:"Timer length", hint:"Used when the timer is on", min:30, max:300, step:30, unit:"s" },
+  { type:"toggle", key:"impHint", label:"Give imposters a hint", hint:"They see the category" },
+  { type:"toggle", key:"impFirst", label:"Imposter can go first", hint:"Off means a non-imposter always starts" },
+  { type:"toggle", key:"impRandOrder", label:"Random speaking order", hint:"Off: go around in seating order, so list players in the order you’re sitting" }
+];
+function renderImpPacks(){
+  const box = $("impPacks"); box.innerHTML = "";
+  Object.keys(IMP_WORDS).forEach(c => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = c;
+    b.setAttribute("aria-pressed", S.impPacks.includes(c));
+    b.onclick = () => {
+      S.impPacks = S.impPacks.includes(c) ? S.impPacks.filter(p => p !== c) : [...S.impPacks, c];
+      b.setAttribute("aria-pressed", S.impPacks.includes(c)); save();
+    };
+    box.appendChild(b);
+  });
+}
+renderImpPacks();
+$("goImp").onclick = () => openSetup("imp");
+
+function impCheck(){
+  const n = S.players.length;
+  if (n < 3) return "Imposter needs at least 3 players.";
+  const max = Math.ceil(n / 2) - 1;
+  if (S.imposters > max) return `With ${n} players you can have at most ${max} imposter${max > 1 ? "s" : ""}.`;
+  if (!S.impPacks.length) return "Pick at least one word category.";
+  return "";
+}
+function impStart(){
+  G.pool = S.impPacks.flatMap(c => IMP_WORDS[c].map(w => [w, c]));
+  G.deck = shuffle(G.pool);
+  impRound();
+}
+function impRound(){
+  stopTimer();
+  G.current = draw();
+  const all = [...Array(S.players.length).keys()];
+  G.imps = new Set(shuffle(all).slice(0, S.imposters));
+  const starters = all.filter(i => S.impFirst || !G.imps.has(i));
+  G.first = starters[Math.floor(Math.random() * starters.length)];
+  if (S.impRandOrder) {
+    G.order = shuffle(all);
+    if (!S.impFirst) { const k = G.order.findIndex(i => !G.imps.has(i)); G.order.unshift(G.order.splice(k, 1)[0]); }
+  } else G.order = all.map((_, j) => (G.first + j) % all.length);
+  G.seen = new Set(); G.discState = "idle";
+  showReveal();
+}
+function showReveal(){
+  const box = $("nameList"); box.innerHTML = "";
+  S.players.forEach((_, i) => {
+    const seen = G.seen.has(i);
+    const b = document.createElement("button"); b.className = "name-btn" + (seen ? " seen" : "");
+    b.innerHTML = `<span></span><small>${seen ? "✓ Seen" : "Tap to see"}</small>`;
+    b.querySelector("span").textContent = name(i);
+    b.onclick = () => openRole(i);
+    box.appendChild(b);
+  });
+  const left = S.players.length - G.seen.size;
+  $("toCluesBtn").disabled = left > 0;
+  $("revStatus").textContent = left ? `Waiting on ${left} player${left > 1 ? "s" : ""}.` : "Everyone has seen their word.";
+  $("revList").hidden = false; $("revCardWrap").hidden = true;
+  show("reveal");
+}
+function openRole(i){
+  G.seen.add(i);
+  const imp = G.imps.has(i), [word, cat] = G.current;
+  $("revWho").textContent = name(i);
+  $("roleCard").classList.toggle("imposter", imp);
+  $("roleTag").textContent = imp ? "You are the" : "The secret word is";
+  $("roleWord").textContent = imp ? "Imposter" : word;
+  $("roleHint").textContent = imp ? (S.impHint ? `Hint: the category is ${cat}` : "No hint. Listen closely and blend in.") : `Category: ${cat}`;
+  $("revList").hidden = true; $("revCardWrap").hidden = false;
+  window.scrollTo(0, 0);
+}
+$("roleCard").onclick = showReveal;
+$("toCluesBtn").onclick = toClues;
+
+function fmt(ms){ const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function toClues(){
+  const n = S.players.length;
+  $("firstName").textContent = name(G.order[0]);
+  const ol = $("order"); ol.innerHTML = "";
+  G.order.forEach(i => { const li = document.createElement("li"); li.textContent = name(i); ol.appendChild(li); });
+  G.discState = "idle";
+  $("discBlock").hidden = !S.discOn;
+  $("discTime").textContent = fmt(S.discSec * 1000);
+  $("discBtn").textContent = "Start timer";
+  show("clues");
+}
+$("discBtn").onclick = () => {
+  const btn = $("discBtn");
+  if (G.discState === "run") { pauseTimer(); G.discState = "paused"; btn.textContent = "Resume"; return; }
+  if (G.discState === "paused") { resumeTimer(); G.discState = "run"; btn.textContent = "Pause"; return; }
+  G.discState = "run"; btn.textContent = "Pause";
+  runTimer(S.discSec * 1000, rem => $("discTime").textContent = fmt(rem), () => {
+    T.locked = true; G.discState = "done"; buzzer();
+    $("discTime").textContent = "0:00"; btn.textContent = "Restart timer";
+  });
+};
+$("toVote").onclick = () => {
+  stopTimer();
+  const k = G.imps.size; G.votes = new Set();
+  $("voteNote").textContent = k === 1 ? "Tap the player the group voted for." : `Tap the ${k} players the group voted for.`;
+  const box = $("voteList"); box.innerHTML = "";
+  S.players.forEach((_, i) => {
+    const b = document.createElement("button"); b.textContent = name(i); b.setAttribute("aria-pressed", false);
+    b.onclick = () => {
+      if (G.votes.has(i)) G.votes.delete(i);
+      else {
+        if (G.votes.size >= k) {
+          if (k !== 1) return;
+          G.votes.clear(); box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", false));
+        }
+        G.votes.add(i);
+      }
+      b.setAttribute("aria-pressed", G.votes.has(i));
+      $("revealBtn").disabled = G.votes.size !== k;
+    };
+    box.appendChild(b);
+  });
+  $("revealBtn").disabled = true;
+  show("vote");
+};
+$("revealBtn").onclick = () => {
+  const k = G.imps.size;
+  const caught = [...G.imps].filter(i => G.votes.has(i)).length;
+  const all = caught === k;
+  $("resWord").textContent = G.current[0];
+  $("resCat").textContent = `Category: ${G.current[1]}`;
+  $("resTitle").textContent = all ? (k === 1 ? "Imposter caught!" : "All imposters caught!")
+    : caught ? `Caught ${caught} of ${k}` : (k === 1 ? "The imposter got away" : "The imposters got away");
+  const list = $("resList"); list.innerHTML = "";
+  [...G.imps].forEach(i => {
+    const got = G.votes.has(i);
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${got ? "y" : "n"}">${got ? "✓" : "✕"}</span><span class="w"></span><span class="p">${got ? "Caught" : "Got away"}</span>`;
+    li.querySelector(".w").textContent = name(i) + " was an imposter";
+    list.appendChild(li);
+  });
+  $("resNote").textContent = all
+    ? (k === 1 ? "Imposter, you get one guess at the secret word. Guess it and you still win." : "Imposters, you get one guess at the secret word. Guess it and you still win.")
+    : "The imposters who got away win this round.";
+  if (all) ding(); else buzzer();
+  show("impResult");
+};
+$("impAgain").onclick = impRound;
+
+/* ---------- Sketch chain ---------- */
+const TELE_WORDS = {
+  1: ["sun","cat","house","fish","tree","car","apple","star","flower","dog","ball","moon","boat","cake","rainbow","snowman","bird","pizza","hat","robot","butterfly","ice cream","train","rocket","banana","kite","spider","clock","egg","duck","umbrella","heart","castle","frog","shoe","cookie","turtle","crown","balloon","bed"],
+  2: ["volcano","pirate ship","birthday party","roller coaster","treasure map","lighthouse","waterfall","astronaut","scarecrow","campfire","dentist","tornado","snorkeling","superhero","mermaid","dragon","picnic","thunderstorm","sandcastle","hot air balloon","traffic light","spaghetti","bunk bed","skateboard","unicorn","popcorn","jellyfish","igloo","juggler","pyramid","cactus","waffle","magician","bowling","fire truck","tightrope walker","snow globe","giraffe","treehouse","school bus"],
+  3: ["sleepwalking","brain freeze","homesick","bad hair day","time travel","stage fright","surprise party","traffic jam","sunburn","lost luggage","food fight","photobomb","sore loser","early bird","cold feet","couch potato","night owl","piggy bank","butterflies in your stomach","raining cats and dogs","piece of cake","on cloud nine","spill the beans","break a leg","brainstorm","fish out of water","monkey business","under the weather","head in the clouds","bookworm","midnight snack","first day of school","flat tire","hide and seek","heat wave","snow day","family reunion","talent show","pillow fight","dream job"]
+};
+const TELE_HINTS = {
+  1: "Simple things to draw. Great for young kids.",
+  2: "Scenes and trickier things to draw.",
+  3: "Phrases and sayings. Tough to draw, funny to guess."
+};
+INTROS.tele = ["Pass the doodle", "Draw it, guess it, draw the guess. Pass the phone around and watch the word change along the way."];
+for (const [k,v] of Object.entries({ teleLevel:1, teleBooks:1, teleTimerOn:true, teleSec:60 })) if (S[k] === undefined) S[k] = v;
+SETTINGS.tele = [
+  { key:"teleBooks", label:"Sketchbooks", hint:"Each starts with a different player. More books, longer game", min:1, max:8, step:1 },
+  { type:"toggle", key:"teleTimerOn", label:"Drawing timer", hint:"When time runs out, the drawing is done" },
+  { key:"teleSec", label:"Timer length", hint:"Used when the timer is on", min:20, max:180, step:10, unit:"s" }
+];
+function renderTeleLevel(){
+  document.querySelectorAll("#teleLevels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.tlevel === S.teleLevel));
+  $("teleLevelHint").textContent = TELE_HINTS[S.teleLevel];
+}
+document.querySelectorAll("#teleLevels button").forEach(b => b.onclick = () => { S.teleLevel = +b.dataset.tlevel; save(); renderTeleLevel(); });
+renderTeleLevel();
+$("goTele").onclick = () => openSetup("tele");
+
+const pad = (() => {
+  const c = $("pad"), x = c.getContext("2d");
+  let strokes = [], cur = null, color = "#1E1B3A", size = .01;
+  function stroke(s){
+    const W = c.width, p = s.pts;
+    x.strokeStyle = x.fillStyle = s.color; x.lineWidth = s.size * W; x.lineCap = x.lineJoin = "round";
+    if (p.length === 1) { x.beginPath(); x.arc(p[0][0]*W, p[0][1]*W, s.size*W/2, 0, Math.PI*2); x.fill(); return; }
+    x.beginPath(); x.moveTo(p[0][0]*W, p[0][1]*W);
+    for (let i = 1; i < p.length; i++) x.lineTo(p[i][0]*W, p[i][1]*W);
+    x.stroke();
+  }
+  function redraw(){ x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); strokes.forEach(stroke); }
+  function fit(){
+    const w = c.clientWidth || 300, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = c.height = Math.round(w * dpr); redraw();
+  }
+  function pt(e){ const r = c.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; }
+  c.addEventListener("pointerdown", e => {
+    e.preventDefault(); try { c.setPointerCapture(e.pointerId); } catch(_) {}
+    cur = { color, size, pts:[pt(e)] }; strokes.push(cur); stroke(cur);
+  });
+  c.addEventListener("pointermove", e => {
+    if (!cur) return;
+    cur.pts.push(pt(e));
+    const W = c.width, p = cur.pts, a = p[p.length-2], b = p[p.length-1];
+    x.strokeStyle = cur.color; x.lineWidth = cur.size * W; x.lineCap = "round";
+    x.beginPath(); x.moveTo(a[0]*W, a[1]*W); x.lineTo(b[0]*W, b[1]*W); x.stroke();
+  });
+  const end = () => { cur = null; };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+  window.addEventListener("resize", () => { if (G.screen === "tdraw") fit(); });
+  return {
+    fit,
+    reset(){ strokes = []; cur = null; redraw(); },
+    undo(){ strokes.pop(); redraw(); },
+    setColor(v){ color = v; }, setSize(v){ size = v; },
+    export(){ const o = document.createElement("canvas"); o.width = o.height = 600; o.getContext("2d").drawImage(c, 0, 0, 600, 600); return o.toDataURL("image/jpeg", .85); }
+  };
+})();
+function pickTool(sel, attr, btn){ document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", b === btn)); }
+document.querySelectorAll("#tdraw [data-color]").forEach(b => b.onclick = () => { pad.setColor(b.dataset.color); pickTool("#tdraw [data-color]", "color", b); });
+document.querySelectorAll("#tdraw [data-size]").forEach(b => b.onclick = () => { pad.setSize(+b.dataset.size); pickTool("#tdraw [data-size]", "size", b); });
+function resetTools(){
+  const black = document.querySelector('#tdraw [data-color="#1E1B3A"]'), thin = document.querySelector("#tdraw [data-size]");
+  black.click(); thin.click();
+}
+$("undoBtn").onclick = () => pad.undo();
+$("clearBtn").onclick = () => pad.reset();
+
+function teleCheck(){
+  const n = S.players.length;
+  if (n < 3) return "Pass the doodle needs at least 3 players.";
+  if (S.teleBooks > n) return `With ${n} players you can have at most ${n} sketchbooks.`;
+  return "";
+}
+function teleStart(){ G.pool = TELE_WORDS[S.teleLevel].map(w => [w]); G.deck = shuffle(G.pool); teleRound(); }
+function teleRound(){
+  stopTimer();
+  const n = S.players.length, k = S.teleBooks;
+  G.books = [...Array(k).keys()].map(b => { const word = draw()[0]; return { start: Math.floor(b * n / k), word, entries:[{ type:"word", text:word }] }; });
+  G.seq = [];
+  for (let s = 0; s < n; s++) for (let b = 0; b < k; b++) G.seq.push({ b, s, p:(G.books[b].start + s) % n });
+  G.pos = 0; tPass();
+}
+function lastEntry(t){ const e = G.books[t.b].entries; return e[e.length - 1]; }
+function stepLabel(){ const t = G.seq[G.pos]; return `Turn ${G.pos + 1} of ${G.seq.length}` + (S.teleBooks > 1 ? `, sketchbook ${t.b + 1}` : ""); }
+function tPass(){
+  const t = G.seq[G.pos];
+  $("tpStep").textContent = stepLabel();
+  $("tpName").textContent = name(t.p);
+  $("tpWhat").textContent = t.s === 0 ? "You’ll get a secret word to draw. Keep the screen to yourself."
+    : t.s % 2 === 0 ? "You’ll see a guess and draw it." : "You’ll see a drawing and write your guess of what it is.";
+  $("tpGo").textContent = `I’m ${name(t.p)}, let’s go`;
+  show("tpass");
+}
+$("tpGo").onclick = () => { const t = G.seq[G.pos]; if (t.s % 2 === 0) tDraw(); else tGuess(); };
+function tDraw(){
+  const t = G.seq[G.pos], prev = lastEntry(t);
+  $("tdStep").textContent = stepLabel();
+  $("tdLabel").textContent = t.s === 0 ? "Your secret word" : `${name(prev.by)} guessed`;
+  $("tdPrompt").textContent = prev.text;
+  $("tdSwap").hidden = t.s !== 0;
+  show("tdraw"); pad.fit(); pad.reset(); resetTools();
+  if (S.teleTimerOn) {
+    $("tdSec").hidden = false;
+    runTimer(S.teleSec * 1000, rem => $("tdSec").textContent = Math.ceil(rem / 1000), () => { buzzer(); finishDraw(); });
+  } else { stopTimer(); $("tdSec").hidden = true; }
+}
+function finishDraw(){
+  if (G.screen !== "tdraw") return;
+  stopTimer();
+  const t = G.seq[G.pos];
+  G.books[t.b].entries.push({ type:"draw", by:t.p, img:pad.export() });
+  advance();
+}
+$("tdDone").onclick = finishDraw;
+$("tdSwap").onclick = () => {
+  const t = G.seq[G.pos], w = draw()[0];
+  G.books[t.b].word = w; G.books[t.b].entries[0].text = w;
+  $("tdPrompt").textContent = w; pad.reset();
+};
+function tGuess(){
+  stopTimer();
+  const t = G.seq[G.pos];
+  $("tgStep").textContent = stepLabel();
+  $("tgImg").src = lastEntry(t).img;
+  $("tgInput").value = ""; $("tgErr").textContent = "";
+  show("tguess");
+}
+$("tgDone").onclick = () => {
+  const v = $("tgInput").value.trim();
+  if (!v) { $("tgErr").textContent = "Type a guess first. Any guess is fine!"; return; }
+  const t = G.seq[G.pos];
+  G.books[t.b].entries.push({ type:"guess", by:t.p, text:v });
+  $("tgInput").blur(); advance();
+};
+$("tgInput").addEventListener("keydown", e => { if (e.key === "Enter") $("tgDone").click(); });
+function advance(){ G.pos++; if (G.pos < G.seq.length) tPass(); else { G.rb = 0; renderBook(); } }
+
+function renderBook(){
+  const book = G.books[G.rb];
+  $("trBookNo").textContent = G.books.length > 1 ? `Sketchbook ${G.rb + 1} of ${G.books.length}` : "The sketchbook";
+  $("trTitle").textContent = `Started by ${name(book.start)}`;
+  $("trList").innerHTML = ""; G.ri = 0;
+  show("treveal"); revealNext();
+}
+function revealNext(){
+  const book = G.books[G.rb], e = book.entries[G.ri];
+  const d = document.createElement("div"); d.className = "chain-item" + (G.ri === 0 ? " first" : "");
+  const sm = document.createElement("small");
+  sm.textContent = e.type === "word" ? "The secret word was" : e.type === "draw" ? `${name(e.by)} drew` : `${name(e.by)} guessed`;
+  d.appendChild(sm);
+  if (e.type === "draw") { const im = new Image(); im.src = e.img; im.alt = `Drawing by ${name(e.by)}`; d.appendChild(im); }
+  else { const p = document.createElement("p"); p.className = "txt"; p.textContent = e.text; d.appendChild(p); }
+  $("trList").appendChild(d); G.ri++;
+  const more = G.ri < book.entries.length, lastBook = G.rb === G.books.length - 1;
+  if (!more) {
+    const last = book.entries[book.entries.length - 1];
+    const end = document.createElement("p"); end.className = "note center"; end.style.margin = "4px 0 0";
+    const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    end.textContent = last.type === "guess" && norm(last.text) === norm(book.word)
+      ? "It made it all the way around!"
+      : last.type === "guess" ? `Started as “${book.word}” and ended as “${last.text}”.` : `Started as “${book.word}.” How close is that last drawing?`;
+    $("trList").appendChild(end);
+  }
+  $("trNext").textContent = more ? "Show next page" : lastBook ? "Play again" : "Next sketchbook";
+  $("trAll").hidden = !more;
+  if (G.ri > 1) d.scrollIntoView({ behavior:"smooth", block:"center" });
+}
+$("trNext").onclick = () => {
+  const book = G.books[G.rb];
+  if (G.ri < book.entries.length) return revealNext();
+  if (G.rb < G.books.length - 1) { G.rb++; renderBook(); } else teleRound();
+};
+$("trAll").onclick = () => { const book = G.books[G.rb]; while (G.ri < book.entries.length) revealNext(); };
+
+/* ---------- Mind dial ---------- */
+const WAVE = {
+  1: [["cold","hot"],["small","big"],["slow","fast"],["yucky","yummy"],["quiet","loud"],["soft","hard"],["short","tall"],["light","heavy"],["easy","hard"],["sad","happy"],["boring","fun"],["dirty","clean"],["dark","bright"],["young","old"],["cheap","expensive"],["calm","scary"],["sour","sweet"],["smooth","bumpy"],["near","far"],["weak","strong"],["tiny animal","huge animal"],["bad pet","great pet"],["inside thing","outside thing"],["daytime","nighttime"],["dry","wet"],["thin","thick"],["empty","full"],["low","high"],["ugly","beautiful"],["breakfast food","dinner food"],["sleepy","wide awake"],["sunny","rainy"],["slow animal","fast animal"],["cold food","hot food"],["easy to carry","hard to carry"],["soft toy","hard toy"],["short word","long word"],["little kid","grown-up"],["boring toy","fun toy"],["calm animal","wild animal"],["smells bad","smells good"],["round","square"],["tastes bad","tastes good"],["quiet place","loud place"],["dark color","light color"],["cheap snack","fancy snack"],["easy to find","hard to find"],["ugly bug","cute bug"],["boring day","best day ever"],["slow vehicle","fast vehicle"],["bad weather","good weather"],["cold place","hot place"],["tiny thing","giant thing"],["sad song","happy song"],["easy game","hard game"],["short animal","tall animal"],["dry food","juicy food"],["morning thing","bedtime thing"],["not scary","super scary"],["boring color","favorite color"]],
+  2: [["unhealthy food","healthy food"],["boring job","exciting job"],["easy to draw","hard to draw"],["bad gift","great gift"],["useless","useful"],["common","rare"],["bad superpower","great superpower"],["dangerous","safe"],["kid thing","grown-up thing"],["boring class","favorite class"],["quiet animal","noisy animal"],["bad smell","good smell"],["easy to learn","hard to learn"],["cheap gift","fancy gift"],["summer thing","winter thing"],["bad movie","great movie"],["silly","serious"],["ancient","modern"],["relaxing","stressful"],["unpopular","popular"],["messy","neat"],["bad vacation","dream vacation"],["normal pet","weird pet"],["easy sport","hard sport"],["mild food","spicy food"],["short trip","long trip"],["bad habit","good habit"],["forgettable","unforgettable"],["harmless animal","scary animal"],["easy chore","hard chore"],["useless gadget","must-have gadget"],["bad team name","great team name"],["boring holiday","best holiday"],["easy recipe","hard recipe"],["cheap toy","expensive toy"],["boring museum","amazing museum"],["bad pizza topping","great pizza topping"],["easy instrument","hard instrument"],["bad hiding spot","great hiding spot"],["quiet job","loud job"],["boring book","page-turner"],["bad breakfast","great breakfast"],["healthy drink","sugary drink"],["easy word","hard word"],["bad party song","great party song"],["lazy animal","busy animal"],["fake","real"],["common name","unusual name"],["boring field trip","awesome field trip"],["simple invention","amazing invention"],["bad excuse","great excuse"],["safe hobby","risky hobby"],["indoor game","outdoor game"],["kids’ movie","grown-up movie"],["useless skill","useful skill"],["bad gift for a teacher","great gift for a teacher"],["small country","big country"],["old invention","new invention"],["mild weather","extreme weather"],["boring snack","amazing snack"]],
+  3: [["overrated","underrated"],["normal","weird"],["villain","hero"],["bad advice","good advice"],["guilty pleasure","proud to love it"],["useless invention","life-changing invention"],["sounds fake","sounds real"],["trend","classic"],["worst chore","best chore"],["boring fact","amazing fact"],["mildly annoying","extremely annoying"],["easy to fake","hard to fake"],["fantasy","science fiction"],["round","pointy"],["for kids","for grown-ups"],["unknown","famous"],["temporary","permanent"],["bad pet name","great pet name"],["hard to spell","easy to spell"],["better hot","better cold"],["unnecessary","essential"],["worst time to sing","best time to sing"],["fragile","indestructible"],["risky","safe bet"],["old-fashioned","futuristic"],["easy question","impossible question"],["low effort","high effort"],["comfortable","uncomfortable"],["simple","complicated"],["bad sandwich ingredient","great sandwich ingredient"],["useless in an emergency","useful in an emergency"],["normal thing to collect","weird thing to collect"],["underrated food","overrated food"],["easy to explain","hard to explain"],["bad first impression","great first impression"],["worst job","dream job"],["useless school subject","useful school subject"],["normal habit","strange habit"],["childish","mature"],["harmless fib","big lie"],["boring sport to watch","exciting sport to watch"],["bad role model","great role model"],["not worth the wait","worth the wait"],["easy decision","tough decision"],["predictable","surprising"],["bad time to laugh","good time to laugh"],["mild surprise","huge surprise"],["needs practice","comes naturally"],["silly rule","important rule"],["looks easy","looks hard"],["bad way to start the day","great way to start the day"],["forgettable song","catchy song"],["easy to forgive","hard to forgive"],["silly fear","reasonable fear"],["worst smell","best smell"],["overpriced","bargain"],["boring adventure","epic adventure"],["small change","life-changing"],["polite","rude"],["unlucky","lucky"],["hidden talent","famous talent"]]
+};
+const W_HINTS = {
+  1: "Simple opposites like cold to hot. Great for young kids.",
+  2: "Trickier scales like boring job to exciting job.",
+  3: "Opinion scales like overrated to underrated. Expect debates!"
+};
+INTROS.wave = ["In the range", "One player knows where the hidden target is. They give a clue, and everyone else works together to move the dial to it."];
+for (const [k,v] of Object.entries({ wLevel:1, wRounds:2 })) if (S[k] === undefined) S[k] = v;
+SETTINGS.wave = [
+  { key:"wRounds", label:"Rounds", hint:"Everyone gives one clue per round", min:1, max:5, step:1 }
+];
+function renderWLevel(){
+  document.querySelectorAll("#wLevels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.wlevel === S.wLevel));
+  $("wLevelHint").textContent = W_HINTS[S.wLevel];
+}
+document.querySelectorAll("#wLevels button").forEach(b => b.onclick = () => { S.wLevel = +b.dataset.wlevel; save(); renderWLevel(); });
+renderWLevel();
+$("goWave").onclick = () => openSetup("wave");
+
+function dialSVG(o){
+  const cx = 160, cy = 160, R = 150;
+  const P = (v, r) => { const a = (180 - v * 1.8) * Math.PI / 180; return [(cx + r * Math.cos(a)).toFixed(1), (cy - r * Math.sin(a)).toFixed(1)]; };
+  const wedge = (v1, v2, style) => {
+    v1 = Math.max(0, v1); v2 = Math.min(100, v2); if (v2 <= v1) return "";
+    const [x1, y1] = P(v1, R), [x2, y2] = P(v2, R);
+    return `<path d="M${cx},${cy} L${x1},${y1} A${R},${R} 0 0 1 ${x2},${y2} Z" style="${style}"/>`;
+  };
+  let s = `<svg viewBox="0 0 320 172" xmlns="http://www.w3.org/2000/svg">`;
+  s += wedge(0, 100, "fill:var(--surface);stroke:var(--line);stroke-width:3");
+  if (o.show) {
+    const t = o.target;
+    s += wedge(t - 16, t + 16, "fill:#FFE08A") + wedge(t - 10, t + 10, "fill:#FFB347") + wedge(t - 4, t + 4, "fill:#F0588F");
+    [[t - 16, t - 10, 2], [t - 10, t - 4, 3], [t - 4, t + 4, 4], [t + 4, t + 10, 3], [t + 10, t + 16, 2]].forEach(([a, b, n]) => {
+      a = Math.max(0, a); b = Math.min(100, b); if (b - a < 2.5) return;
+      const [x, y] = P((a + b) / 2, R * .82);
+      s += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" style="font:800 14px 'Bricolage Grotesque',system-ui,sans-serif;fill:#1E1B3A">${n}</text>`;
+    });
+  }
+  s += `<line x1="8" y1="${cy}" x2="312" y2="${cy}" style="stroke:var(--line);stroke-width:3"/>`;
+  if (o.needle !== undefined) {
+    const [x, y] = P(o.needle, R - 10);
+    s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" style="stroke:var(--ink);stroke-width:5;stroke-linecap:round"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="9" style="fill:var(--cobalt);stroke:var(--ink);stroke-width:3"/>`;
+  }
+  s += `<circle cx="${cx}" cy="${cy}" r="10" style="fill:var(--ink)"/></svg>`;
+  return s;
+}
+function setEnds(){
+  document.querySelectorAll(".end.l").forEach(e => e.textContent = G.current[0]);
+  document.querySelectorAll(".end.r").forEach(e => e.textContent = G.current[1]);
+}
+function waveStart(){
+  G.pool = WAVE[S.wLevel]; G.deck = shuffle(G.pool);
+  G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = S.players.length * S.wRounds;
+  wNewCard(); wPass();
+}
+function wNewCard(){ G.current = draw(); G.target = Math.random() * 100; }
+function wGiver(){ return G.wTurn % S.players.length; }
+function wStep(){ return `Turn ${G.wTurn + 1} of ${G.wTotal}`; }
+function wPass(){
+  $("wpStep").textContent = wStep();
+  $("wpName").textContent = name(wGiver());
+  $("wpScore").textContent = `Group score: ${G.wScore}`;
+  show("wpass");
+}
+$("wpGo").onclick = () => { $("wClue").value = ""; wPsy(); };
+function wPsy(){
+  setEnds(); G.spun = false; G.spinning = false; G.spinId = (G.spinId || 0) + 1;
+  $("wsStep").textContent = wStep();
+  $("wsDial").innerHTML = dialSVG({});
+  $("wsSpinHint").hidden = false; $("wsAfter").hidden = true;
+  show("wpsy");
+}
+function wSpin(){
+  if (G.spun || G.spinning) return;
+  G.spinning = true;
+  const final = Math.random() * 100;
+  const d1 = 200 * (3 + Math.floor(Math.random() * 2)) + (Math.random() < .5 ? final : 200 - final);
+  const d0 = d1 - (160 + Math.random() * 240);
+  const id = G.spinId, dur = 1400, t0 = performance.now();
+  const pp = d => { const m = d % 200; return m <= 100 ? m : 200 - m; };
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const frame = now => {
+    if (id !== G.spinId) return;
+    const t = reduce ? 1 : Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 3);
+    G.target = t < 1 ? pp(d0 + (d1 - d0) * e) : final;
+    $("wsDial").innerHTML = dialSVG({ target:G.target, show:true });
+    if (t < 1) requestAnimationFrame(frame);
+    else { G.spinning = false; G.spun = true; tone(880,.12); $("wsSpinHint").hidden = true; $("wsAfter").hidden = false; }
+  };
+  requestAnimationFrame(frame);
+}
+(() => {
+  const el = $("wsDial"); let x0 = null;
+  el.addEventListener("pointerdown", e => { e.preventDefault(); x0 = e.clientX; });
+  el.addEventListener("pointermove", e => { if (x0 !== null && Math.abs(e.clientX - x0) > 24) { x0 = null; wSpin(); } });
+  el.addEventListener("pointerup", () => { if (x0 !== null) { x0 = null; wSpin(); } });
+})();
+$("wsSwap").onclick = () => { wNewCard(); wPsy(); };
+$("wClue").addEventListener("keydown", e => { if (e.key === "Enter") $("wsDone").click(); });
+$("wsDone").onclick = () => {
+  G.clue = $("wClue").value.trim(); $("wClue").blur();
+  G.needle = 50; setEnds();
+  $("wgStep").textContent = wStep();
+  $("wgScore").textContent = `Score: ${G.wScore}`;
+  $("wgWho").textContent = G.clue ? `${name(wGiver())}’s clue` : `Listen to ${name(wGiver())}’s clue`;
+  $("wgClue").textContent = G.clue; $("wgClue").hidden = !G.clue;
+  drawGuess(); show("wguess");
+};
+function drawGuess(){ $("wgDial").innerHTML = dialSVG({ needle:G.needle }); }
+(() => {
+  const el = $("wgDial"); let drag = false;
+  const set = e => {
+    const svg = el.querySelector("svg"); if (!svg) return;
+    const r = svg.getBoundingClientRect(), k = 320 / r.width;
+    const dx = (e.clientX - r.left) * k - 160, dy = 160 - (e.clientY - r.top) * k;
+    const a = dy <= 0 ? (dx < 0 ? 180 : 0) : Math.atan2(dy, dx) * 180 / Math.PI;
+    G.needle = Math.min(100, Math.max(0, (180 - a) / 1.8)); drawGuess();
+  };
+  el.addEventListener("pointerdown", e => { e.preventDefault(); drag = true; try { el.setPointerCapture(e.pointerId); } catch(_) {} set(e); });
+  el.addEventListener("pointermove", e => { if (drag) set(e); });
+  ["pointerup","pointercancel"].forEach(t => el.addEventListener(t, () => drag = false));
+})();
+$("wgL").onclick = () => { G.needle = Math.max(0, G.needle - 1); drawGuess(); };
+$("wgR").onclick = () => { G.needle = Math.min(100, G.needle + 1); drawGuess(); };
+$("wgDone").onclick = () => {
+  const d = Math.abs(G.needle - G.target);
+  const pts = d <= 4 ? 4 : d <= 10 ? 3 : d <= 16 ? 2 : 0;
+  G.wScore += pts;
+  G.wLog.push({ giver:wGiver(), ends:G.current, clue:G.clue, pts });
+  $("wrStep").textContent = wStep();
+  $("wrPts").textContent = pts ? `+${pts}` : "0 points";
+  $("wrMsg").textContent = { 4:"Bullseye!", 3:"So close!", 2:"Not bad!", 0:"Missed it this time." }[pts];
+  $("wrDial").innerHTML = dialSVG({ target:G.target, show:true, needle:G.needle });
+  $("wrScore").textContent = `Group score: ${G.wScore}`;
+  $("wrNext").textContent = G.wTurn + 1 >= G.wTotal ? "See final score" : `Pass to ${name((G.wTurn + 1) % S.players.length)}`;
+  if (pts >= 3) ding(); else if (pts) tone(660,.15); else tone(220,.3,"triangle",.12);
+  show("wreveal");
+};
+$("wrNext").onclick = () => { G.wTurn++; if (G.wTurn >= G.wTotal) return wFinal(); wNewCard(); wPass(); };
+function wFinal(){
+  const max = G.wTotal * 4, r = G.wScore / max;
+  $("wfScore").textContent = `${G.wScore} of ${max}`;
+  $("wfMsg").textContent = r >= .75 ? "Total mind readers!" : r >= .5 ? "Great teamwork!" : r >= .25 ? "Not bad. Keep tuning in!" : "Room to grow. Play again!";
+  const list = $("wfList"); list.innerHTML = "";
+  G.wLog.forEach(l => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${l.pts ? "y" : "n"}">${l.pts}</span><span class="w"></span>`;
+    li.querySelector(".w").textContent = `${name(l.giver)}: ${l.clue ? "“" + l.clue + "”" : "a spoken clue"} (${l.ends[0]} to ${l.ends[1]})`;
+    list.appendChild(li);
+  });
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+  show("wfinal");
+}
+$("wfAgain").onclick = waveStart;
+
+/* ---------- Summary + final ---------- */
+const KIND_LABEL = { skip:"Skipped", buzz:"Buzzed", time:"Time ran out" };
+function isLastTurn(){ return G.round === S.rounds && G.turn === S.players.length - 1; }
+function toSummary(){
+  $("sumRound").textContent = `Round ${G.round} of ${S.rounds}`;
+  $("sumTitle").textContent = `${name(G.turn)} +${turnPts()}`;
+  const list = $("sumList"); list.innerHTML = "";
+  G.turnLog.forEach(r => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${r.got ? "y" : "n"}">${r.got ? "✓" : "✕"}</span><span class="w"></span><span class="p">${r.got ? "+" + r.pts : KIND_LABEL[r.kind]}</span>`;
+    li.querySelector(".w").textContent = r.word; list.appendChild(li);
+  });
+  const nextIdx = (G.turn + 1) % S.players.length;
+  $("nextTurn").textContent = isLastTurn() ? "See final scores" : `Pass to ${name(nextIdx)}`;
+  show("summary");
+}
+$("nextTurn").onclick = () => {
+  if (isLastTurn()) return toFinal();
+  G.turn++; if (G.turn >= S.players.length) { G.turn = 0; G.round++; }
+  toPass();
+};
+function toFinal(){
+  const top = Math.max(...G.scores);
+  const winners = S.players.map((_,i) => i).filter(i => G.scores[i] === top);
+  $("winner").textContent = winners.length > 1 ? "It’s a tie" : `${name(winners[0])} wins`;
+  renderScores($("finalScores"), "rank");
+  const rv = $("review"); rv.innerHTML = "";
+  [...new Set(G.missed)].forEach(w => { const s = document.createElement("span"); s.textContent = w; rv.appendChild(s); });
+  $("reviewWrap").hidden = !G.missed.length;
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+  show("final");
+}
+$("playAgain").onclick = newGame;
+
+let restartArm = 0;
+function resetRestart(){ clearTimeout(restartArm); restartArm = 0; const b = $("startOver"); b.classList.remove("confirm"); b.textContent = "Start over"; }
+$("startOver").onclick = () => {
+  if (G.screen !== "final" && G.screen !== "impResult" && G.screen !== "wfinal" && G.screen !== "spyend" && !restartArm) {
+    const b = $("startOver"); b.classList.add("confirm"); b.textContent = "Tap again to end this game";
+    restartArm = setTimeout(resetRestart, 3000); return;
+  }
+  stopTimer(); openSetup(G.mode);
+};
+
+/* ---------- Sound ---------- */
+let ctx;
+function unlockAudio(){ try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === "suspended") ctx.resume(); } catch(e) {} }
+function tone(freq, dur, type = "sine", vol = .12){
+  if (!S.sound || !ctx) return;
+  try {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + dur);
+    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+function ding(){ tone(880,.12,"sine",.15); setTimeout(() => tone(1320,.18,"sine",.15), 110); }
+function buzzer(){ tone(140,.6,"sawtooth",.18); try { navigator.vibrate && navigator.vibrate(250); } catch(e) {} }
+
+/* ---------- Word bowl ---------- */
+const FB_ROUNDS = [
+  ["Describe it", "Say anything to get your team to guess, except the word itself."],
+  ["One word", "You can say only one word as your clue. Choose wisely!"],
+  ["Act it out", "No talking at all. Act out the word for your team."]
+];
+const TEAMS = ["Team Blue", "Team Pink"];
+INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then two teams race through the same words three times: describe them, use one word, then act them out."];
+for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
+SETTINGS.fb = [
+  { type:"toggle", key:"fbWrite", label:"Players write the words", hint:"Off: the game fills the bowl for you" },
+  { key:"fbPer", label:"Words per player", hint:"How many words or phrases each person adds", min:2, max:8, step:1 },
+  { key:"fbSec", label:"Turn timer", hint:"For each player’s turn", min:30, max:120, step:15, unit:"s" }
+];
+$("goFb").onclick = () => openSetup("fb");
+
+function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go"); }
+function fbStart(){
+  G.teams = [[], []]; S.players.forEach((_, i) => G.teams[i % 2].push(i));
+  if (!S.fbWrite) {
+    G.fbWords = shuffle([...TABOO[1], ...TABOO[2]].map(c => c[0])).slice(0, S.players.length * S.fbPer);
+    return fbRoundIntro(true);
+  }
+  G.fbSubs = S.players.map(() => null);
+  fbSubList();
+}
+function fbSubList(){
+  const box = $("fbNames"); box.innerHTML = "";
+  S.players.forEach((_, i) => {
+    const done = !!G.fbSubs[i];
+    const b = document.createElement("button"); b.className = "name-btn" + (done ? " seen" : "");
+    b.innerHTML = `<span></span><small>${done ? "✓ Added" : "Tap to add words"}</small>`;
+    b.querySelector("span").textContent = name(i);
+    b.onclick = () => fbWrite(i);
+    box.appendChild(b);
+  });
+  const left = G.fbSubs.filter(x => !x).length;
+  $("fbsubNote").textContent = `Pass the phone around. Each player taps their name and secretly adds ${S.fbPer} words or phrases. Tapping your name again lets you redo yours.`;
+  $("fbStart").disabled = left > 0;
+  $("fbsubStatus").textContent = left ? `Waiting on ${left} player${left > 1 ? "s" : ""}.` : `The bowl has ${S.players.length * S.fbPer} words. Ready!`;
+  show("fbsub");
+}
+function fbWrite(i){
+  G.fbWho = i;
+  $("fbwName").textContent = name(i);
+  const box = $("fbInputs"); box.innerHTML = "";
+  for (let k = 0; k < S.fbPer; k++) {
+    const inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 40; inp.autocomplete = "off";
+    inp.placeholder = `Word or phrase ${k + 1}`; inp.setAttribute("aria-label", `Word or phrase ${k + 1}`);
+    box.appendChild(inp);
+  }
+  $("fbwErr").textContent = "";
+  show("fbwrite");
+}
+$("fbwSave").onclick = () => {
+  const vals = [...$("fbInputs").querySelectorAll("input")].map(x => x.value.trim());
+  if (vals.some(v => !v)) { $("fbwErr").textContent = `Fill in all ${S.fbPer} words first.`; return; }
+  document.activeElement && document.activeElement.blur();
+  G.fbSubs[G.fbWho] = vals; fbSubList();
+};
+$("fbStart").onclick = () => { G.fbWords = G.fbSubs.flat(); fbRoundIntro(true); };
+
+function fbScores(el){
+  el.innerHTML = "";
+  TEAMS.forEach((t, k) => {
+    const li = document.createElement("li");
+    const n = document.createElement("span"); n.textContent = t;
+    const sm = document.createElement("small"); sm.textContent = G.teams[k].map(name).join(", "); n.appendChild(sm);
+    const b = document.createElement("b"); b.textContent = G.teamScores[k];
+    li.append(n, b); el.appendChild(li);
+  });
+}
+function fbRoundIntro(first){
+  if (first) { G.fbRound = 1; G.teamScores = [0, 0]; G.fbPtr = [0, 0]; G.fbTeam = 0; }
+  G.bowl = shuffle(G.fbWords);
+  const [nm, rule] = FB_ROUNDS[G.fbRound - 1];
+  $("frNo").textContent = `Round ${G.fbRound} of 3`;
+  $("frName").textContent = nm; $("frRule").textContent = rule;
+  fbScores($("frScores"));
+  $("frGo").textContent = `Start round ${G.fbRound}`;
+  show("fbround");
+}
+function fbCurrent(){ const list = G.teams[G.fbTeam]; return list[G.fbPtr[G.fbTeam] % list.length]; }
+function fbPass(){
+  const [nm, rule] = FB_ROUNDS[G.fbRound - 1];
+  $("fpRound").textContent = `Round ${G.fbRound} of 3: ${nm}`;
+  $("fpName").textContent = name(fbCurrent());
+  $("fpTeam").textContent = TEAMS[G.fbTeam];
+  $("fpRule").textContent = rule;
+  $("fpLeft").textContent = `${G.bowl.length} word${G.bowl.length === 1 ? "" : "s"} left in the bowl`;
+  show("fbpass");
+}
+$("frGo").onclick = fbPass;
+function fbBtns(on){ $("fbGot").disabled = $("fbSkip").disabled = !on; }
+function fbShowWord(){ $("fbWord").textContent = G.bowl[0]; $("fbLeft").textContent = `${G.bowl.length} left in the bowl`; }
+$("fpGo").onclick = () => {
+  G.fbLog = []; G.fbEmpty = false;
+  $("fbCard").classList.remove("paused"); $("fbPause").textContent = "Pause"; $("fbPop").className = "pop";
+  $("fbRuleTag").textContent = FB_ROUNDS[G.fbRound - 1][0];
+  fbBtns(true); fbShowWord(); show("fbplay");
+  runTimer(S.fbSec * 1000, rem => {
+    const s = Math.ceil(rem / 1000);
+    $("fbFill").style.transform = `scaleX(${rem / T.total})`;
+    $("fbSec").textContent = s;
+    $("fbTrack").classList.toggle("low", s <= 10);
+  }, () => fbEndTurn(false));
+};
+$("fbGot").onclick = () => {
+  if (T.locked || T.paused) return;
+  G.fbLog.push(G.bowl.shift()); G.teamScores[G.fbTeam]++;
+  ding(); popFxEl($("fbPop"), "+1", "green");
+  if (!G.bowl.length) return fbEndTurn(true);
+  fbShowWord();
+};
+$("fbSkip").onclick = () => {
+  if (T.locked || T.paused) return;
+  G.bowl.push(G.bowl.shift());
+  tone(300,.15,"triangle",.1); popFxEl($("fbPop"), "Skipped", "gray");
+  fbShowWord();
+};
+$("fbPause").onclick = () => {
+  if (T.locked) return;
+  const off = !T.paused;
+  if (off) pauseTimer(); else resumeTimer();
+  $("fbPause").textContent = off ? "Resume" : "Pause";
+  $("fbCard").classList.toggle("paused", off);
+  fbBtns(!off);
+};
+function fbEndTurn(empty){
+  stopTimer(); fbBtns(false); G.fbEmpty = empty;
+  if (!empty) { buzzer(); popFxEl($("fbPop"), "Time’s up", "red", true); }
+  else popFxEl($("fbPop"), "Bowl empty!", "green", true);
+  T.next = setTimeout(fbTurnSummary, 1300);
+}
+function fbTurnSummary(){
+  const p = fbCurrent();
+  $("ftRound").textContent = G.fbEmpty ? `The bowl is empty! Round ${G.fbRound} is done.` : `Round ${G.fbRound} of 3: ${FB_ROUNDS[G.fbRound - 1][0]}`;
+  $("ftTitle").textContent = `${name(p)} +${G.fbLog.length}`;
+  const list = $("ftList"); list.innerHTML = "";
+  G.fbLog.forEach(w => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark y">✓</span><span class="w"></span>`;
+    li.querySelector(".w").textContent = w; list.appendChild(li);
+  });
+  G.fbPtr[G.fbTeam]++; G.fbTeam = 1 - G.fbTeam;
+  fbScores($("ftScores"));
+  if (!G.fbEmpty) { G.ftAction = "pass"; $("ftNext").textContent = `Pass to ${name(fbCurrent())}`; }
+  else if (G.fbRound < 3) { G.ftAction = "round"; $("ftNext").textContent = `On to round ${G.fbRound + 1}`; }
+  else { G.ftAction = "final"; $("ftNext").textContent = "See who won"; }
+  show("fbturn");
+}
+function fbFinal(){
+  const [a, b] = G.teamScores;
+  $("ftRound").textContent = "Final scores";
+  $("ftTitle").textContent = a === b ? "It’s a tie!" : `${TEAMS[a > b ? 0 : 1]} wins!`;
+  $("ftList").innerHTML = "";
+  fbScores($("ftScores"));
+  G.ftAction = "again"; $("ftNext").textContent = "Play again";
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+  show("fbturn");
+}
+$("ftNext").onclick = () => {
+  if (G.ftAction === "pass") fbPass();
+  else if (G.ftAction === "round") { G.fbRound++; fbRoundIntro(false); }
+  else if (G.ftAction === "final") fbFinal();
+  else fbStart();
+};
+
+/* ---------- Word spies ---------- */
+const SPY_L3 = ["bank","bat","spring","star","ring","bark","pitch","plate","key","wave","match","bow","jam","palm","fan","seal","trunk","club","deck","scale","mouse","cell","line","park","ruler","band","bear","bolt","bridge","cap","chest","crane","date","diamond","dragon","drop","field","fire","glass","ground","horn","jack","kiwi","light","lock","mint","nail","note","organ","pan","pipe","plane","point","press","pupil","racket","root","rock","sink","slip","space","stamp","switch","table","tie","tip","watch","well","yard","shell","spot","pool","ball","boot","cross","fall","file","foot","glove","iron","mole","nut","pass","pen","pie","pin","port","post","row","school","ship","square","stick","stream","tag","tower","train","web","wind","king","queen","knight","ghost","robot","moon","snow","apple"];
+const SPY_HINTS = {
+  1: "Simple words for young kids.",
+  2: "A bigger mix of everyday words.",
+  3: "Lots of words with more than one meaning, like the real game."
+};
+function spyPool(level){
+  const single = s => !/\s/.test(s);
+  const src = level === 1 ? [...TABOO[1].map(c => c[0]), ...TELE_WORDS[1], ...IMP_WORDS["Animals"], ...IMP_WORDS["Food"], ...IMP_WORDS["Things at home"]]
+    : level === 2 ? [...TABOO[2].map(c => c[0]), ...TELE_WORDS[2], ...IMP_WORDS["Places"], ...IMP_WORDS["Jobs"], ...IMP_WORDS["Sports & games"]]
+    : SPY_L3;
+  return [...new Set(src.filter(single).map(w => w.toLowerCase()))];
+}
+INTROS.spy = ["Word spies", "Two teams, one secret key. Spymasters give one-word clues to help their team find their words, and avoid the trap!"];
+for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true })) if (S[k] === undefined) S[k] = v;
+SETTINGS.spy = [
+  { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
+  { type:"toggle", key:"spyTrap", label:"Trap card", hint:"Reveal it and your team loses" }
+];
+function renderSpyLevel(){
+  document.querySelectorAll("#spyLevels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.slevel === S.spyLevel));
+  $("spyLevelHint").textContent = SPY_HINTS[S.spyLevel];
+}
+document.querySelectorAll("#spyLevels button").forEach(b => b.onclick = () => { S.spyLevel = +b.dataset.slevel; save(); renderSpyLevel(); });
+renderSpyLevel();
+$("goSpy").onclick = () => openSetup("spy");
+
+function spyStart(){
+  G.teams = [[], []]; S.players.forEach((_, i) => G.teams[i % 2].push(i));
+  G.spyGame = -1; spyDeal();
+}
+function spyDeal(){
+  G.spyGame++;
+  const big = S.spyBig, n = big ? 25 : 16;
+  const words = shuffle(spyPool(S.spyLevel)).slice(0, n);
+  const first = Math.random() < .5 ? 0 : 1;
+  const [a, b, by] = big ? [9, 8, 7] : [6, 5, 4];
+  const trap = S.spyTrap ? 1 : 0, roles = [];
+  for (let i = 0; i < a; i++) roles.push(first);
+  for (let i = 0; i < b; i++) roles.push(1 - first);
+  for (let i = 0; i < by + 1 - trap; i++) roles.push("by");
+  if (trap) roles.push("trap");
+  G.board = shuffle(roles).map((r, i) => ({ w:words[i], r, open:false }));
+  G.spyBig = big; G.spyTurn = first; G.spySel = null;
+  G.spymasters = [0, 1].map(k => G.teams[k][G.spyGame % G.teams[k].length]);
+  $("srFirst").textContent = `${TEAMS[first]} goes first`;
+  const ul = $("srSpies"); ul.innerHTML = "";
+  [0, 1].forEach(k => {
+    const li = document.createElement("li");
+    const s = document.createElement("span"); s.textContent = `${TEAMS[k]} spymaster`;
+    const b2 = document.createElement("b"); b2.textContent = name(G.spymasters[k]);
+    li.append(s, b2); ul.appendChild(li);
+  });
+  show("spyround");
+}
+$("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); };
+function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
+function renderSpy(){
+  const t = G.spyTurn;
+  $("sbTurn").textContent = `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
+  $("sbCount").textContent = `Blue ${spyLeft(0)} left, Pink ${spyLeft(1)} left`;
+  const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
+  G.board.forEach((c, i) => {
+    const b = document.createElement("button");
+    b.className = "spy-card" + (c.open ? " r-" + c.r : "") + (G.spySel === i ? " sel" : "");
+    b.textContent = c.w; b.disabled = c.open;
+    b.onclick = () => { G.spySel = G.spySel === i ? null : i; renderSpy(); };
+    grid.appendChild(b);
+  });
+  $("sbReveal").hidden = G.spySel === null;
+  if (G.spySel !== null) $("sbReveal").textContent = `Reveal “${G.board[G.spySel].w}”`;
+}
+$("sbReveal").onclick = () => {
+  const i = G.spySel; if (i === null) return;
+  const c = G.board[i], t = G.spyTurn;
+  c.open = true; G.spySel = null;
+  if (c.r === "trap") return spyEnd(1 - t, `${TEAMS[t]} found the trap card!`);
+  if (!spyLeft(0)) return spyEnd(0, "Team Blue found all its words!");
+  if (!spyLeft(1)) return spyEnd(1, "Team Pink found all its words!");
+  if (c.r === t) { ding(); $("sbMsg").textContent = "Correct! Keep guessing, or end your turn."; }
+  else {
+    tone(220,.3,"triangle",.12);
+    $("sbMsg").textContent = c.r === "by" ? "That word belongs to nobody. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`;
+    G.spyTurn = 1 - t;
+  }
+  renderSpy();
+};
+$("sbEnd").onclick = () => {
+  G.spyTurn = 1 - G.spyTurn; G.spySel = null;
+  $("sbMsg").textContent = `${TEAMS[G.spyTurn]}’s spymaster, give your clue.`;
+  renderSpy();
+};
+function spyKeyGrid(el, cross){
+  el.className = "spy-grid c" + (G.spyBig ? 5 : 4); el.innerHTML = "";
+  G.board.forEach(c => {
+    const d = document.createElement("div");
+    d.className = `spy-card r-${c.r}` + (cross && c.open ? " done" : "");
+    d.textContent = c.w; el.appendChild(d);
+  });
+}
+$("sbKey").onclick = () => {
+  $("skWho").textContent = `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
+  spyKeyGrid($("skGrid"), true); show("spykey");
+};
+$("skHide").onclick = () => { renderSpy(); show("spyboard"); };
+function spyEnd(winner, reason){
+  $("seReason").textContent = reason;
+  $("seWin").textContent = `${TEAMS[winner]} wins!`;
+  spyKeyGrid($("seGrid"), false);
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+  show("spyend");
+}
+$("seAgain").onclick = spyDeal;
+
+/* ---------- Icons ---------- */
+const ICON_WRAP = s => `<svg viewBox="-2 -2 100 100" xmlns="http://www.w3.org/2000/svg"><g stroke-linecap="round" stroke-linejoin="round">${s}</g></svg>`;
+const ICON = {
+  act: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><path d="M44 35 L44 60 M44 43 L28 32 M44 43 L62 30 M44 60 L32 78 M44 60 L58 77" fill="none" stroke="#1E1B3A" stroke-width="4"/><circle cx="44" cy="26" r="9" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><path d="M20 24 Q15 30 20 36" fill="none" stroke="#1E1B3A" stroke-width="3"/><rect x="69" y="55" width="6" height="5" rx="1" fill="#1E1B3A"/><circle cx="72" cy="70" r="11" fill="#FFC83D" stroke="#1E1B3A" stroke-width="3"/><path d="M72 70 L72 63 M72 70 L77 72" fill="none" stroke="#1E1B3A" stroke-width="2.5"/>`),
+  taboo: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><path d="M28 56 L24 70 L40 56" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><rect x="14" y="18" width="62" height="40" rx="12" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><path d="M26 32 L64 32 M26 44 L50 44" fill="none" stroke="#1E1B3A" stroke-width="4"/><circle cx="70" cy="68" r="14" fill="#fff" stroke="#E2453C" stroke-width="4"/><path d="M60 58 L80 78" fill="none" stroke="#E2453C" stroke-width="4"/>`),
+  imp: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><path d="M10 78 Q24 58 38 78" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><circle cx="24" cy="46" r="10" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><path d="M58 78 Q72 58 86 78" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><circle cx="72" cy="46" r="10" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><path d="M28 84 Q48 56 68 84" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><circle cx="48" cy="40" r="13" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><rect x="34" y="33" width="28" height="11" rx="5" fill="#8FE3C0" stroke="#1E1B3A" stroke-width="2.5"/><circle cx="42" cy="38.5" r="2.5" fill="#1E1B3A"/><circle cx="54" cy="38.5" r="2.5" fill="#1E1B3A"/>`),
+  tele: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><rect x="14" y="14" width="50" height="50" rx="8" fill="#fff" stroke="#1E1B3A" stroke-width="3" transform="rotate(-6 39 39)"/><path d="M22 46 Q30 26 38 40 T54 32" fill="none" stroke="#E2453C" stroke-width="3"/><line x1="80" y1="32" x2="58" y2="64" stroke="#FFC83D" stroke-width="10" stroke-linecap="butt"/><line x1="80" y1="32" x2="83.4" y2="27.1" stroke="#F0588F" stroke-width="10" stroke-linecap="butt"/><polygon points="62.1,66.8 53.9,61.2 52.3,72.2" fill="#FFE8C7" stroke="#1E1B3A" stroke-width="2"/><path d="M18 80 Q46 92 74 81" fill="none" stroke="#1E1B3A" stroke-width="3"/><path d="M68 76 L75 81 L68 86" fill="none" stroke="#1E1B3A" stroke-width="3"/>`),
+  fb: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><g transform="rotate(-14 36 33)"><rect x="26" y="16" width="20" height="32" rx="3" fill="#fff" stroke="#1E1B3A" stroke-width="3"/><path d="M30 24 L42 24 M30 30 L40 30" fill="none" stroke="#1E1B3A" stroke-width="2.5"/></g><g transform="rotate(10 58 30)"><rect x="48" y="12" width="20" height="34" rx="3" fill="#FFE08A" stroke="#1E1B3A" stroke-width="3"/><path d="M52 20 L64 20 M52 26 L62 26" fill="none" stroke="#1E1B3A" stroke-width="2.5"/></g><path d="M12 46 L84 46 Q82 78 48 80 Q14 78 12 46 Z" fill="#C9A7FF" stroke="#1E1B3A" stroke-width="3"/><path d="M22 56 Q48 62 74 56" fill="none" stroke="#1E1B3A" stroke-width="2.5" opacity=".5"/><rect x="34" y="80" width="28" height="7" rx="3" fill="#1E1B3A"/>`),
+  spy: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><g stroke="#1E1B3A" stroke-width="2.5"><rect x="15" y="15" width="19" height="19" rx="4" fill="#BFD4FF"/><rect x="38.5" y="15" width="19" height="19" rx="4" fill="#fff"/><rect x="62" y="15" width="19" height="19" rx="4" fill="#FFC9C2"/><rect x="15" y="38.5" width="19" height="19" rx="4" fill="#fff"/><rect x="38.5" y="38.5" width="19" height="19" rx="4" fill="#1E1B3A"/><rect x="62" y="38.5" width="19" height="19" rx="4" fill="#BFD4FF"/><rect x="15" y="62" width="19" height="19" rx="4" fill="#FFC9C2"/><rect x="38.5" y="62" width="19" height="19" rx="4" fill="#fff"/><rect x="62" y="62" width="19" height="19" rx="4" fill="#BFD4FF"/></g>`),
+  wave: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><path d="M14 66 A34 34 0 0 1 82 66 Z" fill="#fff"/><path d="M48 66 L59.6 34 A34 34 0 0 1 69.9 40 Z" fill="#F0588F"/><path d="M14 66 A34 34 0 0 1 82 66 Z" fill="none" stroke="#1E1B3A" stroke-width="3"/><line x1="48" y1="66" x2="40.7" y2="38.9" stroke="#1E1B3A" stroke-width="4"/><circle cx="48" cy="66" r="5" fill="#1E1B3A"/><rect x="14" y="76" width="24" height="10" rx="5" fill="#BFD4FF" stroke="#1E1B3A" stroke-width="2"/><rect x="58" y="76" width="24" height="10" rx="5" fill="#FFC9C2" stroke="#1E1B3A" stroke-width="2"/>`)
+};
+const ICON_BG = { act:"#FFC83D", taboo:"#F0588F", imp:"#8FE3C0", tele:"#A9B8FF", wave:"#FFB347", fb:"#C9A7FF", spy:"#8CD3E6" };
+document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = ICON[el.dataset.icon]);
+
+/* ---------- Init ---------- */
+renderPlayers(); renderPacks(); renderLevel();
+$("custom").value = S.custom;
+$("soundToggle").setAttribute("aria-checked", S.sound);
+show("home");
+</script>
+</body>
+</html>
