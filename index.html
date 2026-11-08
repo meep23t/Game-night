@@ -57,12 +57,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .home-grid{display:grid;gap:18px}
 /* Game night */
 .night-strip{margin:-6px 0 20px}
-.night-start{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--sun);color:#1E1B3A;border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
+.night-start{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#1E1B3A;color:#FFFFFF;border:3px solid #FFC83D;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
 .night-start:active,.night-live:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
 .night-start .trophy,.night-live .trophy{font-size:28px;line-height:1;flex:none}
 .night-start b,.night-live b{display:block;font-size:19px;font-weight:800}
 .night-start small,.night-live small{display:block;font-size:15px;font-weight:500;opacity:.85}
 .night-start .arrow,.night-live .arrow{margin-left:auto;font-weight:800;flex:none}
+.night-start small{color:#FFD873;opacity:1}
+.night-start .arrow{color:#FFC83D}
 .night-live{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--cobalt);color:var(--on-cobalt);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
 .night-stale{background:var(--surface);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
 .night-stale p{margin-bottom:12px}
@@ -320,7 +322,7 @@ h3.sub{font-size:20px;margin-top:26px}
 <section id="home">
   <header class="hero">
     <h1>Game night</h1>
-    <p>Pick a game. Everything runs on one phone, passed around the group.</p>
+    <p>Play any game on its own just for fun, or start a game night to keep score across every game you play. Everything runs on one phone, passed around the group.</p>
   </header>
   <div class="night-strip" id="nightStrip"></div>
   <div class="install" id="installBar" hidden>
