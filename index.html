@@ -76,6 +76,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .sit-out .chip{color:var(--ink)}
 .night-rules ul{margin:10px 0 0;padding-left:20px;font-size:15px;color:var(--ink)}
 .night-rules li{margin-bottom:6px}
+.night-rules .nr-step{font-size:15px;margin-top:10px}
 .standings{list-style:none;padding:0;margin:8px 0 6px;counter-reset:rank}
 .standings li{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
 .standings .rk{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:var(--line);color:var(--ink)}
@@ -872,14 +873,17 @@ h3.sub{font-size:20px;margin-top:26px}
   </div>
   <details class="block night-rules">
     <summary>How points work</summary>
+    <p class="nr-step"><b>1. Each game scores itself.</b> While you play, every game keeps its own score with its usual rules, across all of its rounds.</p>
+    <p class="nr-step"><b>2. The final result becomes night points.</b> Only when a whole game is finished does its result turn into night points:</p>
     <ul>
-      <li><b>Act it out, Describe it, In the range:</b> 1st place 3, 2nd 2, 3rd 1.</li>
-      <li><b>In the range</b> is scored per player first: the cluegiver gets 2 and each guesser 1 when the guess scores.</li>
-      <li><b>Word bowl, Word spies:</b> everyone on the winning team gets 2. A tie gives everyone 1.</li>
-      <li><b>Imposter:</b> everyone on the winning side gets 2.</li>
-      <li><b>Pass the doodle:</b> everyone gets 1 for playing.</li>
-      <li>Ties share the place. Games you leave early don’t count.</li>
+      <li><b>Act it out, Describe it:</b> final scores after all rounds. 1st place 3, 2nd 2, 3rd 1.</li>
+      <li><b>In the range:</b> after all turns, each player’s tally (cluegiver 2, guessers 1 when the guess scores) is ranked. 1st 3, 2nd 2, 3rd 1.</li>
+      <li><b>Word bowl:</b> after all three rounds, everyone on the winning team gets 2. A tie gives everyone 1.</li>
+      <li><b>Word spies:</b> each board is one game. Everyone on the winning team gets 2.</li>
+      <li><b>Imposter:</b> each round is one game. Everyone on the winning side gets 2.</li>
+      <li><b>Pass the doodle:</b> once every sketchbook is revealed, everyone gets 1.</li>
     </ul>
+    <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
