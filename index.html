@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Game night</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="theme-color" content="#2B44D6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Game night">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
@@ -47,6 +55,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .hero h1{font-size:clamp(48px,14vw,72px);font-weight:800;letter-spacing:-.035em;font-variation-settings:"opsz" 96}
 .hero p{margin-top:10px;color:var(--muted);max-width:34ch}
 .home-grid{display:grid;gap:18px}
+.install{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 12px 12px 14px;margin:-6px 0 20px}
+.install[hidden]{display:none}
+.install img{width:40px;height:40px;border-radius:10px;flex:none}
+.install p{flex:1;font-size:15px;line-height:1.35;color:var(--ink)}
+.install .share-glyph{display:inline-block;width:14px;height:16px;vertical-align:-2px}
+.install-go{background:var(--cobalt);color:var(--on-cobalt);font-weight:700;border-radius:10px;padding:8px 12px;flex:none}
+.install-x{color:var(--muted);font-size:22px;line-height:1;padding:4px 6px;flex:none}
 .game-tile{display:block;width:100%;text-align:left;border:3px solid #1E1B3A;border-radius:24px;box-shadow:7px 7px 0 var(--shadow);padding:22px;color:#1E1B3A}
 .game-tile.act{background:var(--sun)}
 .game-tile.taboo{background:var(--pink)}
@@ -265,6 +280,12 @@ h3.sub{font-size:20px;margin-top:26px}
     <h1>Game night</h1>
     <p>Pick a game. Everything runs on one phone, passed around the group.</p>
   </header>
+  <div class="install" id="installBar" hidden>
+    <img src="/icons/icon-180.png" alt="">
+    <p id="installText"></p>
+    <button class="install-go" id="installGo" hidden>Install</button>
+    <button class="install-x" id="installX" aria-label="Dismiss">×</button>
+  </div>
   <div class="home-grid">
     <div class="home-head"><h3>Classics</h3></div>
     <button class="game-tile act" id="goAct">
@@ -1994,6 +2015,52 @@ renderPlayers(); renderPacks(); renderLevel();
 $("custom").value = S.custom;
 $("soundToggle").setAttribute("aria-checked", S.sound);
 show("home");
+
+/* ---------- Install + offline ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+}
+(() => {
+  const DISMISS_KEY = "gn-install-dismissed";
+  const bar = $("installBar"), text = $("installText"), go = $("installGo");
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(DISMISS_KEY) === "1"; } catch(e) {}
+  if (standalone || dismissed) return;
+
+  $("installX").addEventListener("click", () => {
+    bar.hidden = true;
+    try { localStorage.setItem(DISMISS_KEY, "1"); } catch(e) {}
+  });
+
+  // iPhone/iPad Safari: no install prompt, so explain the Share menu.
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (isIOS) {
+    const shareIcon = '<svg class="share-glyph" viewBox="0 0 14 16" aria-label="Share"><path d="M7 1v9M3.5 4.5 7 1l3.5 3.5M2 7.5v7h10v-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    text.innerHTML = `Play offline: tap ${shareIcon} Share, then <b>Add to Home Screen</b>.`;
+    bar.hidden = false;
+    return;
+  }
+
+  // Android/Chrome/Edge: use the browser's install prompt.
+  let deferred = null;
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    deferred = e;
+    text.textContent = "Install Game night to play offline from your home screen.";
+    go.hidden = false;
+    bar.hidden = false;
+  });
+  go.addEventListener("click", async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    await deferred.userChoice;
+    deferred = null;
+    bar.hidden = true;
+  });
+  window.addEventListener("appinstalled", () => { bar.hidden = true; });
+})();
 </script>
 </body>
 </html>
