@@ -1,5 +1,5 @@
 // Offline support for Game night. Bump VERSION when precached files change.
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = `game-night-${VERSION}`;
 const PRECACHE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-180.png"];
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
