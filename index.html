@@ -55,6 +55,47 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .hero h1{font-size:clamp(48px,14vw,72px);font-weight:800;letter-spacing:-.035em;font-variation-settings:"opsz" 96}
 .hero p{margin-top:10px;color:var(--muted);max-width:34ch}
 .home-grid{display:grid;gap:18px}
+/* Game night */
+.night-strip{margin:-6px 0 20px}
+.night-start{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--sun);color:#1E1B3A;border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
+.night-start:active,.night-live:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
+.night-start .trophy,.night-live .trophy{font-size:28px;line-height:1;flex:none}
+.night-start b,.night-live b{display:block;font-size:19px;font-weight:800}
+.night-start small,.night-live small{display:block;font-size:15px;font-weight:500;opacity:.85}
+.night-start .arrow,.night-live .arrow{margin-left:auto;font-weight:800;flex:none}
+.night-live{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--cobalt);color:var(--on-cobalt);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
+.night-stale{background:var(--surface);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
+.night-stale p{margin-bottom:12px}
+.night-stale .row{display:flex;gap:10px}
+.night-stale .row button{flex:1;border-radius:12px;padding:10px;font-weight:700;border:2px solid var(--line)}
+.night-stale .row button.go{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt)}
+.night-link{display:block;margin:10px auto 0;color:var(--muted);font-weight:600;font-size:15px;text-decoration:underline}
+.player-row .icon-btn.up{font-size:18px}
+.sit-out{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.sit-out .note{margin-bottom:10px}
+.sit-out .chip{color:var(--ink)}
+.night-rules ul{margin:10px 0 0;padding-left:20px;font-size:15px;color:var(--ink)}
+.night-rules li{margin-bottom:6px}
+.standings{list-style:none;padding:0;margin:8px 0 6px;counter-reset:rank}
+.standings li{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.standings .rk{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:var(--line);color:var(--ink)}
+.standings li.first .rk{background:var(--sun);color:#1E1B3A}
+.standings .nm{flex:1;font-size:19px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.standings .nm small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.standings .pt{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.night-log li{align-items:flex-start}
+.night-log .w b{display:block}
+.night-log .w small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.night-box{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:18px 0}
+.night-box .nb-head{font-weight:800;margin-bottom:8px}
+.night-box ul{list-style:none;padding:0;margin:0 0 10px}
+.night-box li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:16px}
+.night-box li b{color:var(--mint);font-variant-numeric:tabular-nums}
+.night-box .nb-q{margin-bottom:10px}
+.night-box .nb-choices{display:grid;gap:8px}
+.night-box .nb-choices button{border:2px solid var(--line);border-radius:12px;padding:10px;font-weight:700}
+.night-box .nb-links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.night-box .nb-links button{color:var(--muted);font-weight:600;font-size:15px;text-decoration:underline;padding:4px 0}
 .install{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 12px 12px 14px;margin:-6px 0 20px}
 .install[hidden]{display:none}
 .install img{width:40px;height:40px;border-radius:10px;flex:none}
@@ -280,6 +321,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <h1>Game night</h1>
     <p>Pick a game. Everything runs on one phone, passed around the group.</p>
   </header>
+  <div class="night-strip" id="nightStrip"></div>
   <div class="install" id="installBar" hidden>
     <img src="/icons/icon-180.png" alt="">
     <p id="installText"></p>
@@ -350,6 +392,10 @@ h3.sub{font-size:20px;margin-top:26px}
     <p class="hint" data-for="spy" style="margin:-4px 0 12px">Teams are made for you: the 1st, 3rd, 5th… players are Team Blue, and the 2nd, 4th, 6th… are Team Pink. The spymaster role rotates each game.</p>
     <div id="players"></div>
     <button id="addPlayer" class="ghost">Add player</button>
+    <div id="sitOut" class="sit-out" hidden>
+      <p class="note" id="sitOutNote"></p>
+      <div class="chips" id="sitOutChips"></div>
+    </div>
   </div>
 
   <div class="block" data-for="act">
@@ -813,6 +859,48 @@ h3.sub{font-size:20px;margin-top:26px}
   <button id="playAgain" class="primary" style="margin-top:24px">Play again</button>
 </section>
 
+<section id="nightStart" hidden>
+  <button class="back" id="nsBack">← All games</button>
+  <header class="hero">
+    <h1>Game night</h1>
+    <p>Who’s playing tonight? Every game you finish adds points to the leaderboard. Before each game you can sit people out or add someone new.</p>
+  </header>
+  <div class="block">
+    <h2>Players</h2>
+    <div id="nsList"></div>
+    <button id="nsAdd" class="ghost">Add player</button>
+  </div>
+  <details class="block night-rules">
+    <summary>How points work</summary>
+    <ul>
+      <li><b>Act it out, Describe it, In the range:</b> 1st place 3, 2nd 2, 3rd 1.</li>
+      <li><b>In the range</b> is scored per player first: the cluegiver gets 2 and each guesser 1 when the guess scores.</li>
+      <li><b>Word bowl, Word spies:</b> everyone on the winning team gets 2. A tie gives everyone 1.</li>
+      <li><b>Imposter:</b> everyone on the winning side gets 2.</li>
+      <li><b>Pass the doodle:</b> everyone gets 1 for playing.</li>
+      <li>Ties share the place. Games you leave early don’t count.</li>
+    </ul>
+  </details>
+  <button id="nsGo" class="primary">Start game night</button>
+  <p id="nsError" class="error" role="alert"></p>
+</section>
+
+<section id="night" hidden>
+  <button class="back" id="nightBack">← All games</button>
+  <header class="hero">
+    <h1 id="nightTitle">Game night</h1>
+    <p id="nightSub"></p>
+  </header>
+  <ol class="standings" id="nightStand"></ol>
+  <h3 class="sub">Games tonight</h3>
+  <ul class="result-list night-log" id="nightLog"></ul>
+  <p class="note" id="nightEmpty">No games yet. Finish a game and its points land here.</p>
+  <button id="nightPlay" class="primary" style="margin-top:20px">Back to games</button>
+  <button id="nightEnd" class="ghost" style="margin-top:12px">End game night</button>
+</section>
+
+<div id="nightBox" class="night-box" hidden></div>
+
 <button id="startOver" class="restart" hidden>Start over</button>
 </main>
 <script>
@@ -845,6 +933,7 @@ const KEY = "actitout-v1";
 const S = { players:["Player 1","Player 2"], packs:["Everyday actions","School life","Animals"], easy:20, hard:30, perTurn:4, rounds:3, sound:true, custom:"", level:1, turnSec:60 };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e) {}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+if (!Array.isArray(S.playerIds) || S.playerIds.length !== S.players.length) S.playerIds = S.players.map(() => null);
 
 const $ = id => document.getElementById(id);
 const G = { mode:"act", screen:"home", scores:[], deck:[], pool:[], round:1, turn:0, card:0, turnLog:[], missed:[], current:null, choice:null };
@@ -873,11 +962,15 @@ function stopTimer(){ T.locked = true; T.paused = false; cancelAnimationFrame(T.
 function show(id){
   document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== id);
   G.screen = id;
-  $("startOver").hidden = id === "home" || id === "setup";
+  $("startOver").hidden = ["home", "setup", "nightStart", "night"].includes(id);
+  if (G.nightBoxFor !== id) { $("nightBox").hidden = true; G.nightBoxFor = null; }
+  if (id === "home") renderNightStrip();
   resetRestart(); window.scrollTo(0,0);
 }
 function openSetup(mode){
   G.mode = mode;
+  if (nightOn()) nightSyncPlayers();
+  renderPlayers();
   $("setupTitle").textContent = INTROS[mode][0];
   $("setupIcon").innerHTML = ICON[mode];
   $("setupIcon").querySelector("rect").setAttribute("fill", ICON_BG[mode]);
@@ -892,25 +985,49 @@ $("toHome").onclick = () => show("home");
 
 /* ---------- Setup ---------- */
 function renderPlayers(){
+  const night = nightOn();
   const box = $("players"); box.innerHTML = "";
   S.players.forEach((name,i) => {
     const row = document.createElement("div"); row.className = "player-row";
     const inp = document.createElement("input"); inp.type = "text"; inp.value = name; inp.maxLength = 24;
     inp.setAttribute("aria-label", "Player " + (i+1) + " name");
-    inp.addEventListener("input", () => { S.players[i] = inp.value; save(); });
+    inp.addEventListener("input", () => {
+      S.players[i] = inp.value;
+      if (night) nightRename(S.playerIds[i], inp.value);
+      save();
+    });
     row.appendChild(inp);
+    if (i === 0) { const sp = document.createElement("span"); sp.className = "icon-btn"; sp.style.visibility = "hidden"; row.appendChild(sp); }
+    else {
+      const up = document.createElement("button"); up.className = "icon-btn up"; up.textContent = "↑";
+      up.setAttribute("aria-label", "Move " + (name || "player") + " up");
+      up.onclick = () => { movePlayer(i, i - 1); };
+      row.appendChild(up);
+    }
     if (S.players.length > 2) {
       const rm = document.createElement("button"); rm.className = "icon-btn"; rm.textContent = "×";
-      rm.setAttribute("aria-label", "Remove " + (name || "player"));
-      rm.onclick = () => { S.players.splice(i,1); save(); renderPlayers(); };
+      rm.setAttribute("aria-label", (night ? "Sit out " : "Remove ") + (name || "player"));
+      rm.onclick = () => { S.players.splice(i,1); S.playerIds.splice(i,1); save(); renderPlayers(); };
       row.appendChild(rm);
     }
     box.appendChild(row);
   });
   $("addPlayer").hidden = S.players.length >= 8;
+  $("addPlayer").textContent = night ? "Add someone new" : "Add player";
+  renderSitOut();
 }
-$("addPlayer").onclick = () => { S.players.push("Player " + (S.players.length+1)); save(); renderPlayers(); };
-
+function movePlayer(a, b){
+  [S.players[a], S.players[b]] = [S.players[b], S.players[a]];
+  [S.playerIds[a], S.playerIds[b]] = [S.playerIds[b], S.playerIds[a]];
+  save(); renderPlayers();
+}
+$("addPlayer").onclick = () => {
+  if (nightOn()) {
+    const id = S.night.nextId++, nm = "Player " + (S.night.roster.length + 1);
+    S.night.roster.push({ id, name:nm }); S.players.push(nm); S.playerIds.push(id);
+  } else { S.players.push("Player " + (S.players.length+1)); S.playerIds.push(null); }
+  save(); renderPlayers();
+};
 function renderPacks(){
   const box = $("packs"); box.innerHTML = "";
   Object.keys(PACKS).forEach(name => {
@@ -1306,6 +1423,12 @@ $("revealBtn").onclick = () => {
     ? (k === 1 ? "Imposter, you get one guess at the secret word. Guess it and you still win." : "Imposters, you get one guess at the secret word. Guess it and you still win.")
     : "The imposters who got away win this round.";
   if (all) ding(); else buzzer();
+  const crew = S.players.map((_, i) => i).filter(i => !G.imps.has(i));
+  if (!all) nightRecord("impAgain", [...G.imps].filter(i => !G.votes.has(i)).map(i => ({ i, pts:2 })));
+  else nightAsk("impAgain", k === 1 ? "Did the imposter guess the secret word?" : "Did the imposters guess the secret word?", [
+    { label: k === 1 ? "No, the group wins" : "No, the group wins", awards: crew.map(i => ({ i, pts:2 })) },
+    { label: k === 1 ? "Yes, the imposter wins" : "Yes, the imposters win", awards: [...G.imps].map(i => ({ i, pts:2 })) }
+  ]);
   show("impResult");
 };
 $("impAgain").onclick = impRound;
@@ -1480,6 +1603,7 @@ function revealNext(){
       ? "It made it all the way around!"
       : last.type === "guess" ? `Started as “${book.word}” and ended as “${last.text}”.` : `Started as “${book.word}.” How close is that last drawing?`;
     $("trList").appendChild(end);
+    if (lastBook) nightRecord("trNext", S.players.map((_, i) => ({ i, pts:1 })));
   }
   $("trNext").textContent = more ? "Show next page" : lastBook ? "Play again" : "Next sketchbook";
   $("trAll").hidden = !more;
@@ -1551,6 +1675,7 @@ function setEnds(){
 function waveStart(){
   G.pool = WAVE[S.wLevel]; G.deck = shuffle(G.pool);
   G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = S.players.length * S.wRounds;
+  G.wInd = S.players.map(() => 0);
   wNewCard(); wPass();
 }
 function wNewCard(){ G.current = draw(); G.target = Math.random() * 100; }
@@ -1626,6 +1751,7 @@ $("wgDone").onclick = () => {
   const d = Math.abs(G.needle - G.target);
   const pts = d <= 4 ? 4 : d <= 10 ? 3 : d <= 16 ? 2 : 0;
   G.wScore += pts;
+  if (pts >= 2) { const g = wGiver(); G.wInd = G.wInd.map((v, i) => v + (i === g ? 2 : 1)); }
   G.wLog.push({ giver:wGiver(), ends:G.current, clue:G.clue, pts });
   $("wrStep").textContent = wStep();
   $("wrPts").textContent = pts ? `+${pts}` : "0 points";
@@ -1648,6 +1774,7 @@ function wFinal(){
     li.querySelector(".w").textContent = `${name(l.giver)}: ${l.clue ? "“" + l.clue + "”" : "a spoken clue"} (${l.ends[0]} to ${l.ends[1]})`;
     list.appendChild(li);
   });
+  nightRecord("wfAgain", placeAwards(G.wInd), "Cluegiver 2, guessers 1 when the guess scores.");
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("wfinal");
 }
@@ -1682,6 +1809,7 @@ function toFinal(){
   const rv = $("review"); rv.innerHTML = "";
   [...new Set(G.missed)].forEach(w => { const s = document.createElement("span"); s.textContent = w; rv.appendChild(s); });
   $("reviewWrap").hidden = !G.missed.length;
+  nightRecord("playAgain", placeAwards(G.scores));
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("final");
 }
@@ -1871,6 +1999,7 @@ function fbFinal(){
   $("ftList").innerHTML = "";
   fbScores($("ftScores"));
   G.ftAction = "again"; $("ftNext").textContent = "Play again";
+  nightRecord("ftNext", a === b ? S.players.map((_, i) => ({ i, pts:1 })) : G.teams[a > b ? 0 : 1].map(i => ({ i, pts:2 })));
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("fbturn");
 }
@@ -1991,6 +2120,7 @@ function spyEnd(winner, reason){
   $("seReason").textContent = reason;
   $("seWin").textContent = `${TEAMS[winner]} wins!`;
   spyKeyGrid($("seGrid"), false);
+  nightRecord("seAgain", G.teams[winner].map(i => ({ i, pts:2 })));
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("spyend");
 }
@@ -2009,6 +2139,231 @@ const ICON = {
 };
 const ICON_BG = { act:"#FFC83D", taboo:"#F0588F", imp:"#8FE3C0", tele:"#A9B8FF", wave:"#FFB347", fb:"#C9A7FF", spy:"#8CD3E6" };
 document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = ICON[el.dataset.icon]);
+
+/* ---------- Game night ---------- */
+// S.night = { started, last, ended, nextId, roster:[{id,name}], log:[{key, mode, label, players:[id], awards:[{id,pts,raw}], note}] }
+// Totals are always derived from the log, so "don't count" is just removing an entry.
+const NIGHT_STALE_MS = 12 * 60 * 60 * 1000;
+const PLACE_PTS = [3, 2, 1];
+function nightOn(){ return !!(S.night && !S.night.ended); }
+function rosterName(id){ const r = S.night && S.night.roster.find(p => p.id === id); return r ? (r.name.trim() || "Player") : "Player"; }
+function nightRename(id, nm){ const r = id != null && S.night.roster.find(p => p.id === id); if (r) r.name = nm; }
+
+// Keep this game's player list pointing at roster members.
+function nightSyncPlayers(){
+  const ids = new Set(S.night.roster.map(p => p.id));
+  const keep = S.players.map((n, i) => [n, S.playerIds[i]]).filter(([, id]) => ids.has(id));
+  if (keep.length >= 2) { S.players = keep.map(([, id]) => rosterName(id)); S.playerIds = keep.map(([, id]) => id); }
+  else { const r = S.night.roster.slice(0, 8); S.players = r.map(p => rosterName(p.id)); S.playerIds = r.map(p => p.id); }
+  save();
+}
+function renderSitOut(){
+  const wrap = $("sitOut"), chips = $("sitOutChips");
+  if (!nightOn()) { wrap.hidden = true; return; }
+  const out = S.night.roster.filter(p => !S.playerIds.includes(p.id));
+  wrap.hidden = false; chips.innerHTML = "";
+  $("sitOutNote").textContent = out.length
+    ? "Sitting out this game. They keep their night points. Tap to add back:"
+    : "Game night is on. Tap × to sit someone out of this game; they keep their night points.";
+  out.forEach(p => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = "+ " + rosterName(p.id);
+    b.disabled = S.players.length >= 8;
+    b.onclick = () => { S.players.push(rosterName(p.id)); S.playerIds.push(p.id); save(); renderPlayers(); };
+    chips.appendChild(b);
+  });
+}
+
+// 1st/2nd/3rd from a list of in-game scores. Ties share the place.
+function placeAwards(scores){
+  if (!scores.length || Math.max(...scores) <= 0) return [];
+  return scores.map((s, i) => ({ i, raw:s, pts: PLACE_PTS[scores.filter(x => x > s).length] || 0 }));
+}
+function nightPlace(beforeId){
+  const nb = $("nightBox"), ref = $(beforeId);
+  ref.parentElement.insertBefore(nb, ref);
+  G.nightBoxFor = ref.closest("section").id; nb.hidden = false;
+}
+function nightRecord(beforeId, awards, note){
+  if (!nightOn()) return;
+  const e = {
+    key: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    mode: G.mode, label: INTROS[G.mode][0], t: Date.now(),
+    players: S.playerIds.filter(id => id != null),
+    awards: awards.filter(a => a.pts > 0 && S.playerIds[a.i] != null).map(a => ({ id:S.playerIds[a.i], pts:a.pts, raw:a.raw })),
+    note: note || ""
+  };
+  S.night.log.push(e); S.night.last = Date.now(); save();
+  G.nightEntry = e; G.nightCounted = true;
+  nightPlace(beforeId); renderNightBox();
+}
+function nightAsk(beforeId, question, choices){
+  if (!nightOn()) return;
+  const nb = $("nightBox");
+  nb.innerHTML = `<p class="nb-head">🏆 Game night</p><p class="nb-q"></p><div class="nb-choices"></div>`;
+  nb.querySelector(".nb-q").textContent = question;
+  choices.forEach(c => {
+    const b = document.createElement("button"); b.textContent = c.label;
+    b.onclick = () => nightRecord(beforeId, c.awards);
+    nb.querySelector(".nb-choices").appendChild(b);
+  });
+  nightPlace(beforeId);
+}
+function renderNightBox(){
+  const nb = $("nightBox"), e = G.nightEntry;
+  nb.innerHTML = `<p class="nb-head">🏆 Game night</p>`;
+  if (G.nightCounted) {
+    if (e.awards.length) {
+      const ul = document.createElement("ul");
+      e.awards.slice().sort((a, b) => b.pts - a.pts).forEach(a => {
+        const li = document.createElement("li"), s = document.createElement("span"), b = document.createElement("b");
+        s.textContent = rosterName(a.id) + (a.raw != null ? ` (${a.raw} in game)` : ""); b.textContent = "+" + a.pts;
+        li.append(s, b); ul.appendChild(li);
+      });
+      nb.appendChild(ul);
+    } else nb.insertAdjacentHTML("beforeend", `<p class="note" style="margin-bottom:10px">No night points this game.</p>`);
+  } else nb.insertAdjacentHTML("beforeend", `<p class="note" style="margin-bottom:10px">Not counted toward tonight.</p>`);
+  const links = document.createElement("div"); links.className = "nb-links";
+  const tog = document.createElement("button");
+  tog.textContent = G.nightCounted ? "Don’t count this game" : "Count it after all";
+  tog.onclick = () => {
+    if (G.nightCounted) S.night.log = S.night.log.filter(x => x.key !== e.key);
+    else S.night.log.push(e);
+    G.nightCounted = !G.nightCounted; save(); renderNightBox();
+  };
+  const view = document.createElement("button"); view.textContent = "See standings";
+  view.onclick = () => { stopTimer(); openNight(); };
+  links.append(tog, view); nb.appendChild(links);
+}
+
+function nightStandings(){
+  const pts = {}, games = {};
+  S.night.log.forEach(e => {
+    e.players.forEach(id => games[id] = (games[id] || 0) + 1);
+    e.awards.forEach(a => pts[a.id] = (pts[a.id] || 0) + a.pts);
+  });
+  return S.night.roster.map(p => ({ id:p.id, name:rosterName(p.id), pts:pts[p.id] || 0, games:games[p.id] || 0 }))
+    .sort((a, b) => b.pts - a.pts || b.games - a.games || a.name.localeCompare(b.name));
+}
+function nightLeaderText(){
+  const st = nightStandings();
+  if (!S.night.log.length || !st[0].pts) return "No points yet";
+  const top = st.filter(r => r.pts === st[0].pts);
+  return top.length > 1 ? `Tied at the top with ${st[0].pts}` : `${top[0].name} leads with ${st[0].pts}`;
+}
+
+function renderNightStrip(){
+  const el = $("nightStrip"); el.innerHTML = "";
+  if (nightOn() && G.nightStale) {
+    el.innerHTML = `<div class="night-stale"><p><b>Game night from earlier</b><br><span class="note"></span></p><div class="row"><button class="go">Continue</button><button>New night</button></div></div>`;
+    el.querySelector(".note").textContent = nightLeaderText() + ". Pick up where you left off?";
+    const [go, fresh] = el.querySelectorAll("button");
+    go.onclick = () => { G.nightStale = false; S.night.last = Date.now(); save(); renderNightStrip(); };
+    fresh.onclick = () => { G.nightStale = false; openNightStart(); };
+    return;
+  }
+  if (nightOn()) {
+    const b = document.createElement("button"); b.className = "night-live";
+    b.innerHTML = `<span class="trophy" aria-hidden="true">🏆</span><span><b>Game night</b><small></small></span><span class="arrow">View →</span>`;
+    b.querySelector("small").textContent = nightLeaderText();
+    b.onclick = openNight; el.appendChild(b); return;
+  }
+  const b = document.createElement("button"); b.className = "night-start";
+  b.innerHTML = `<span class="trophy" aria-hidden="true">🏆</span><span><b>Start game night</b><small>Keep score across every game you play tonight</small></span><span class="arrow">→</span>`;
+  b.onclick = openNightStart; el.appendChild(b);
+  if (S.night && S.night.ended && S.night.log.length) {
+    const l = document.createElement("button"); l.className = "night-link"; l.textContent = "See last game night’s results";
+    l.onclick = openNight; el.appendChild(l);
+  }
+}
+
+// Start screen: confirm who's playing.
+function openNightStart(){
+  G.nightDraft = S.players.map(n => n.trim()).filter(Boolean);
+  while (G.nightDraft.length < 2) G.nightDraft.push("Player " + (G.nightDraft.length + 1));
+  renderDraft(); $("nsError").textContent = ""; show("nightStart");
+}
+function renderDraft(){
+  const box = $("nsList"); box.innerHTML = "";
+  G.nightDraft.forEach((nm, i) => {
+    const row = document.createElement("div"); row.className = "player-row";
+    const inp = document.createElement("input"); inp.type = "text"; inp.value = nm; inp.maxLength = 24;
+    inp.setAttribute("aria-label", "Player " + (i + 1) + " name");
+    inp.addEventListener("input", () => { G.nightDraft[i] = inp.value; });
+    row.appendChild(inp);
+    if (G.nightDraft.length > 2) {
+      const rm = document.createElement("button"); rm.className = "icon-btn"; rm.textContent = "×";
+      rm.setAttribute("aria-label", "Remove " + (nm || "player"));
+      rm.onclick = () => { G.nightDraft.splice(i, 1); renderDraft(); };
+      row.appendChild(rm);
+    }
+    box.appendChild(row);
+  });
+  $("nsAdd").hidden = G.nightDraft.length >= 12;
+}
+$("nsAdd").onclick = () => { G.nightDraft.push("Player " + (G.nightDraft.length + 1)); renderDraft(); };
+$("nsBack").onclick = () => show("home");
+$("nsGo").onclick = () => {
+  const names = G.nightDraft.map(s => s.trim());
+  if (names.some(n => !n)) { $("nsError").textContent = "Give every player a name."; return; }
+  const now = Date.now();
+  S.night = { started:now, last:now, ended:false, nextId:names.length + 1, roster:names.map((name, i) => ({ id:i + 1, name })), log:[] };
+  S.players = names.slice(0, 8); S.playerIds = S.night.roster.slice(0, 8).map(p => p.id);
+  G.nightStale = false; save(); renderPlayers(); show("home");
+};
+
+// Leaderboard screen.
+let nightEndArm = 0;
+function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; renderNight(); show("night"); }
+function renderNight(){
+  const n = S.night, st = nightStandings(), done = n.ended;
+  const played = n.log.length;
+  $("nightTitle").textContent = done ? "Final results" : "Game night";
+  const top = st.filter(r => played && r.pts && r.pts === st[0].pts);
+  $("nightSub").textContent = done
+    ? (top.length === 1 ? `${top[0].name} wins game night! 🏆` : top.length ? `It’s a tie between ${top.map(r => r.name).join(" and ")}!` : "No games were counted.")
+    : `${played} game${played === 1 ? "" : "s"} played so far.`;
+  const ol = $("nightStand"); ol.innerHTML = "";
+  st.forEach(r => {
+    const rank = st.filter(x => x.pts > r.pts).length + 1;
+    const li = document.createElement("li"); if (rank === 1 && r.pts) li.className = "first";
+    li.innerHTML = `<span class="rk"></span><span class="nm"><span></span><small></small></span><span class="pt"></span>`;
+    li.querySelector(".rk").textContent = rank;
+    li.querySelector(".nm span").textContent = r.name;
+    li.querySelector(".nm small").textContent = played ? `${r.games} of ${played} game${played === 1 ? "" : "s"}` : "";
+    li.querySelector(".pt").textContent = r.pts;
+    ol.appendChild(li);
+  });
+  const log = $("nightLog"); log.innerHTML = "";
+  n.log.slice().reverse().forEach(e => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="w"><b></b><small></small></span>`;
+    li.querySelector("b").textContent = e.label;
+    li.querySelector("small").textContent = e.awards.length
+      ? e.awards.slice().sort((a, b) => b.pts - a.pts).map(a => `${rosterName(a.id)} +${a.pts}`).join(" · ")
+      : "No points";
+    log.appendChild(li);
+  });
+  $("nightEmpty").hidden = played > 0;
+  const end = $("nightEnd");
+  end.classList.remove("confirm-end");
+  end.textContent = done ? "Start a new game night" : "End game night";
+}
+$("nightBack").onclick = () => show("home");
+$("nightPlay").onclick = () => show("home");
+$("nightEnd").onclick = () => {
+  const b = $("nightEnd");
+  if (S.night.ended) return openNightStart();
+  if (!nightEndArm) {
+    b.textContent = "Tap again to end the night and crown a winner";
+    nightEndArm = setTimeout(() => { nightEndArm = 0; b.textContent = "End game night"; }, 3000);
+    return;
+  }
+  clearTimeout(nightEndArm); nightEndArm = 0;
+  S.night.ended = true; save();
+  renderNight(); window.scrollTo(0, 0);
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+};
+G.nightStale = nightOn() && Date.now() - S.night.last > NIGHT_STALE_MS;
 
 /* ---------- Init ---------- */
 renderPlayers(); renderPacks(); renderLevel();
