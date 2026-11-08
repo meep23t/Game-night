@@ -57,8 +57,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .home-grid{display:grid;gap:18px}
 /* Game night */
 .night-strip{margin:-6px 0 20px}
-.night-start{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#1E1B3A;color:#FFFFFF;border:3px solid #FFC83D;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
-.night-start:active,.night-live:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
+.night-start{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#1E1B3A;color:#FFFFFF;border:3px solid #1E1B3A;border-radius:18px;box-shadow:none;padding:14px 16px}
+.night-start:active{transform:scale(.98)}
+.night-live:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
 .night-start .trophy,.night-live .trophy{font-size:28px;line-height:1;flex:none}
 .night-start b,.night-live b{display:block;font-size:19px;font-weight:800}
 .night-start small,.night-live small{display:block;font-size:15px;font-weight:500;opacity:.85}
