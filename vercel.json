@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "game-night-seven-alpha.vercel.app" }],
+      "destination": "https://ourgamenight.vercel.app/:path*",
+      "permanent": true
+    }
+  ]
+}
