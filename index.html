@@ -95,9 +95,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-box ul{list-style:none;padding:0;margin:0 0 10px}
 .night-box li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:16px}
 .night-box li b{color:var(--mint);font-variant-numeric:tabular-nums}
-.night-box .nb-q{margin-bottom:10px}
-.night-box .nb-choices{display:grid;gap:8px}
-.night-box .nb-choices button{border:2px solid var(--line);border-radius:12px;padding:10px;font-weight:700}
 .night-box .nb-links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .night-box .nb-links button{color:var(--muted);font-weight:600;font-size:15px;text-decoration:underline;padding:4px 0}
 .install{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:5px 6px 5px 8px;margin:-4px 0 6px}
@@ -235,6 +232,11 @@ button:disabled{opacity:.4}
 .game-tile.imp{background:#8FE3C0}
 .role-card{width:100%;min-height:min(46vh,360px);padding:30px 20px;text-align:center;align-items:center;justify-content:center;margin-top:12px}
 .role-tag{font-weight:700;opacity:.75}
+.guess-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 20px}
+.guess-btns button{padding:16px 8px;border-radius:16px;font-weight:800;font-size:18px;border:3px solid #1E1B3A;box-shadow:0 4px 0 var(--shadow);color:#1E1B3A}
+.guess-btns button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+#resGuessYes{background:var(--pink)}
+#resGuessNo{background:#8FE3C0}
 .role-word{font-size:clamp(40px,12vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:6px 0 10px;word-break:break-word}
 .role-hint{font-weight:600;opacity:.85}
 .order{padding-left:30px;margin:18px 0 22px;font-size:19px}
@@ -646,12 +648,18 @@ h3.sub{font-size:20px;margin-top:26px}
 </section>
 
 <section id="impResult" class="center" hidden>
-  <p class="eyebrow">The secret word was</p>
-  <p class="big-name" id="resWord"></p>
-  <p class="eyebrow" id="resCat"></p>
+  <div id="resWordWrap">
+    <p class="eyebrow">The secret word was</p>
+    <p class="big-name" id="resWord"></p>
+    <p class="eyebrow" id="resCat"></p>
+  </div>
   <h3 class="sub" id="resTitle" style="font-size:30px"></h3>
   <ul class="result-list" id="resList" style="text-align:left"></ul>
   <p class="note" id="resNote"></p>
+  <div class="guess-btns" id="resGuess" hidden>
+    <button id="resGuessYes">They guessed it</button>
+    <button id="resGuessNo">They missed it</button>
+  </div>
   <button id="impAgain" class="primary">Play again</button>
 </section>
 
@@ -1425,18 +1433,38 @@ $("revealBtn").onclick = () => {
     li.querySelector(".w").textContent = name(i) + " was an imposter";
     list.appendChild(li);
   });
-  $("resNote").textContent = all
-    ? (k === 1 ? "Imposter, you get one guess at the secret word. Guess it and you still win." : "Imposters, you get one guess at the secret word. Guess it and you still win.")
-    : "The imposters who got away win this round.";
-  if (all) ding(); else buzzer();
-  const crew = S.players.map((_, i) => i).filter(i => !G.imps.has(i));
-  if (!all) nightRecord("impAgain", [...G.imps].filter(i => !G.votes.has(i)).map(i => ({ i, pts:2 })));
-  else nightAsk("impAgain", k === 1 ? "Did the imposter guess the secret word?" : "Did the imposters guess the secret word?", [
-    { label: k === 1 ? "No, the group wins" : "No, the group wins", awards: crew.map(i => ({ i, pts:2 })) },
-    { label: k === 1 ? "Yes, the imposter wins" : "Yes, the imposters win", awards: [...G.imps].map(i => ({ i, pts:2 })) }
-  ]);
+  if (all) {
+    // Keep the word hidden until the caught imposter(s) have made their guess.
+    $("resWordWrap").hidden = true; $("resGuess").hidden = false; $("impAgain").hidden = true;
+    $("resNote").textContent = k === 1
+      ? "Imposter, you get one guess at the secret word. Say it out loud. Everyone else: did they get it right?"
+      : "Imposters, you get one guess at the secret word. Say it out loud. Everyone else: did they get it right?";
+    ding();
+  } else {
+    $("resWordWrap").hidden = false; $("resGuess").hidden = true; $("impAgain").hidden = false;
+    $("resNote").textContent = "The imposters who got away win this round.";
+    buzzer();
+    nightRecord("impAgain", [...G.imps].filter(i => !G.votes.has(i)).map(i => ({ i, pts:2 })));
+  }
   show("impResult");
 };
+function impGuessed(right){
+  const k = G.imps.size, imps = [...G.imps];
+  $("resWordWrap").hidden = false; $("resGuess").hidden = true; $("impAgain").hidden = false;
+  if (right) {
+    $("resTitle").textContent = k === 1 ? "The imposter guessed the word!" : "The imposters guessed the word!";
+    $("resNote").textContent = k === 1 ? "Caught, but they still win this round." : "Caught, but they still win this round.";
+    buzzer();
+  } else {
+    $("resNote").textContent = k === 1 ? "Wrong guess. The group wins this round!" : "Wrong guess. The group wins this round!";
+    ding();
+  }
+  const winners = right ? imps : S.players.map((_, i) => i).filter(i => !G.imps.has(i));
+  nightRecord("impAgain", winners.map(i => ({ i, pts:2 })));
+  window.scrollTo(0, 0);
+}
+$("resGuessYes").onclick = () => impGuessed(true);
+$("resGuessNo").onclick = () => impGuessed(false);
 $("impAgain").onclick = impRound;
 
 /* ---------- Sketch chain ---------- */
@@ -2201,18 +2229,6 @@ function nightRecord(beforeId, awards, note){
   S.night.log.push(e); S.night.last = Date.now(); save();
   G.nightEntry = e; G.nightCounted = true;
   nightPlace(beforeId); renderNightBox();
-}
-function nightAsk(beforeId, question, choices){
-  if (!nightOn()) return;
-  const nb = $("nightBox");
-  nb.innerHTML = `<p class="nb-head">🏆 Game night</p><p class="nb-q"></p><div class="nb-choices"></div>`;
-  nb.querySelector(".nb-q").textContent = question;
-  choices.forEach(c => {
-    const b = document.createElement("button"); b.textContent = c.label;
-    b.onclick = () => nightRecord(beforeId, c.awards);
-    nb.querySelector(".nb-choices").appendChild(b);
-  });
-  nightPlace(beforeId);
 }
 function renderNightBox(){
   const nb = $("nightBox"), e = G.nightEntry;
