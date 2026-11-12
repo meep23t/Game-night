@@ -256,6 +256,21 @@ button:disabled{opacity:.4}
 .disc small{display:block;color:var(--muted);font-size:13px}
 .disc-time{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
 .vote-list{display:grid;gap:10px;margin:20px 0}
+.tally{display:grid;gap:8px;margin:18px 0 12px}
+.tally .row{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 10px 8px 16px}
+.tally .row.lead{border-color:var(--red);background:#FFE9E6;color:#1E1B3A}
+.tally .nm{flex:1;min-width:0;font-weight:700;font-size:19px;overflow-wrap:anywhere}
+.tally .nm small{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:var(--red);color:#fff;font-size:12px;font-weight:800;vertical-align:2px;white-space:nowrap}
+.tally .st{width:44px;height:44px;flex:none;border-radius:12px;border:2px solid var(--line);font-size:22px;font-weight:700;color:var(--ink);background:var(--paper)}
+.tally .row.lead .st{color:#1E1B3A;background:#fff}
+.tally .st:disabled{opacity:.35}
+.tally .ct{width:30px;flex:none;text-align:center;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.tally .ct.zero{opacity:.45;font-weight:600}
+.count-line{text-align:center;font-weight:700;margin:4px 0 14px}
+.count-line .ok{color:var(--mint)}
+.tie-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.tie-btns button{border:2px solid var(--line);border-radius:14px;padding:14px 10px;font-weight:800;font-size:18px;background:var(--surface)}
+.tie-btns button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
 .vote-list button{border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:700;font-size:19px;text-align:left}
 .vote-list button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
 .vote-list .name-btn{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface)}
@@ -699,9 +714,14 @@ h3.sub{font-size:20px;margin-top:26px}
 </section>
 
 <section id="vote" hidden>
-  <p class="big-name center">Who’s the imposter?</p>
+  <p class="big-name center" style="font-size:clamp(34px,10vw,46px)">Count the votes</p>
   <p class="note center" id="voteNote"></p>
-  <div class="vote-list" id="voteList"></div>
+  <div class="tally" id="voteList"></div>
+  <p class="count-line" id="voteCount"></p>
+  <div id="voteTie" hidden>
+    <p class="count-line" id="voteTieMsg"></p>
+    <div class="tie-btns" id="voteTieBtns"></div>
+  </div>
   <button id="revealBtn" class="primary" disabled>Reveal</button>
 </section>
 
@@ -1559,28 +1579,63 @@ $("discBtn").onclick = () => {
 };
 $("toVote").onclick = () => {
   stopTimer();
-  const k = G.imps.size; G.votes = new Set();
-  $("voteNote").textContent = k === 1 ? "Tap the player the group voted for." : `Tap the ${k} players the group voted for.`;
+  G.tally = S.players.map(() => 0); G.tiePick = new Set();
+  renderVote(); show("vote");
+};
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]); }
+// Who the votes accuse: the top k (k = number of imposters). A tie at the cut-off is settled by the group.
+function voteOutcome(){
+  const k = G.imps.size, t = G.tally, total = t.reduce((a, b) => a + b, 0);
+  const order = t.map((_, i) => i).filter(i => t[i] > 0).sort((a, b) => t[b] - t[a] || a - b);
+  if (order.length <= k) return { total, sure: order, tied: [], need: 0 };
+  const cut = t[order[k - 1]];
+  const sure = order.filter(i => t[i] > cut), tied = order.filter(i => t[i] === cut), need = k - sure.length;
+  return tied.length === need ? { total, sure: sure.concat(tied), tied: [], need: 0 } : { total, sure, tied, need };
+}
+function renderVote(){
+  const k = G.imps.size, n = S.players.length, o = voteOutcome();
+  G.tiePick = new Set([...G.tiePick].filter(i => o.tied.includes(i)));
+  $("voteNote").textContent = k === 1
+    ? "On the count of three, everyone points at who they think the imposter is. Tap + for each vote."
+    : `On the count of three, everyone points at who they think an imposter is. Tap + for each vote. The top ${k} are accused.`;
   const box = $("voteList"); box.innerHTML = "";
   S.players.forEach((_, i) => {
-    const b = document.createElement("button"); b.textContent = name(i); b.setAttribute("aria-pressed", false);
-    b.onclick = () => {
-      if (G.votes.has(i)) G.votes.delete(i);
-      else {
-        if (G.votes.size >= k) {
-          if (k !== 1) return;
-          G.votes.clear(); box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", false));
-        }
-        G.votes.add(i);
-      }
-      b.setAttribute("aria-pressed", G.votes.has(i));
-      $("revealBtn").disabled = G.votes.size !== k;
-    };
-    box.appendChild(b);
+    const c = G.tally[i], lead = o.sure.includes(i) || o.tied.includes(i);
+    const row = document.createElement("div"); row.className = "row" + (lead ? " lead" : "");
+    row.innerHTML = `<span class="nm"></span><button class="st" aria-label="One less vote for ${esc(name(i))}">−</button><span class="ct${c ? "" : " zero"}">${c}</span><button class="st" aria-label="One more vote for ${esc(name(i))}">+</button>`;
+    const nm = row.querySelector(".nm"); nm.textContent = name(i);
+    if (lead) { const tag = document.createElement("small"); tag.textContent = o.tied.includes(i) ? "Tied" : k === 1 ? "Most votes" : "Accused"; nm.appendChild(tag); }
+    const [minus, plus] = row.querySelectorAll("button");
+    minus.disabled = !c;
+    minus.onclick = () => { G.tally[i] = Math.max(0, c - 1); renderVote(); };
+    plus.onclick = () => { G.tally[i] = c + 1; renderVote(); };
+    box.appendChild(row);
   });
-  $("revealBtn").disabled = true;
-  show("vote");
-};
+  $("voteCount").innerHTML = o.total >= n ? `<span class="ok">✓</span> ${o.total} of ${n} votes counted` : `${o.total} of ${n} votes counted`;
+  const tieBox = $("voteTie"), btns = $("voteTieBtns");
+  tieBox.hidden = !o.tied.length; btns.innerHTML = "";
+  if (o.tied.length) {
+    const names = o.tied.map(name), list = names.length === 2 ? names.join(" and ") : names.slice(0, -1).join(", ") + " and " + names.at(-1);
+    $("voteTieMsg").textContent = `It’s a tie between ${list}. Tap the ${o.need === 1 ? "one" : o.need} the group goes with:`;
+    o.tied.forEach(i => {
+      const b = document.createElement("button"); b.textContent = name(i); b.setAttribute("aria-pressed", G.tiePick.has(i));
+      b.onclick = () => {
+        if (G.tiePick.has(i)) G.tiePick.delete(i);
+        else { if (o.need === 1) G.tiePick.clear(); else if (G.tiePick.size >= o.need) return; G.tiePick.add(i); }
+        renderVote();
+      };
+      btns.appendChild(b);
+    });
+  }
+  const settled = !o.tied.length || G.tiePick.size === o.need;
+  const accused = settled ? o.sure.concat([...G.tiePick]) : [];
+  G.votes = new Set(accused);
+  const rb = $("revealBtn");
+  rb.disabled = !o.total || !settled;
+  rb.textContent = !accused.length ? "Reveal" : accused.length === 1
+    ? `Reveal: is ${name(accused[0])} the imposter?`
+    : `Reveal: ${accused.map(name).join(" and ")}?`;
+}
 $("revealBtn").onclick = () => {
   const k = G.imps.size;
   const caught = [...G.imps].filter(i => G.votes.has(i)).length;
