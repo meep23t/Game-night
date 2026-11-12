@@ -639,6 +639,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>Put the phone in the middle. There are two teams, and each has a spymaster. Only spymasters may look at the secret key, which shows which words belong to each team.</li>
+        <li>Spymasters, sit next to each other so you can look at the key together.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps Reveal. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap End turn.</li>
         <li>Watch out for the trap card! Reveal it and your team loses right away.</li>
@@ -930,9 +931,9 @@ h3.sub{font-size:20px;margin-top:26px}
 
 <section id="spyround" class="center" hidden>
   <p class="eyebrow">New board</p>
-  <p class="big-name" id="srFirst"></p>
+  <p class="big-name" id="srFirst" style="font-size:clamp(32px,9vw,44px)"></p>
   <div id="srSpies" style="margin:18px 0 6px"></div>
-  <p class="note">Spymasters: tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
+  <p class="note">Spymasters, sit next to each other so you can look at the key together. Tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
   <button id="srGo" class="primary">Show the board</button>
 </section>
 
@@ -2497,11 +2498,11 @@ function spyKeyGrid(el, cross){
 $("sbKey").onclick = () => {
   $("skWho").textContent = `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
   const t = G.spyTurn, tip = $("skTip");
-  $("skClue").hidden = !G.clue;
+  $("skClue").hidden = !G.clue; tip.hidden = !!G.clue;
   if (G.clue) {
     $("skClueShow").textContent = `${G.clue.word.toUpperCase()} · ${G.clue.num}`;
     $("skGuesses").textContent = `${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left`;
-    tip.textContent = "Keep a straight face while your team guesses!";
+    tip.textContent = "";
   } else {
     tip.innerHTML = "";
     const who = document.createElement("b"); who.textContent = `${TEAMS[t]} spymaster:`;
