@@ -454,7 +454,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Describe the word at the top so your group can guess it. Don’t say the word itself or any word under “Don’t say.”</li>
         <li>No acting, pointing, or “sounds like.” Words only.</li>
         <li>Tap <b>Got it</b> when someone guesses the word for 1 point.</li>
-        <li>Say a forbidden word and the card gets a <b>Buzz</b>: it’s gone and scores no points. Tap <b>Skip</b> to pass on a card the same way.</li>
+        <li>Say a forbidden word and the card gets a <b>Buzz</b>: it’s gone, and you lose 1 point (unless “Lose a point for a buzz” is off under Rules). Tap <b>Skip</b> to pass on a card for free.</li>
         <li>Pick how you’ll catch forbidden words before you start:
           <ul>
             <li><b>Buzzer:</b> the next person in line sits beside the describer, watches the screen, and taps <b>Buzz</b>. They sit out guessing that turn.</li>
@@ -957,6 +957,7 @@ const S = { players:["Player 1","Player 2"], packs:["Everyday actions","School l
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e) {}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 if (!Array.isArray(S.playerIds) || S.playerIds.length !== S.players.length) S.playerIds = S.players.map(() => null);
+if (S.tabooPenalty === undefined) S.tabooPenalty = true;
 
 const $ = id => document.getElementById(id);
 const G = { mode:"act", screen:"home", scores:[], deck:[], pool:[], round:1, turn:0, card:0, turnLog:[], missed:[], current:null, choice:null };
@@ -1078,7 +1079,8 @@ const SETTINGS = {
   ],
   taboo: [
     { key:"turnSec", label:"Turn timer", hint:"For the whole turn", min:30, max:180, step:15, unit:"s" },
-    { key:"rounds", label:"Rounds", hint:"Everyone plays once per round", min:1, max:10, step:1 }
+    { key:"rounds", label:"Rounds", hint:"Everyone plays once per round", min:1, max:10, step:1 },
+    { type:"toggle", key:"tabooPenalty", label:"Lose a point for a buzz", hint:"Saying a forbidden word costs 1 point. Skips are always free" }
   ]
 };
 function renderSettings(){
@@ -1166,7 +1168,8 @@ $("startTurn").onclick = () => {
   G.turnLog = [];
   if (G.mode === "act") { G.card = 1; toPick(); } else tabooStart();
 };
-function turnPts(){ return G.turnLog.reduce((s,r) => s + (r.got ? r.pts : 0), 0); }
+function turnPts(){ return G.turnLog.reduce((s,r) => s + (r.got ? r.pts : r.pen ? -1 : 0), 0); }
+function signed(n){ return n < 0 ? "−" + Math.abs(n) : "+" + n; }
 
 /* ---------- Act it out ---------- */
 function toPick(){
@@ -1250,7 +1253,7 @@ function tabooDeal(){
   $("tWord").textContent = G.current[0];
   const ul = $("tDont"); ul.innerHTML = "";
   G.current[1].forEach(w => { const li = document.createElement("li"); li.textContent = w; ul.appendChild(li); });
-  $("tPts").textContent = `${name(G.turn)}: ${turnPts()} pts`;
+  $("tPts").textContent = `${name(G.turn)}: ${String(turnPts()).replace("-", "−")} pts`;
 }
 function setTButtons(on){ ["tGot","tSkip","tBuzz"].forEach(id => $(id).disabled = !on); }
 function popFx(text, color, hold){
@@ -1260,11 +1263,13 @@ function popFx(text, color, hold){
 function tabooMark(kind){
   if (T.locked || T.paused) return;
   const got = kind === "got";
-  G.turnLog.push({ word:G.current[0], got, pts:1, kind });
+  const pen = kind === "buzz" && S.tabooPenalty;
+  G.turnLog.push({ word:G.current[0], got, pts:1, kind, pen });
   if (got) { G.scores[G.turn] += 1; ding(); popFx("+1","green"); }
   else {
     G.missed.push(G.current[0]);
-    if (kind === "buzz") { tone(180,.35,"sawtooth",.16); popFx("Buzz!","red"); }
+    if (pen) G.scores[G.turn] -= 1;
+    if (kind === "buzz") { tone(180,.35,"sawtooth",.16); popFx(pen ? "Buzz! −1" : "Buzz!","red"); }
     else { tone(300,.15,"triangle",.1); popFx("Skipped","gray"); }
   }
   tabooDeal();
@@ -1827,11 +1832,11 @@ const KIND_LABEL = { skip:"Skipped", buzz:"Buzzed", time:"Time ran out" };
 function isLastTurn(){ return G.round === S.rounds && G.turn === S.players.length - 1; }
 function toSummary(){
   $("sumRound").textContent = `Round ${G.round} of ${S.rounds}`;
-  $("sumTitle").textContent = `${name(G.turn)} +${turnPts()}`;
+  $("sumTitle").textContent = `${name(G.turn)} ${signed(turnPts())}`;
   const list = $("sumList"); list.innerHTML = "";
   G.turnLog.forEach(r => {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="mark ${r.got ? "y" : "n"}">${r.got ? "✓" : "✕"}</span><span class="w"></span><span class="p">${r.got ? "+" + r.pts : KIND_LABEL[r.kind]}</span>`;
+    li.innerHTML = `<span class="mark ${r.got ? "y" : "n"}">${r.got ? "✓" : "✕"}</span><span class="w"></span><span class="p">${r.got ? "+" + r.pts : KIND_LABEL[r.kind] + (r.pen ? " −1" : "")}</span>`;
     li.querySelector(".w").textContent = r.word; list.appendChild(li);
   });
   const nextIdx = (G.turn + 1) % S.players.length;
