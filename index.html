@@ -300,6 +300,10 @@ button:disabled{opacity:.4}
 .turn-pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#1E1B3A}
 .turn-pill.t0{background:#BFD4FF}
 .turn-pill.t1{background:#FFC9C2}
+#spyboard .bar{gap:8px;flex-wrap:wrap;row-gap:6px}
+#spyboard .turn-pill{white-space:nowrap}
+#sbCount{font-size:15px;white-space:nowrap}
+#spyboard .bar:has(.spy-time:not([hidden])) #sbCount{order:3;flex-basis:100%}
 .spy-time{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums;padding:4px 10px;border-radius:10px;border:2px solid var(--line)}
 .spy-time.low{color:var(--red);border-color:var(--red)}
 .team-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
@@ -2289,7 +2293,7 @@ function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
   $("sbTurn").textContent = `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
-  $("sbCount").textContent = `Blue ${spyLeft(0)} left, Pink ${spyLeft(1)} left`;
+  $("sbCount").textContent = `Left: Blue ${spyLeft(0)} · Pink ${spyLeft(1)}`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
