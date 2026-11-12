@@ -243,12 +243,18 @@ button:disabled{opacity:.4}
 #resGuessNo{background:#8FE3C0}
 .role-word{font-size:clamp(40px,12vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:6px 0 10px;word-break:break-word}
 .role-hint{font-weight:600;opacity:.85}
-.order{padding-left:30px;margin:18px 0 22px;font-size:19px}
-.order li{padding:6px 0}
-.order li:first-child{font-weight:800}
-.disc{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.order{padding-left:28px;margin:10px 0 0;font-size:18px}
+.order li{padding:4px 0}
+.order .starts{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:var(--line);color:var(--ink);font-size:13px;font-weight:700;vertical-align:2px}
+#clues > .eyebrow{margin-bottom:14px}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.step h3{display:flex;align-items:center;gap:10px;font-size:20px;margin-bottom:4px}
+.step .num{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--cobalt);color:var(--on-cobalt);font-size:15px;font-weight:800}
+.step .note{margin:0}
+.disc-label{font-weight:700;color:var(--muted)}
+.disc{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
 .disc small{display:block;color:var(--muted);font-size:13px}
-.disc-time{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums}
+.disc-time{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
 .vote-list{display:grid;gap:10px;margin:20px 0}
 .vote-list button{border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:700;font-size:19px;text-align:left}
 .vote-list button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
@@ -671,15 +677,25 @@ h3.sub{font-size:20px;margin-top:26px}
 </section>
 
 <section id="clues" hidden>
-  <p class="eyebrow center">Everyone has seen their word</p>
-  <p class="big-name center" id="firstName"></p>
-  <p class="note center">goes first. Go around once in this order, one clue each.</p>
-  <ol class="order" id="order"></ol>
-  <div class="block" id="discBlock">
-    <div class="disc"><div><b>Discussion timer</b><small>Optional, before the vote</small></div><span class="disc-time" id="discTime"></span></div>
-    <button id="discBtn" class="ghost" style="margin-top:12px;border-style:solid;color:var(--ink)">Start timer</button>
+  <p class="eyebrow center">Everyone has seen their word. Put the phone down.</p>
+  <div class="step">
+    <h3><span class="num">1</span>Give clues</h3>
+    <p class="note">Go around once in this order. Each person says one clue out loud.</p>
+    <ol class="order" id="order"></ol>
   </div>
-  <button id="toVote" class="primary">Time to vote</button>
+  <div class="step">
+    <h3><span class="num">2</span>Discuss</h3>
+    <p class="note">Talk it over: who do you think is the imposter?</p>
+    <div id="discBlock">
+      <div class="disc"><span class="disc-label">Discussion timer</span><span class="disc-time" id="discTime"></span></div>
+      <button id="discBtn" class="ghost" style="margin-top:10px;border-style:solid;color:var(--ink)">Start discussion timer</button>
+    </div>
+  </div>
+  <div class="step">
+    <h3><span class="num">3</span>Vote</h3>
+    <p class="note">Agree out loud on who to vote for, then enter it on the phone.</p>
+  </div>
+  <button id="toVote" class="primary">Enter the vote</button>
 </section>
 
 <section id="vote" hidden>
@@ -1438,7 +1454,7 @@ INTROS.imp = ["Imposter", "Everyone gets the same secret word except the imposte
 for (const [k,v] of Object.entries({ impPacks:["Food","Animals","Places"], imposters:1, impHint:true, impFirst:true, discSec:120, discOn:true, impRandOrder:false })) if (S[k] === undefined) S[k] = v;
 SETTINGS.imp = [
   { key:"imposters", label:"Imposters", hint:"Picked at random each game", min:1, max:3, step:1 },
-  { type:"toggle", key:"discOn", label:"Discussion timer", hint:"Show a timer before the vote" },
+  { type:"toggle", key:"discOn", label:"Discussion timer", hint:"For talking it over after clues, before the vote" },
   { key:"discSec", label:"Timer length", hint:"Used when the timer is on", min:30, max:300, step:30, unit:"s" },
   { type:"toggle", key:"impHint", label:"Give imposters a hint", hint:"They see the category" },
   { type:"toggle", key:"impFirst", label:"Imposter can go first", hint:"Off means a non-imposter always starts" },
@@ -1519,13 +1535,16 @@ $("toCluesBtn").onclick = toClues;
 function fmt(ms){ const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
 function toClues(){
   const n = S.players.length;
-  $("firstName").textContent = name(G.order[0]);
   const ol = $("order"); ol.innerHTML = "";
-  G.order.forEach(i => { const li = document.createElement("li"); li.textContent = name(i); ol.appendChild(li); });
+  G.order.forEach((i, k) => {
+    const li = document.createElement("li"); li.textContent = name(i);
+    if (k === 0) { const t = document.createElement("span"); t.className = "starts"; t.textContent = "starts"; li.appendChild(t); }
+    ol.appendChild(li);
+  });
   G.discState = "idle";
   $("discBlock").hidden = !S.discOn;
   $("discTime").textContent = fmt(S.discSec * 1000);
-  $("discBtn").textContent = "Start timer";
+  $("discBtn").textContent = "Start discussion timer";
   show("clues");
 }
 $("discBtn").onclick = () => {
