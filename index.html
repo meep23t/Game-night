@@ -293,9 +293,18 @@ button:disabled{opacity:.4}
 .spy-card.r-by{background:#EDE6D6;border-color:#B9AE95;color:#1E1B3A}
 .spy-card.r-trap{background:#1E1B3A;border-color:#1E1B3A;color:#fff}
 .spy-card.done{opacity:.35;text-decoration:line-through}
+.estimate{margin:4px 0 14px;text-align:center}
+.estimate p{font-weight:700;color:var(--ink)}
+.estimate p small{display:block;font-weight:500;color:var(--muted);font-size:14px;margin-top:2px}
 .turn-pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#1E1B3A}
 .turn-pill.t0{background:#BFD4FF}
 .turn-pill.t1{background:#FFC9C2}
+#spyboard .bar{gap:8px;flex-wrap:wrap;row-gap:6px}
+#spyboard .turn-pill{white-space:nowrap}
+#sbCount{font-size:15px;white-space:nowrap}
+#spyboard .bar:has(.spy-time:not([hidden])) #sbCount{order:3;flex-basis:100%}
+.spy-time{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums;padding:4px 10px;border-radius:10px;border:2px solid var(--line)}
+.spy-time.low{color:var(--red);border-color:var(--red)}
 .team-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
 .team-row:last-child{border-bottom:0}
 .team-row .nm{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
@@ -587,6 +596,9 @@ h3.sub{font-size:20px;margin-top:26px}
     </details>
   </div>
 
+  <div class="estimate" id="estimate">
+    <p id="estText"></p>
+  </div>
   <button id="startGame" class="primary">Start game</button>
   <p id="setupError" class="error" role="alert"></p>
 </section>
@@ -859,7 +871,7 @@ h3.sub{font-size:20px;margin-top:26px}
 </section>
 
 <section id="spyboard" hidden>
-  <div class="bar"><span class="turn-pill" id="sbTurn"></span><span id="sbCount"></span></div>
+  <div class="bar"><span class="turn-pill" id="sbTurn"></span><span id="sbCount"></span><span class="spy-time" id="sbTime" hidden></span></div>
   <div class="spy-grid" id="sbGrid"></div>
   <p class="note center" id="sbMsg" style="min-height:1.4em;margin:4px 0 10px"></p>
   <button id="sbReveal" class="primary" hidden></button>
@@ -1013,13 +1025,59 @@ function show(id){
   if (id === "home") renderNightStrip();
   resetRestart(); window.scrollTo(0,0);
 }
-const PLAYER_RANGE = { act:[2, 8], taboo:[2, 8], fb:[4, 8], tele:[3, 8], wave:[2, 8], imp:[3, 8], spy:[4, 8] };
+const MAX_PLAYERS = 12;
+const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[4, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[4, 12] };
 const TILE_MODE = { goAct:"act", goTaboo:"taboo", goFb:"fb", goTele:"tele", goWave:"wave", goImp:"imp", goSpy:"spy" };
 Object.entries(TILE_MODE).forEach(([id, m]) => {
   const [lo, hi] = PLAYER_RANGE[m], c = document.createElement("span");
   c.className = "ppl"; c.textContent = `👥 ${lo}–${hi}`; c.setAttribute("aria-label", `${lo} to ${hi} players`);
   $(id).querySelector(".go").after(c);
 });
+/* ---------- Game length estimate ----------
+   Rough [fast, slow] seconds. Fast: people guess/finish at about half the timer.
+   Slow: every timer runs out. Includes passing the phone between turns. */
+function estimate(mode, o){
+  const n = S.players.length, x = Object.assign({}, S, o || {});
+  switch (mode) {
+    case "act": {
+      const turns = n * x.rounds, avg = (x.easy + x.hard) / 2;
+      return [turns * (x.perTurn * (avg * .5 + 6) + 20), turns * (x.perTurn * (avg + 6) + 20)];
+    }
+    case "taboo": { const t = n * x.rounds * (x.turnSec + 20); return [t, t]; }
+    case "fb": {
+      const words = n * x.fbPer, write = x.fbWrite ? n * 40 : 0;
+      const play = s => s + (s / x.fbSec) * 20 + 3 * 20;
+      return [write + play(words * 30), write + play(words * 55)];
+    }
+    case "tele": {
+      const turns = n * x.teleBooks, draws = Math.ceil(turns / 2), guesses = turns - draws;
+      const dFast = x.teleTimerOn ? x.teleSec * .5 : 40, dSlow = x.teleTimerOn ? x.teleSec : 90;
+      const reveal = [turns * 5, turns * 10];
+      return [draws * (dFast + 10) + guesses * 30 + reveal[0], draws * (dSlow + 10) + guesses * 45 + reveal[1]];
+    }
+    case "wave": { const t = n * x.wRounds; return [t * 45, t * 90]; }
+    case "imp": {
+      const base = n * 10 + n * 15 + 30;
+      return x.discOn ? [base + x.discSec * .5, base + x.discSec] : [base + 60, base + 180];
+    }
+    case "spy": {
+      const turns = x.spyBig ? 10 : 8;
+      if (x.spyTimerOn) return [turns * (x.spySec * .5 + 15), turns * (x.spySec + 15)];
+      return x.spyBig ? [12 * 60, 20 * 60] : [8 * 60, 15 * 60];
+    }
+  }
+  return [0, 0];
+}
+function fmtRange([a, b]){
+  const lo = Math.max(1, Math.round(a / 60)), hi = Math.max(1, Math.round(b / 60));
+  return lo === hi ? `about ${lo} min` : `about ${lo}–${hi} min`;
+}
+function renderEstimate(){
+  if (!PLAYER_RANGE[G.mode]) return;
+  const est = estimate(G.mode), n = S.players.length;
+  $("estText").innerHTML = `⏱ ${fmtRange(est)[0].toUpperCase() + fmtRange(est).slice(1)} with ${n} players` +
+    (G.mode === "imp" ? `<small>per round</small>` : G.mode === "spy" ? `<small>per board</small>` : "");
+}
 function openSetup(mode){
   G.mode = mode;
   { const [lo, hi] = PLAYER_RANGE[mode]; $("playerRange").textContent = `${lo}–${hi}`; $("playerRange").setAttribute("aria-label", `${lo} to ${hi} players`); }
@@ -1031,6 +1089,7 @@ function openSetup(mode){
   $("setupIntro").textContent = INTROS[mode][1];
   document.querySelectorAll("[data-for]").forEach(el => el.hidden = el.dataset.for !== mode);
   renderSettings(); $("setupError").textContent = "";
+  renderEstimate();
   show("setup");
 }
 $("goAct").onclick = () => openSetup("act");
@@ -1066,9 +1125,9 @@ function renderPlayers(){
     }
     box.appendChild(row);
   });
-  $("addPlayer").hidden = S.players.length >= 8;
+  $("addPlayer").hidden = S.players.length >= MAX_PLAYERS;
   $("addPlayer").textContent = night ? "Add someone new" : "Add player";
-  renderSitOut(); renderTeams();
+  renderSitOut(); renderTeams(); renderEstimate();
 }
 function movePlayer(a, b){
   [S.players[a], S.players[b]] = [S.players[b], S.players[a]];
@@ -1160,7 +1219,7 @@ function renderSettings(){
       const row = document.createElement("div"); row.className = "setting";
       row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
       const t = row.querySelector("button"); t.setAttribute("aria-label", s.label); t.setAttribute("aria-checked", S[s.key]);
-      t.onclick = () => { S[s.key] = !S[s.key]; t.setAttribute("aria-checked", S[s.key]); save(); if (s.key === "randomTeams") renderTeams(); };
+      t.onclick = () => { S[s.key] = !S[s.key]; t.setAttribute("aria-checked", S[s.key]); save(); if (s.key === "randomTeams") renderTeams(); renderEstimate(); };
       box.appendChild(row); return;
     }
     const row = document.createElement("div"); row.className = "setting";
@@ -1168,8 +1227,8 @@ function renderSettings(){
       <span class="stepper"><button aria-label="Less">−</button><output></output><button aria-label="More">+</button></span>`;
     const [minus, plus] = row.querySelectorAll("button"); const out = row.querySelector("output");
     const draw = () => out.textContent = S[s.key] + (s.unit || "");
-    minus.onclick = () => { S[s.key] = Math.max(s.min, S[s.key] - s.step); draw(); save(); };
-    plus.onclick = () => { S[s.key] = Math.min(s.max, S[s.key] + s.step); draw(); save(); };
+    minus.onclick = () => { S[s.key] = Math.max(s.min, S[s.key] - s.step); draw(); save(); renderEstimate(); };
+    plus.onclick = () => { S[s.key] = Math.min(s.max, S[s.key] + s.step); draw(); save(); renderEstimate(); };
     draw(); box.appendChild(row);
   });
 }
@@ -1566,7 +1625,7 @@ const TELE_HINTS = {
 INTROS.tele = ["Pass the doodle", "Draw it, guess it, draw the guess. Pass the phone around and watch the word change along the way."];
 for (const [k,v] of Object.entries({ teleLevel:1, teleBooks:1, teleTimerOn:true, teleSec:60 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.tele = [
-  { key:"teleBooks", label:"Sketchbooks", hint:"Each starts with a different player. More books, longer game", min:1, max:8, step:1 },
+  { key:"teleBooks", label:"Sketchbooks", hint:"Each starts with a different player. More books, longer game", min:1, max:12, step:1 },
   { type:"toggle", key:"teleTimerOn", label:"Drawing timer", hint:"When time runs out, the drawing is done" },
   { key:"teleSec", label:"Timer length", hint:"Used when the timer is on", min:20, max:180, step:10, unit:"s" }
 ];
@@ -2145,11 +2204,13 @@ function spyPool(level){
   return [...new Set(src.filter(single).map(w => w.toLowerCase()))];
 }
 INTROS.spy = ["Word spies", "Two teams, one secret key. Spymasters give one-word clues to help their team find their words, and avoid the trap!"];
-for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true })) if (S[k] === undefined) S[k] = v;
+for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spyTimerOn:false, spySec:120 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
   { type:"toggle", key:"spyTrap", label:"Trap card", hint:"Reveal it and your team loses" },
-  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams. Off: you pick the teams" }
+  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams. Off: you pick the teams" },
+  { type:"toggle", key:"spyTimerOn", label:"Turn timer", hint:"When time runs out, the turn passes to the other team" },
+  { key:"spySec", label:"Timer length", hint:"Used when the timer is on", min:60, max:300, step:30, unit:"s" }
 ];
 function renderSpyLevel(){
   document.querySelectorAll("#spyLevels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.slevel === S.spyLevel));
@@ -2187,12 +2248,24 @@ function spyDeal(){
   });
   show("spyround");
 }
-$("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); };
+$("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); spyTurnTimer(); };
+// Optional turn timer: when it runs out, the turn passes to the other team.
+function spyTurnTimer(){
+  const el = $("sbTime");
+  if (!S.spyTimerOn) { stopTimer(); el.hidden = true; return; }
+  el.hidden = false; el.classList.remove("low");
+  runTimer(S.spySec * 1000, rem => { el.textContent = fmt(rem); el.classList.toggle("low", rem <= 10000); }, () => {
+    buzzer();
+    G.spyTurn = 1 - G.spyTurn; G.spySel = null;
+    $("sbMsg").textContent = `Time’s up! ${TEAMS[G.spyTurn]}’s spymaster, give your clue.`;
+    renderSpy(); spyTurnTimer();
+  });
+}
 function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
   $("sbTurn").textContent = `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
-  $("sbCount").textContent = `Blue ${spyLeft(0)} left, Pink ${spyLeft(1)} left`;
+  $("sbCount").textContent = `Left: Blue ${spyLeft(0)} · Pink ${spyLeft(1)}`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
@@ -2215,14 +2288,14 @@ $("sbReveal").onclick = () => {
   else {
     tone(220,.3,"triangle",.12);
     $("sbMsg").textContent = c.r === "by" ? "That word belongs to nobody. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`;
-    G.spyTurn = 1 - t;
+    G.spyTurn = 1 - t; renderSpy(); return spyTurnTimer();
   }
   renderSpy();
 };
 $("sbEnd").onclick = () => {
   G.spyTurn = 1 - G.spyTurn; G.spySel = null;
   $("sbMsg").textContent = `${TEAMS[G.spyTurn]}’s spymaster, give your clue.`;
-  renderSpy();
+  renderSpy(); spyTurnTimer();
 };
 function spyKeyGrid(el, cross){
   el.className = "spy-grid c" + (G.spyBig ? 5 : 4); el.innerHTML = "";
@@ -2238,6 +2311,7 @@ $("sbKey").onclick = () => {
 };
 $("skHide").onclick = () => { renderSpy(); show("spyboard"); };
 function spyEnd(winner, reason){
+  stopTimer(); $("sbTime").hidden = true;
   $("seReason").textContent = reason;
   $("seWin").textContent = `${TEAMS[winner]} wins!`;
   spyKeyGrid($("seGrid"), false);
@@ -2275,7 +2349,7 @@ function nightSyncPlayers(){
   const ids = new Set(S.night.roster.map(p => p.id));
   const keep = S.players.map((n, i) => [n, S.playerIds[i]]).filter(([, id]) => ids.has(id));
   if (keep.length >= 2) { S.players = keep.map(([, id]) => rosterName(id)); S.playerIds = keep.map(([, id]) => id); }
-  else { const r = S.night.roster.slice(0, 8); S.players = r.map(p => rosterName(p.id)); S.playerIds = r.map(p => p.id); }
+  else { const r = S.night.roster.slice(0, MAX_PLAYERS); S.players = r.map(p => rosterName(p.id)); S.playerIds = r.map(p => p.id); }
   save();
 }
 function renderSitOut(){
@@ -2288,7 +2362,7 @@ function renderSitOut(){
     : "Game night is on. Tap × to sit someone out of this game; they keep their night points.";
   out.forEach(p => {
     const b = document.createElement("button"); b.className = "chip"; b.textContent = "+ " + rosterName(p.id);
-    b.disabled = S.players.length >= 8;
+    b.disabled = S.players.length >= MAX_PLAYERS;
     b.onclick = () => { S.players.push(rosterName(p.id)); S.playerIds.push(p.id); save(); renderPlayers(); };
     chips.appendChild(b);
   });
@@ -2416,7 +2490,7 @@ $("nsGo").onclick = () => {
   if (names.some(n => !n)) { $("nsError").textContent = "Give every player a name."; return; }
   const now = Date.now();
   S.night = { started:now, last:now, ended:false, nextId:names.length + 1, roster:names.map((name, i) => ({ id:i + 1, name })), log:[] };
-  S.players = names.slice(0, 8); S.playerIds = S.night.roster.slice(0, 8).map(p => p.id);
+  S.players = names.slice(0, MAX_PLAYERS); S.playerIds = S.night.roster.slice(0, MAX_PLAYERS).map(p => p.id);
   G.nightStale = false; save(); renderPlayers(); show("home");
 };
 
