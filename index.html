@@ -334,11 +334,16 @@ button:disabled{opacity:.4}
 .team-row:last-child{border-bottom:0}
 .team-row .nm{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
 .team-seg{display:flex;gap:6px;flex:none}
-.team-row{flex-wrap:wrap;row-gap:8px}
-.team-row .nm{flex:1 1 7em;min-width:7em}
 .team-ctrls{display:flex;gap:6px;margin-left:auto;flex:none}
-.role-btn{flex:none;border:2px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;font-size:14px;color:var(--muted);min-width:96px}
-.role-btn[aria-pressed="true"]{background:#1E1B3A;border-color:#1E1B3A;color:#fff}
+.sm-row{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:10px;text-align:left}
+.sm-row .top{display:flex;align-items:center;gap:10px}
+.sm-row .lbl{flex:1;min-width:0;color:var(--muted);font-weight:600;font-size:15px}
+.sm-row .lbl b{display:block;color:var(--ink);font-size:20px;font-weight:800;overflow-wrap:anywhere}
+.sm-row .chg{flex:none;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--ink)}
+.sm-row .pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sm-row .pick button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--ink)}
+.sm-row .pick button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.sm-row.t0{border-left:8px solid #2B44D6} .sm-row.t1{border-left:8px solid #E2453C}
 .team-seg button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--muted)}
 .team-seg button[aria-pressed="true"].b{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
 .team-seg button[aria-pressed="true"].p{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
@@ -910,7 +915,7 @@ h3.sub{font-size:20px;margin-top:26px}
 <section id="spyround" class="center" hidden>
   <p class="eyebrow">New board</p>
   <p class="big-name" id="srFirst"></p>
-  <ul class="scores" id="srSpies" style="text-align:left"></ul>
+  <div id="srSpies" style="margin:18px 0 6px"></div>
   <p class="note">Spymasters: tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
   <button id="srGo" class="primary">Show the board</button>
 </section>
@@ -1204,11 +1209,6 @@ function teamCheck(){
   for (const k of [0, 1]) if (t[k].length < 2) return `${TEAMS[k]} needs at least 2 players. Move someone over under Teams.`;
   return "";
 }
-if (!S.spyMaster || typeof S.spyMaster !== "object") S.spyMaster = {};
-// Picked spymaster index (within G.teams-style lists) for each team: first flagged player, else the first player.
-function spyMasterIdx(teams){
-  return teams.map(t => { const j = t.findIndex(i => S.spyMaster[S.players[i].trim()]); return j < 0 ? 0 : j; });
-}
 function renderTeams(){
   const blk = $("teamsBlock");
   const on = (G.mode === "fb" || G.mode === "spy") && !S.randomTeams;
@@ -1227,28 +1227,10 @@ function renderTeams(){
     });
     const ctrls = document.createElement("span"); ctrls.className = "team-ctrls"; ctrls.appendChild(seg);
     row.append(n, ctrls);
-    if (G.mode === "spy") {
-      const t = makeTeams(), k = teamOf(i), isSpy = t[k][spyMasterIdx(t)[k]] === i;
-      const r = document.createElement("button"); r.className = "role-btn";
-      r.textContent = isSpy ? "Spymaster" : "Guesser"; r.setAttribute("aria-pressed", isSpy);
-      r.setAttribute("aria-label", `${n.textContent}: ${isSpy ? "spymaster" : "make spymaster"}`);
-      r.onclick = () => {
-        if (isSpy) return;                         // each team always has exactly one spymaster
-        t[k].forEach(j => delete S.spyMaster[S.players[j].trim()]);
-        S.spyMaster[nm.trim()] = true; save(); renderTeams();
-      };
-      ctrls.appendChild(r);
-    }
     box.appendChild(row);
   });
   const t = makeTeams();
-  $("teamsHint").textContent = G.mode === "spy"
-    ? "Tap to put each player on a team, and pick each team’s spymaster. Each team needs at least 2 players."
-    : "Tap to put each player on a team. Each team needs at least 2 players.";
-  if (G.mode === "spy") {
-    const sm = spyMasterIdx(t);
-    $("teamCount").textContent = [0, 1].map(k => `${TEAMS[k]}: ${t[k].length}` + (t[k].length ? ` (spymaster ${name(t[k][sm[k]])})` : "")).join(" · ");
-  } else $("teamCount").textContent = `Team Blue: ${t[0].length} · Team Pink: ${t[1].length}`;
+  $("teamCount").textContent = `Team Blue: ${t[0].length} · Team Pink: ${t[1].length}`;
 }
 
 function renderPacks(){
@@ -2317,7 +2299,7 @@ for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spy
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
   { type:"toggle", key:"spyTrap", label:"Trap card", hint:"Reveal it and your team loses" },
-  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams, with a random spymaster each. Off: you pick teams and spymasters" },
+  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams, with a random spymaster each. Off: you pick the teams" },
   { type:"toggle", key:"spyTimerOn", label:"Turn timer", hint:"When time runs out, the turn passes to the other team" },
   { key:"spySec", label:"Timer length", hint:"Used when the timer is on", min:60, max:300, step:30, unit:"s" }
 ];
@@ -2332,7 +2314,7 @@ $("goSpy").onclick = () => openSetup("spy");
 function spyStart(){
   G.teams = makeTeams();
   // Random teams: random spymaster per team. Otherwise the picked ones. Play again rotates from there.
-  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * t.length)) : spyMasterIdx(G.teams);
+  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * t.length)) : [0, 0];
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){
@@ -2350,14 +2332,36 @@ function spyDeal(){
   G.spyBig = big; G.spyTurn = first; G.spySel = null;
   G.spymasters = [0, 1].map(k => G.teams[k][(G.spyBase[k] + G.spyGame) % G.teams[k].length]);
   $("srFirst").textContent = `${TEAMS[first]} goes first`;
-  const ul = $("srSpies"); ul.innerHTML = "";
-  [0, 1].forEach(k => {
-    const li = document.createElement("li");
-    const s = document.createElement("span"); s.textContent = `${TEAMS[k]} spymaster`;
-    const b2 = document.createElement("b"); b2.textContent = name(G.spymasters[k]);
-    li.append(s, b2); ul.appendChild(li);
-  });
+  G.smOpen = null; renderSpymasters();
   show("spyround");
+}
+// Spymasters are pre-filled (rotating each board); "Change" lets the group pick someone else.
+function renderSpymasters(){
+  const box = $("srSpies"); box.innerHTML = "";
+  [0, 1].forEach(k => {
+    const row = document.createElement("div"); row.className = "sm-row t" + k;
+    row.innerHTML = `<div class="top"><span class="lbl">${TEAMS[k]} spymaster<b></b></span><button class="chg"></button></div>`;
+    row.querySelector("b").textContent = name(G.spymasters[k]);
+    const chg = row.querySelector(".chg");
+    chg.textContent = G.smOpen === k ? "Done" : "Change";
+    chg.setAttribute("aria-label", `${G.smOpen === k ? "Done choosing" : "Change"} ${TEAMS[k]} spymaster`);
+    chg.onclick = () => { G.smOpen = G.smOpen === k ? null : k; renderSpymasters(); };
+    if (G.smOpen === k) {
+      const pick = document.createElement("div"); pick.className = "pick";
+      G.teams[k].forEach((i, j) => {
+        const b = document.createElement("button"); b.textContent = name(i); b.setAttribute("aria-pressed", G.spymasters[k] === i);
+        b.onclick = () => {
+          G.spymasters[k] = i;
+          const len = G.teams[k].length;
+          G.spyBase[k] = ((j - G.spyGame) % len + len) % len;   // Play again rotates on from here
+          G.smOpen = null; renderSpymasters();
+        };
+        pick.appendChild(b);
+      });
+      row.appendChild(pick);
+    }
+    box.appendChild(row);
+  });
 }
 $("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); spyTurnTimer(); };
 // Optional turn timer: when it runs out, the turn passes to the other team.
