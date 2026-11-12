@@ -152,6 +152,8 @@ summary{font-weight:600;cursor:pointer;padding:4px 0}
 .toggle[aria-checked="true"]::after{transform:translateX(24px)}
 .rules{margin:10px 0 0;padding-left:20px}
 .rules li{margin:8px 0}
+.rules ul{margin:6px 0 0;padding-left:18px}
+.rules ul li{margin:6px 0}
 .primary{display:block;width:100%;background:var(--cobalt);color:var(--on-cobalt);font-weight:800;font-size:20px;
   padding:16px;border-radius:16px;box-shadow:0 5px 0 var(--shadow);margin-top:6px}
 .primary:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
@@ -452,7 +454,13 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Describe the word at the top so your group can guess it. Don’t say the word itself or any word under “Don’t say.”</li>
         <li>No acting, pointing, or “sounds like.” Words only.</li>
         <li>Tap <b>Got it</b> when someone guesses the word for 1 point.</li>
-        <li>Tap <b>Buzz</b> if you said a forbidden word, or <b>Skip</b> to pass. Either way the card is gone and scores no points.</li>
+        <li>Say a forbidden word and the card gets a <b>Buzz</b>: it’s gone and scores no points. Tap <b>Skip</b> to pass on a card the same way.</li>
+        <li>Pick how you’ll catch forbidden words before you start:
+          <ul>
+            <li><b>Buzzer:</b> the next person in line sits beside the describer, watches the screen, and taps <b>Buzz</b>. They sit out guessing that turn.</li>
+            <li><b>Honor system:</b> everyone guesses, and the describer taps <b>Buzz</b> on themselves if they slip.</li>
+          </ul>
+        </li>
         <li>One timer covers your whole turn, so get through as many cards as you can.</li>
       </ul>
     </details>
