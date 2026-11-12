@@ -55,6 +55,11 @@ async function noHScroll(p, label) {
   const o = await ev(p, () => ({ sw: document.documentElement.scrollWidth, w: innerWidth }));
   check(`No sideways scrolling: ${label}`, o.sw <= o.w + 1, `${o.sw}px content in ${o.w}px screen`);
 }
+// Word spies: the spymaster types a clue and a number before the team can guess.
+async function giveClue(p, n = 1, word = 'zebrafish') {
+  await ev(p, n => { G.clueNum = n; renderClue(); }, n);
+  await p.fill('#sbClueWord', word); await p.click('#sbClueGo');
+}
 async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail-${name.replace(/[^a-z0-9]+/gi, '-').slice(0, 50)}.png` }); } catch (e) {} }
 
 (async () => {
@@ -419,22 +424,43 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#sbKey');
     check('Spymaster key shows every card’s color', (await p.locator('#skGrid .spy-card').count()) === 16);
     await p.click('#skHide');
+    // clue entry
+    check('Cards are locked until the spymaster gives a clue', await ev(p, () => [...document.querySelectorAll('#sbGrid button')].every(b => b.disabled)) && await p.locator('#sbEnd').isHidden());
+    await p.click('#sbClueGo');
+    check('Blank clue → error', /one-word clue/.test(await txt(p, '#sbClueErr')));
+    await p.fill('#sbClueWord', 'two words'); await p.click('#sbClueGo');
+    check('Clue with a space → error', /One word only/.test(await txt(p, '#sbClueErr')));
+    await p.fill('#sbClueWord', (await ev(p, () => G.board[0].w)).toUpperCase()); await p.click('#sbClueGo');
+    check('Clue that is on the board → error (any capitalisation)', /on the board/.test(await txt(p, '#sbClueErr')));
+    const leftNow = await ev(p, () => spyLeft(G.spyTurn));
+    for (let k = 0; k < 10 && !(await p.locator('#sbNumPlus').isDisabled()); k++) await p.click('#sbNumPlus');
+    check('Number can’t go above the team’s words left', (await txt(p, '#sbNum')) === String(leftNow), `${await txt(p, '#sbNum')} vs ${leftNow}`);
+    for (let k = 0; k < 10 && !(await p.locator('#sbNumMinus').isDisabled()); k++) await p.click('#sbNumMinus');
+    check('…or below 1', (await txt(p, '#sbNum')) === '1');
+    await p.fill('#sbClueWord', 'zebrafish'); await p.click('#sbClueGo');
+    check('Valid clue shows with guesses left (number + 1)', /ZEBRAFISH · 1/.test(await txt(p, '#sbClueOn')) && /2 guesses left/.test(await txt(p, '#sbClueOn')), await txt(p, '#sbClueOn'));
+    const tg = await ev(p, () => G.spyTurn);
+    for (let g = 0; g < 2; g++) { const i = await ev(p, () => G.board.findIndex(c => c.r === G.spyTurn && !c.open)); await p.locator('#sbGrid button').nth(i).click(); await p.click('#sbReveal'); }
+    check('After number + 1 correct guesses the turn passes', (await ev(p, () => G.spyTurn)) === 1 - tg && await p.locator('#sbClueForm').isVisible());
     // wrong guess passes the turn
     const t0 = await ev(p, () => G.spyTurn);
+    await giveClue(p, 1);
     const by = await ev(p, () => G.board.findIndex(c => c.r === 'by'));
     await p.locator('#sbGrid button').nth(by).click(); await p.click('#sbReveal');
     check('Revealing a bystander ends the turn', (await ev(p, () => G.spyTurn)) === 1 - t0);
+    await giveClue(p, 1);
     await p.click('#sbEnd');
     check('"End turn" passes back', (await ev(p, () => G.spyTurn)) === t0);
     // team finds all its words
-    const mine = await ev(p, () => G.board.map((c, i) => [c.r, i]).filter(([r]) => r === G.spyTurn).map(([, i]) => i));
+    await giveClue(p, await ev(p, () => spyLeft(G.spyTurn)));
+    const mine = await ev(p, () => G.board.map((c, i) => [c.r, i, c.open]).filter(([r, , o]) => r === G.spyTurn && !o).map(([, i]) => i));
     for (const i of mine) { await p.locator('#sbGrid button').nth(i).click(); await p.click('#sbReveal'); }
     check('Finding all your words wins', (await screen(p)) === 'spyend' && (await txt(p, '#seWin')).includes(await ev(p, t => TEAMS[t], t0)), await txt(p, '#seWin'));
     const sm1 = await ev(p, () => G.spymasters.join(','));
     await p.click('#seAgain');
     check('Play again rotates the spymasters', (await ev(p, () => G.spymasters.join(','))) !== sm1, `${sm1} → ${await ev(p, () => G.spymasters.join(','))}`);
     // trap
-    await p.click('#srGo');
+    await p.click('#srGo'); await giveClue(p, 1);
     const turn = await ev(p, () => G.spyTurn);
     const trap = await ev(p, () => G.board.findIndex(c => c.r === 'trap'));
     await p.locator('#sbGrid button').nth(trap).click(); await p.click('#sbReveal');
@@ -583,13 +609,16 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.clock.runFor(31000);
     check('Time running out passes the turn', (await ev(p, () => G.spyTurn)) === 1 - t0 && /Time’s up/.test(await txt(p, '#sbMsg')), await txt(p, '#sbMsg'));
     check('…and restarts the clock for the next team', ['1:00', '0:59'].includes(await txt(p, '#sbTime')), await txt(p, '#sbTime'));
+    await giveClue(p, 1);
     await p.clock.runFor(20000);
     await p.click('#sbEnd');
     check('End turn restarts the clock', ['1:00', '0:59'].includes(await txt(p, '#sbTime')), await txt(p, '#sbTime'));
+    await giveClue(p, 1);
     await p.clock.runFor(20000);
     const by = await ev(p, () => G.board.findIndex(c => c.r === 'by' && !c.open));
     await p.locator('#sbGrid button').nth(by).click(); await p.click('#sbReveal');
     check('A wrong guess restarts the clock for the other team', ['1:00', '0:59'].includes(await txt(p, '#sbTime')), await txt(p, '#sbTime'));
+    await giveClue(p, 1);
     const trap = await ev(p, () => G.board.findIndex(c => c.r === 'trap'));
     await p.locator('#sbGrid button').nth(trap).click(); await p.click('#sbReveal');
     const turnAtEnd = await ev(p, () => G.spyTurn);
