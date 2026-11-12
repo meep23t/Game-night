@@ -296,7 +296,6 @@ button:disabled{opacity:.4}
 .estimate{margin:4px 0 14px;text-align:center}
 .estimate p{font-weight:700;color:var(--ink)}
 .estimate p small{display:block;font-weight:500;color:var(--muted);font-size:14px;margin-top:2px}
-.est-short{margin-top:8px;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:700;font-size:15px;color:var(--ink);background:var(--surface)}
 .turn-pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#1E1B3A}
 .turn-pill.t0{background:#BFD4FF}
 .turn-pill.t1{background:#FFC9C2}
@@ -599,7 +598,6 @@ h3.sub{font-size:20px;margin-top:26px}
 
   <div class="estimate" id="estimate">
     <p id="estText"></p>
-    <button id="estShorter" class="est-short" hidden></button>
   </div>
   <button id="startGame" class="primary">Start game</button>
   <p id="setupError" class="error" role="alert"></p>
@@ -1074,37 +1072,11 @@ function fmtRange([a, b]){
   const lo = Math.max(1, Math.round(a / 60)), hi = Math.max(1, Math.round(b / 60));
   return lo === hi ? `about ${lo} min` : `about ${lo}–${hi} min`;
 }
-const LONG_GAME = 25 * 60;
-// The one setting to ease off for each game, in the order to try.
-const SHORTEN = {
-  act:   [["rounds", 1, n => `${n} round${n > 1 ? "s" : ""}`]],
-  taboo: [["rounds", 1, n => `${n} round${n > 1 ? "s" : ""}`]],
-  wave:  [["wRounds", 1, n => `${n} round${n > 1 ? "s" : ""}`]],
-  fb:    [["fbPer", 2, n => `${n} words each`]],
-  tele:  [["teleBooks", 1, n => `${n} sketchbook${n > 1 ? "s" : ""}`], ["teleSec", 30, n => `${n}s to draw`]]
-};
-function shorterOption(mode){
-  for (const [key, min, label] of SHORTEN[mode] || []) {
-    let v = S[key], step = key === "teleSec" ? 10 : 1;
-    while (v - step >= min) {
-      v -= step;
-      const est = estimate(mode, { [key]: v });
-      if (est[1] <= LONG_GAME || v - step < min) return { key, v, label: label(v), est };
-    }
-  }
-  return null;
-}
 function renderEstimate(){
   if (!PLAYER_RANGE[G.mode]) return;
   const est = estimate(G.mode), n = S.players.length;
   $("estText").innerHTML = `⏱ ${fmtRange(est)[0].toUpperCase() + fmtRange(est).slice(1)} with ${n} players` +
     (G.mode === "imp" ? `<small>per round</small>` : G.mode === "spy" ? `<small>per board</small>` : "");
-  const btn = $("estShorter"), opt = est[1] > LONG_GAME ? shorterOption(G.mode) : null;
-  btn.hidden = !opt;
-  if (opt) {
-    btn.textContent = `Make it shorter: ${opt.label}, ${fmtRange(opt.est)}`;
-    btn.onclick = () => { S[opt.key] = opt.v; save(); renderSettings(); renderEstimate(); };
-  }
 }
 function openSetup(mode){
   G.mode = mode;
