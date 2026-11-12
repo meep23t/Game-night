@@ -296,15 +296,6 @@ button:disabled{opacity:.4}
 .turn-pill.t1{background:#FFC9C2}
 .team-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
 .team-row:last-child{border-bottom:0}
-.roster{display:grid;gap:6px;margin:14px 0;text-align:left}
-.roster .r{border-radius:12px;padding:8px 12px;font-size:15px;line-height:1.35;color:#1E1B3A;border:2px solid transparent}
-.roster .r.t0{background:#BFD4FF} .roster .r.t1{background:#FFC9C2}
-.roster .r.on.t0{border-color:#2B44D6} .roster .r.on.t1{border-color:#E2453C}
-.roster .r.dim{opacity:.6}
-.roster .r b{margin-right:6px}
-.roster .r i{font-style:normal;font-size:13px;font-weight:700;opacity:.75}
-.guessers{margin:-2px 0 10px;padding:6px 12px;border-radius:12px;font-size:15px;font-weight:600;color:#1E1B3A}
-.guessers.t0{background:#BFD4FF} .guessers.t1{background:#FFC9C2}
 .team-row .nm{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
 .team-seg{display:flex;gap:6px;flex:none}
 .team-seg button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--muted)}
@@ -829,7 +820,6 @@ h3.sub{font-size:20px;margin-top:26px}
   <p class="eyebrow" id="fpRound"></p>
   <p class="big-name" id="fpName"></p>
   <p class="eyebrow" id="fpTeam"></p>
-  <div class="roster" id="fpRoster"></div>
   <p class="note" id="fpRule" style="margin-top:12px"></p>
   <p class="eyebrow" id="fpLeft"></p>
   <button id="fpGo" class="primary" style="margin-top:18px">Start turn</button>
@@ -838,7 +828,6 @@ h3.sub{font-size:20px;margin-top:26px}
 <section id="fbplay" hidden>
   <div class="bar"><span class="pts" id="fbRuleTag"></span><button class="pause" id="fbPause">Pause</button></div>
   <div class="tbar"><div class="track" id="fbTrack"><i id="fbFill"></i></div><span class="tsec" id="fbSec"></span></div>
-  <p class="guessers" id="fbGuessers"></p>
   <div class="card t-card" id="fbCard">
     <p class="t-word" id="fbWord" style="padding:48px 18px"></p>
     <p class="center" id="fbLeft" style="margin:14px 0;font-weight:600;opacity:.7"></p>
@@ -863,7 +852,6 @@ h3.sub{font-size:20px;margin-top:26px}
   <p class="eyebrow">New board</p>
   <p class="big-name" id="srFirst"></p>
   <ul class="scores" id="srSpies" style="text-align:left"></ul>
-  <div class="roster" id="srRoster"></div>
   <p class="note">Spymasters: tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
   <button id="srGo" class="primary">Show the board</button>
 </section>
@@ -874,7 +862,6 @@ h3.sub{font-size:20px;margin-top:26px}
   <p class="note center" id="sbMsg" style="min-height:1.4em;margin:4px 0 10px"></p>
   <button id="sbReveal" class="primary" hidden></button>
   <div class="spy-tools" style="margin-top:12px"><button class="tool" id="sbKey">Spymaster key</button><button class="tool" id="sbEnd">End turn</button></div>
-  <div class="roster" id="sbRoster"></div>
 </section>
 
 <section id="spykey" hidden>
@@ -1970,22 +1957,6 @@ const FB_ROUNDS = [
   ["Act it out", "No talking at all. Act out the word for your team."]
 ];
 const TEAMS = ["Team Blue", "Team Pink"];
-// Shows both teams' members so nobody forgets who's on their side.
-function teamRoster(el, active, tag){
-  el.innerHTML = "";
-  [0, 1].forEach(k => {
-    const d = document.createElement("div");
-    d.className = `r t${k}` + (active === k ? " on" : active == null ? "" : " dim");
-    const b = document.createElement("b"); b.textContent = TEAMS[k];
-    const s = document.createElement("span");
-    s.innerHTML = G.teams[k].map(i => {
-      const t = tag && tag(i);
-      return esc(name(i)) + (t ? ` <i>(${t})</i>` : "");
-    }).join(", ");
-    d.append(b, s); el.appendChild(d);
-  });
-}
-function esc(s){ return s.replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]); }
 INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then two teams race through the same words three times: describe them, use one word, then act them out."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.fb = [
@@ -2068,7 +2039,6 @@ function fbPass(){
   $("fpRound").textContent = `Round ${G.fbRound} of 3: ${nm}`;
   $("fpName").textContent = name(fbCurrent());
   $("fpTeam").textContent = TEAMS[G.fbTeam];
-  teamRoster($("fpRoster"), G.fbTeam);
   $("fpRule").textContent = rule;
   $("fpLeft").textContent = `${G.bowl.length} word${G.bowl.length === 1 ? "" : "s"} left in the bowl`;
   show("fbpass");
@@ -2080,9 +2050,6 @@ $("fpGo").onclick = () => {
   G.fbLog = []; G.fbEmpty = false;
   $("fbCard").classList.remove("paused"); $("fbPause").textContent = "Pause"; $("fbPop").className = "pop";
   $("fbRuleTag").textContent = FB_ROUNDS[G.fbRound - 1][0];
-  { const me = fbCurrent(), g = $("fbGuessers");
-    g.className = "guessers t" + G.fbTeam;
-    g.textContent = `${TEAMS[G.fbTeam]} guessing: ${G.teams[G.fbTeam].filter(i => i !== me).map(name).join(", ")}`; }
   fbBtns(true); fbShowWord(); show("fbplay");
   runTimer(S.fbSec * 1000, rem => {
     const s = Math.ceil(rem / 1000);
@@ -2208,7 +2175,6 @@ function spyDeal(){
     const b2 = document.createElement("b"); b2.textContent = name(G.spymasters[k]);
     li.append(s, b2); ul.appendChild(li);
   });
-  teamRoster($("srRoster"), null, i => G.spymasters.includes(i) ? "spymaster" : "");
   show("spyround");
 }
 $("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); };
@@ -2216,7 +2182,6 @@ function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
   $("sbTurn").textContent = `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
-  teamRoster($("sbRoster"), t, i => G.spymasters.includes(i) ? "spymaster" : "");
   $("sbCount").textContent = `Blue ${spyLeft(0)} left, Pink ${spyLeft(1)} left`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
