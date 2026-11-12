@@ -1,0 +1,11 @@
+{
+  "name": "game-night-tests",
+  "private": true,
+  "description": "Automated browser tests for the Game night site",
+  "scripts": {
+    "test": "node suite.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}
