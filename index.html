@@ -334,6 +334,11 @@ button:disabled{opacity:.4}
 .team-row:last-child{border-bottom:0}
 .team-row .nm{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
 .team-seg{display:flex;gap:6px;flex:none}
+.team-row{flex-wrap:wrap;row-gap:8px}
+.team-row .nm{flex:1 1 7em;min-width:7em}
+.team-ctrls{display:flex;gap:6px;margin-left:auto;flex:none}
+.role-btn{flex:none;border:2px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;font-size:14px;color:var(--muted);min-width:96px}
+.role-btn[aria-pressed="true"]{background:#1E1B3A;border-color:#1E1B3A;color:#fff}
 .team-seg button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--muted)}
 .team-seg button[aria-pressed="true"].b{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
 .team-seg button[aria-pressed="true"].p{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
@@ -451,7 +456,7 @@ h3.sub{font-size:20px;margin-top:26px}
 
   <div class="block" id="teamsBlock" hidden>
     <h2>Teams</h2>
-    <p class="hint" style="margin:-4px 0 12px">Tap to put each player on a team. Each team needs at least 2 players.</p>
+    <p class="hint" id="teamsHint" style="margin:-4px 0 12px">Tap to put each player on a team. Each team needs at least 2 players.</p>
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
@@ -1199,6 +1204,11 @@ function teamCheck(){
   for (const k of [0, 1]) if (t[k].length < 2) return `${TEAMS[k]} needs at least 2 players. Move someone over under Teams.`;
   return "";
 }
+if (!S.spyMaster || typeof S.spyMaster !== "object") S.spyMaster = {};
+// Picked spymaster index (within G.teams-style lists) for each team: first flagged player, else the first player.
+function spyMasterIdx(teams){
+  return teams.map(t => { const j = t.findIndex(i => S.spyMaster[S.players[i].trim()]); return j < 0 ? 0 : j; });
+}
 function renderTeams(){
   const blk = $("teamsBlock");
   const on = (G.mode === "fb" || G.mode === "spy") && !S.randomTeams;
@@ -1215,10 +1225,30 @@ function renderTeams(){
       b.onclick = () => { S.teamPick[nm.trim()] = k; save(); renderTeams(); $("setupError").textContent = ""; };
       seg.appendChild(b);
     });
-    row.append(n, seg); box.appendChild(row);
+    const ctrls = document.createElement("span"); ctrls.className = "team-ctrls"; ctrls.appendChild(seg);
+    row.append(n, ctrls);
+    if (G.mode === "spy") {
+      const t = makeTeams(), k = teamOf(i), isSpy = t[k][spyMasterIdx(t)[k]] === i;
+      const r = document.createElement("button"); r.className = "role-btn";
+      r.textContent = isSpy ? "Spymaster" : "Guesser"; r.setAttribute("aria-pressed", isSpy);
+      r.setAttribute("aria-label", `${n.textContent}: ${isSpy ? "spymaster" : "make spymaster"}`);
+      r.onclick = () => {
+        if (isSpy) return;                         // each team always has exactly one spymaster
+        t[k].forEach(j => delete S.spyMaster[S.players[j].trim()]);
+        S.spyMaster[nm.trim()] = true; save(); renderTeams();
+      };
+      ctrls.appendChild(r);
+    }
+    box.appendChild(row);
   });
   const t = makeTeams();
-  $("teamCount").textContent = `Team Blue: ${t[0].length} · Team Pink: ${t[1].length}`;
+  $("teamsHint").textContent = G.mode === "spy"
+    ? "Tap to put each player on a team, and pick each team’s spymaster. Each team needs at least 2 players."
+    : "Tap to put each player on a team. Each team needs at least 2 players.";
+  if (G.mode === "spy") {
+    const sm = spyMasterIdx(t);
+    $("teamCount").textContent = [0, 1].map(k => `${TEAMS[k]}: ${t[k].length}` + (t[k].length ? ` (spymaster ${name(t[k][sm[k]])})` : "")).join(" · ");
+  } else $("teamCount").textContent = `Team Blue: ${t[0].length} · Team Pink: ${t[1].length}`;
 }
 
 function renderPacks(){
@@ -2287,7 +2317,7 @@ for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spy
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
   { type:"toggle", key:"spyTrap", label:"Trap card", hint:"Reveal it and your team loses" },
-  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams. Off: you pick the teams" },
+  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams, with a random spymaster each. Off: you pick teams and spymasters" },
   { type:"toggle", key:"spyTimerOn", label:"Turn timer", hint:"When time runs out, the turn passes to the other team" },
   { key:"spySec", label:"Timer length", hint:"Used when the timer is on", min:60, max:300, step:30, unit:"s" }
 ];
@@ -2301,6 +2331,8 @@ $("goSpy").onclick = () => openSetup("spy");
 
 function spyStart(){
   G.teams = makeTeams();
+  // Random teams: random spymaster per team. Otherwise the picked ones. Play again rotates from there.
+  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * t.length)) : spyMasterIdx(G.teams);
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){
@@ -2316,7 +2348,7 @@ function spyDeal(){
   if (trap) roles.push("trap");
   G.board = shuffle(roles).map((r, i) => ({ w:words[i], r, open:false }));
   G.spyBig = big; G.spyTurn = first; G.spySel = null;
-  G.spymasters = [0, 1].map(k => G.teams[k][G.spyGame % G.teams[k].length]);
+  G.spymasters = [0, 1].map(k => G.teams[k][(G.spyBase[k] + G.spyGame) % G.teams[k].length]);
   $("srFirst").textContent = `${TEAMS[first]} goes first`;
   const ul = $("srSpies"); ul.innerHTML = "";
   [0, 1].forEach(k => {
