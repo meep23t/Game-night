@@ -309,8 +309,9 @@ button:disabled{opacity:.4}
 .spy-grid{display:grid;gap:6px;margin:12px 0}
 .spy-grid.c4{grid-template-columns:repeat(4,1fr)}
 .spy-grid.c5{grid-template-columns:repeat(5,1fr)}
-.spy-card{display:grid;place-items:center;text-align:center;min-height:58px;padding:6px 3px;border:2px solid var(--line);border-radius:10px;background:var(--surface);font-weight:700;font-size:14px;line-height:1.15;overflow-wrap:anywhere;color:var(--ink)}
-.spy-grid.c5 .spy-card{font-size:12px;min-height:52px}
+.spy-card{display:grid;place-items:center;text-align:center;min-height:58px;padding:6px 3px;border:2px solid var(--line);border-radius:10px;background:var(--surface);font-weight:700;font-size:14px;line-height:1.15;overflow-wrap:normal;word-break:normal;hyphens:none;color:var(--ink);min-width:0;overflow:hidden}
+.spy-grid.c5 .spy-card{font-size:12px;min-height:52px;padding:5px 2px}
+.spy-card.hy{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:anywhere}
 .spy-card:disabled{opacity:1}
 .spy-card.sel{border-color:var(--cobalt);box-shadow:0 0 0 3px var(--cobalt)}
 .spy-card.r-0{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
@@ -2378,7 +2379,7 @@ function renderSpymasters(){
     box.appendChild(row);
   });
 }
-$("srGo").onclick = () => { G.clue = null; G.clueNum = 1; $("sbClueWord").value = ""; $("sbClueErr").textContent = ""; $("sbMsg").textContent = ""; renderSpy(); show("spyboard"); spyTurnTimer(); };
+$("srGo").onclick = () => { G.clue = null; G.clueNum = 1; $("sbClueWord").value = ""; $("sbClueErr").textContent = ""; $("sbMsg").textContent = ""; renderSpy(); show("spyboard"); fitCards($("sbGrid")); spyTurnTimer(); };
 // Hand the turn to the other team; their spymaster gives the next clue.
 function spyNextTurn(msg){
   G.spyTurn = 1 - G.spyTurn; G.spySel = null; G.clue = null; G.clueNum = 1;
@@ -2439,6 +2440,7 @@ function renderSpy(){
     b.onclick = () => { G.spySel = G.spySel === i ? null : i; renderSpy(); };
     grid.appendChild(b);
   });
+  fitCards(grid);
   $("sbReveal").hidden = G.spySel === null || !G.clue;
   if (G.spySel !== null) $("sbReveal").textContent = `Reveal “${G.board[G.spySel].w}”`;
   renderClue();
@@ -2461,6 +2463,17 @@ $("sbReveal").onclick = () => {
   renderSpy();
 };
 $("sbEnd").onclick = () => spyNextTurn(`${TEAMS[1 - G.spyTurn]}’s turn.`);
+// Shrink the text of any card whose longest word doesn't fit, instead of breaking the word.
+function fitCards(el){
+  el.querySelectorAll(".spy-card").forEach(c => {
+    c.style.fontSize = "";
+    if (!c.clientWidth) return;                       // not on screen yet
+    c.classList.remove("hy");
+    let fs = parseFloat(getComputedStyle(c).fontSize);
+    while (c.scrollWidth > c.clientWidth && fs > 9) { fs -= .5; c.style.fontSize = fs + "px"; }
+    if (c.scrollWidth > c.clientWidth) c.classList.add("hy");   // last resort: split at a syllable, with a hyphen
+  });
+}
 function spyKeyGrid(el, cross){
   el.className = "spy-grid c" + (G.spyBig ? 5 : 4); el.innerHTML = "";
   G.board.forEach(c => {
@@ -2471,9 +2484,9 @@ function spyKeyGrid(el, cross){
 }
 $("sbKey").onclick = () => {
   $("skWho").textContent = `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
-  spyKeyGrid($("skGrid"), true); show("spykey");
+  spyKeyGrid($("skGrid"), true); show("spykey"); fitCards($("skGrid"));
 };
-$("skHide").onclick = () => { renderSpy(); show("spyboard"); };
+$("skHide").onclick = () => { show("spyboard"); renderSpy(); };
 function spyEnd(winner, reason){
   stopTimer(); $("sbTime").hidden = true;
   $("seReason").textContent = reason;
@@ -2481,7 +2494,7 @@ function spyEnd(winner, reason){
   spyKeyGrid($("seGrid"), false);
   nightRecord("seAgain", G.teams[winner].map(i => ({ i, pts:2 })));
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
-  show("spyend");
+  show("spyend"); fitCards($("seGrid"));
 }
 $("seAgain").onclick = spyDeal;
 
