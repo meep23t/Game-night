@@ -348,6 +348,13 @@ button:disabled{opacity:.4}
 .team-seg button[aria-pressed="true"].b{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
 .team-seg button[aria-pressed="true"].p{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
 .spy-tools{display:flex;gap:10px}
+.clue-box{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.clue-box.t0{border-color:#2B44D6} .clue-box.t1{border-color:#E2453C}
+.clue-title{font-weight:800;margin-bottom:8px}
+.clue-num{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-weight:600}
+.clue-on{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-weight:600}
+.clue-on b{font-size:19px;font-weight:800;letter-spacing:.02em}
+.clue-on #sbGuesses{color:var(--muted);font-size:15px}
 .spy-tools button{flex:1;padding:12px}
 .scores li small{display:block;font-size:13px;color:var(--muted);font-weight:500}
 .ends{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:8px 0 6px}
@@ -623,7 +630,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>Put the phone in the middle. There are two teams, and each has a spymaster. Only spymasters may look at the secret key, which shows which words belong to each team.</li>
-        <li>On your team’s turn, your spymaster gives a one-word clue and a number, like “ocean, 2,” to link that many of your team’s words.</li>
+        <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps Reveal. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap End turn.</li>
         <li>Watch out for the trap card! Reveal it and your team loses right away.</li>
         <li>The first team to find all its words wins.</li>
@@ -922,6 +929,14 @@ h3.sub{font-size:20px;margin-top:26px}
 
 <section id="spyboard" hidden>
   <div class="bar"><span class="turn-pill" id="sbTurn"></span><span id="sbCount"></span><span class="spy-time" id="sbTime" hidden></span></div>
+  <div class="clue-box" id="sbClueForm">
+    <p class="clue-title" id="sbClueWho"></p>
+    <input type="text" id="sbClueWord" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="One-word clue" aria-label="Clue word">
+    <div class="clue-num"><span>Number of words</span><span class="stepper"><button id="sbNumMinus" aria-label="Fewer words">−</button><output id="sbNum">1</output><button id="sbNumPlus" aria-label="More words">+</button></span></div>
+    <p class="error" id="sbClueErr" role="alert" style="margin:6px 0 0;min-height:0"></p>
+    <button class="primary" id="sbClueGo" style="margin-top:10px">Give clue</button>
+  </div>
+  <div class="clue-on" id="sbClueOn" hidden><span>Clue: <b id="sbClueShow"></b></span><span id="sbGuesses"></span></div>
   <div class="spy-grid" id="sbGrid"></div>
   <p class="note center" id="sbMsg" style="min-height:1.4em;margin:4px 0 10px"></p>
   <button id="sbReveal" class="primary" hidden></button>
@@ -2363,7 +2378,44 @@ function renderSpymasters(){
     box.appendChild(row);
   });
 }
-$("srGo").onclick = () => { $("sbMsg").textContent = "Spymaster, give your clue: one word and a number."; renderSpy(); show("spyboard"); spyTurnTimer(); };
+$("srGo").onclick = () => { G.clue = null; G.clueNum = 1; $("sbClueWord").value = ""; $("sbClueErr").textContent = ""; $("sbMsg").textContent = ""; renderSpy(); show("spyboard"); spyTurnTimer(); };
+// Hand the turn to the other team; their spymaster gives the next clue.
+function spyNextTurn(msg){
+  G.spyTurn = 1 - G.spyTurn; G.spySel = null; G.clue = null; G.clueNum = 1;
+  $("sbClueWord").value = ""; $("sbClueErr").textContent = "";
+  $("sbMsg").textContent = msg; renderSpy(); spyTurnTimer();
+}
+function renderClue(){
+  const t = G.spyTurn, left = spyLeft(t);
+  G.clueNum = Math.min(Math.max(1, G.clueNum || 1), Math.max(1, left));
+  $("sbClueForm").hidden = !!G.clue; $("sbClueOn").hidden = !G.clue;
+  $("sbClueForm").className = "clue-box t" + t;
+  $("sbEnd").hidden = !G.clue;
+  if (!G.clue) {
+    $("sbClueWho").textContent = `${TEAMS[t]} spymaster: give your clue`;
+    $("sbNum").textContent = G.clueNum;
+    $("sbNumMinus").disabled = G.clueNum <= 1; $("sbNumPlus").disabled = G.clueNum >= left;
+  } else {
+    $("sbClueShow").textContent = `${G.clue.word.toUpperCase()} · ${G.clue.num}`;
+    $("sbGuesses").textContent = `${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left`;
+  }
+}
+$("sbNumMinus").onclick = () => { G.clueNum--; renderClue(); };
+$("sbNumPlus").onclick = () => { G.clueNum++; renderClue(); };
+$("sbClueWord").addEventListener("input", () => { $("sbClueErr").textContent = ""; });
+$("sbClueWord").addEventListener("keydown", e => { if (e.key === "Enter") $("sbClueGo").click(); });
+$("sbClueGo").onclick = () => {
+  const w = $("sbClueWord").value.trim(), t = G.spyTurn, left = spyLeft(t), n = G.clueNum, err = $("sbClueErr");
+  if (!w) { err.textContent = "Type a one-word clue."; return; }
+  if (/\s/.test(w)) { err.textContent = "One word only, no spaces."; return; }
+  const lw = w.toLowerCase();
+  if (G.board.some(c => !c.open && c.w.toLowerCase() === lw)) { err.textContent = "That word is on the board. Pick a different clue."; return; }
+  if (!Number.isInteger(n) || n < 1 || n > left) { err.textContent = `Pick a number from 1 to ${left}.`; return; }
+  G.clue = { word:w, num:n, left:n + 1 };
+  $("sbClueWord").blur();
+  $("sbMsg").textContent = `${TEAMS[t]}: tap a word, then Reveal. Up to ${n + 1} guesses.`;
+  renderSpy();
+};
 // Optional turn timer: when it runs out, the turn passes to the other team.
 function spyTurnTimer(){
   const el = $("sbTime");
@@ -2371,9 +2423,7 @@ function spyTurnTimer(){
   el.hidden = false; el.classList.remove("low");
   runTimer(S.spySec * 1000, rem => { el.textContent = fmt(rem); el.classList.toggle("low", rem <= 10000); }, () => {
     buzzer();
-    G.spyTurn = 1 - G.spyTurn; G.spySel = null;
-    $("sbMsg").textContent = `Time’s up! ${TEAMS[G.spyTurn]}’s spymaster, give your clue.`;
-    renderSpy(); spyTurnTimer();
+    spyNextTurn(`Time’s up! ${TEAMS[1 - G.spyTurn]}’s turn.`);
   });
 }
 function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
@@ -2385,12 +2435,13 @@ function renderSpy(){
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
     b.className = "spy-card" + (c.open ? " r-" + c.r : "") + (G.spySel === i ? " sel" : "");
-    b.textContent = c.w; b.disabled = c.open;
+    b.textContent = c.w; b.disabled = c.open || !G.clue;
     b.onclick = () => { G.spySel = G.spySel === i ? null : i; renderSpy(); };
     grid.appendChild(b);
   });
-  $("sbReveal").hidden = G.spySel === null;
+  $("sbReveal").hidden = G.spySel === null || !G.clue;
   if (G.spySel !== null) $("sbReveal").textContent = `Reveal “${G.board[G.spySel].w}”`;
+  renderClue();
 }
 $("sbReveal").onclick = () => {
   const i = G.spySel; if (i === null) return;
@@ -2399,19 +2450,17 @@ $("sbReveal").onclick = () => {
   if (c.r === "trap") return spyEnd(1 - t, `${TEAMS[t]} found the trap card!`);
   if (!spyLeft(0)) return spyEnd(0, "Team Blue found all its words!");
   if (!spyLeft(1)) return spyEnd(1, "Team Pink found all its words!");
-  if (c.r === t) { ding(); $("sbMsg").textContent = "Correct! Keep guessing, or end your turn."; }
-  else {
+  if (c.r === t) {
+    ding(); G.clue.left--;
+    if (G.clue.left <= 0) return spyNextTurn(`Correct! That was your last guess. ${TEAMS[1 - t]}’s turn.`);
+    $("sbMsg").textContent = `Correct! ${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left, or end your turn.`;
+  } else {
     tone(220,.3,"triangle",.12);
-    $("sbMsg").textContent = c.r === "by" ? "That word belongs to nobody. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`;
-    G.spyTurn = 1 - t; renderSpy(); return spyTurnTimer();
+    return spyNextTurn(c.r === "by" ? "That word belongs to nobody. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`);
   }
   renderSpy();
 };
-$("sbEnd").onclick = () => {
-  G.spyTurn = 1 - G.spyTurn; G.spySel = null;
-  $("sbMsg").textContent = `${TEAMS[G.spyTurn]}’s spymaster, give your clue.`;
-  renderSpy(); spyTurnTimer();
-};
+$("sbEnd").onclick = () => spyNextTurn(`${TEAMS[1 - G.spyTurn]}’s turn.`);
 function spyKeyGrid(el, cross){
   el.className = "spy-grid c" + (G.spyBig ? 5 : 4); el.innerHTML = "";
   G.board.forEach(c => {
