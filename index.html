@@ -361,7 +361,9 @@ button:disabled{opacity:.4}
 .clue-go{flex:none;background:var(--cobalt);color:var(--on-cobalt);border-radius:10px;padding:9px 12px;font-weight:800;font-size:15px}
 .clue-on{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-weight:600}
 .clue-on b{font-size:19px;font-weight:800;letter-spacing:.02em}
-.clue-on #sbGuesses{color:var(--muted);font-size:15px}
+.clue-on #sbGuesses,.clue-on #skGuesses{color:var(--muted);font-size:15px}
+.sk-tip{text-align:center;font-weight:600;margin:10px 0 4px}
+.sk-tip b{font-weight:800}
 .spy-tools button{flex:1;padding:12px}
 .scores li small{display:block;font-size:13px;color:var(--muted);font-weight:500}
 .ends{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:8px 0 6px}
@@ -956,8 +958,10 @@ h3.sub{font-size:20px;margin-top:26px}
   <p class="eyebrow center">Spymasters only!</p>
   <p class="big-name center" style="font-size:clamp(30px,9vw,42px)">The secret key</p>
   <p class="note center" id="skWho"></p>
+  <div class="clue-on" id="skClue" hidden><span>Clue: <b id="skClueShow"></b></span><span id="skGuesses"></span></div>
+  <p class="sk-tip" id="skTip"></p>
   <div class="spy-grid" id="skGrid"></div>
-  <p class="note center">Blue words are Team Blue’s, pink are Team Pink’s, tan are nobody’s, and the dark card is the trap. Crossed-out cards are already revealed.</p>
+  <p class="note center">Crossed-out cards are already found.</p>
   <button id="skHide" class="primary">Hide key</button>
 </section>
 
@@ -2492,6 +2496,17 @@ function spyKeyGrid(el, cross){
 }
 $("sbKey").onclick = () => {
   $("skWho").textContent = `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
+  const t = G.spyTurn, tip = $("skTip");
+  $("skClue").hidden = !G.clue;
+  if (G.clue) {
+    $("skClueShow").textContent = `${G.clue.word.toUpperCase()} · ${G.clue.num}`;
+    $("skGuesses").textContent = `${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left`;
+    tip.textContent = "Keep a straight face while your team guesses!";
+  } else {
+    tip.innerHTML = "";
+    const who = document.createElement("b"); who.textContent = `${TEAMS[t]} spymaster:`;
+    tip.append(who, " think of one word that links some of your team’s cards. Avoid the dark trap card!");
+  }
   spyKeyGrid($("skGrid"), true); show("spykey"); fitCards($("skGrid"));
 };
 $("skHide").onclick = () => { show("spyboard"); renderSpy(); };
