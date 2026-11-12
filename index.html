@@ -111,6 +111,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .game-tile h2{font-size:34px;font-weight:800;letter-spacing:-.03em}
 .game-tile p{margin-top:8px;font-weight:500;opacity:.85}
 .game-tile .go{display:inline-block;margin-top:14px;font-weight:800}
+.game-tile .ppl{display:inline-block;margin:14px 0 0 12px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.6);border:1.5px solid rgba(30,27,58,.25);font-size:14px;font-weight:700;vertical-align:1px}
 .game-tile:active{transform:translate(3px,3px);box-shadow:4px 4px 0 var(--shadow)}
 .game-tile{position:relative}
 .home-head h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
@@ -123,6 +124,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .back{color:var(--muted);font-weight:700;padding:6px 0}
 .block{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
 .block h2{font-size:20px;font-weight:700;margin-bottom:12px}
+.block h2 .ppl-range{font-size:15px;font-weight:600;color:var(--muted);margin-left:6px}
 .player-row{display:flex;gap:8px;margin-bottom:8px}
 .player-row input{flex:1;min-width:0}
 input[type=text],textarea{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
@@ -400,7 +402,7 @@ h3.sub{font-size:20px;margin-top:26px}
   </header>
 
   <div class="block">
-    <h2>Players</h2>
+    <h2>Players <small class="ppl-range" id="playerRange"></small></h2>
     <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
     <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
     <p class="hint" data-for="fb" style="margin:-4px 0 12px">Two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
@@ -1011,8 +1013,16 @@ function show(id){
   if (id === "home") renderNightStrip();
   resetRestart(); window.scrollTo(0,0);
 }
+const PLAYER_RANGE = { act:[2, 8], taboo:[2, 8], fb:[4, 8], tele:[3, 8], wave:[2, 8], imp:[3, 8], spy:[4, 8] };
+const TILE_MODE = { goAct:"act", goTaboo:"taboo", goFb:"fb", goTele:"tele", goWave:"wave", goImp:"imp", goSpy:"spy" };
+Object.entries(TILE_MODE).forEach(([id, m]) => {
+  const [lo, hi] = PLAYER_RANGE[m], c = document.createElement("span");
+  c.className = "ppl"; c.textContent = `👥 ${lo}–${hi}`; c.setAttribute("aria-label", `${lo} to ${hi} players`);
+  $(id).querySelector(".go").after(c);
+});
 function openSetup(mode){
   G.mode = mode;
+  { const [lo, hi] = PLAYER_RANGE[mode]; $("playerRange").textContent = `${lo}–${hi}`; $("playerRange").setAttribute("aria-label", `${lo} to ${hi} players`); }
   if (nightOn()) nightSyncPlayers();
   renderPlayers();
   $("setupTitle").textContent = INTROS[mode][0];
