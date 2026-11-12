@@ -277,6 +277,10 @@ button:disabled{opacity:.4}
 .name-btn small{font-weight:600;font-size:14px;color:var(--cobalt);flex:none}
 .vote-list .name-btn.seen{border-color:var(--mint)}
 .name-btn.seen small{color:var(--mint)}
+#nameList{grid-template-columns:1fr 1fr;gap:14px}
+#nameList .name-btn{flex-direction:column;justify-content:center;gap:6px;min-height:108px;padding:14px 10px;text-align:center;border-width:3px;border-radius:18px}
+#nameList .name-btn span{font-size:clamp(16px,4.6vw,21px);font-weight:800;overflow-wrap:break-word;max-width:100%}
+#nameList .name-btn.seen{background:rgba(31,168,116,.14);opacity:.85}
 
 /* Sketch chain */
 .game-tile.tele{background:#A9B8FF}
