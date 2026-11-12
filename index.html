@@ -349,10 +349,16 @@ button:disabled{opacity:.4}
 .team-seg button[aria-pressed="true"].b{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
 .team-seg button[aria-pressed="true"].p{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
 .spy-tools{display:flex;gap:10px}
-.clue-box{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.clue-box{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:10px}
 .clue-box.t0{border-color:#2B44D6} .clue-box.t1{border-color:#E2453C}
-.clue-title{font-weight:800;margin-bottom:8px}
-.clue-num{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-weight:600}
+.clue-title{font-weight:800;font-size:14px;margin-bottom:6px}
+.clue-row{display:flex;align-items:center;gap:6px}
+.clue-row input{flex:1;min-width:0;padding:8px 10px;font-size:16px}
+.clue-step{display:flex;align-items:center;gap:2px;flex:none}
+.clue-step button{width:32px;height:38px;border-radius:10px;border:2px solid var(--line);font-size:18px;font-weight:700}
+.clue-step button:disabled{opacity:.35}
+.clue-step output{min-width:22px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.clue-go{flex:none;background:var(--cobalt);color:var(--on-cobalt);border-radius:10px;padding:9px 12px;font-weight:800;font-size:15px}
 .clue-on{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-weight:600}
 .clue-on b{font-size:19px;font-weight:800;letter-spacing:.02em}
 .clue-on #sbGuesses{color:var(--muted);font-size:15px}
@@ -932,10 +938,12 @@ h3.sub{font-size:20px;margin-top:26px}
   <div class="bar"><span class="turn-pill" id="sbTurn"></span><span id="sbCount"></span><span class="spy-time" id="sbTime" hidden></span></div>
   <div class="clue-box" id="sbClueForm">
     <p class="clue-title" id="sbClueWho"></p>
-    <input type="text" id="sbClueWord" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="One-word clue" aria-label="Clue word">
-    <div class="clue-num"><span>Number of words</span><span class="stepper"><button id="sbNumMinus" aria-label="Fewer words">−</button><output id="sbNum">1</output><button id="sbNumPlus" aria-label="More words">+</button></span></div>
+    <div class="clue-row">
+      <input type="text" id="sbClueWord" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="One word" aria-label="Clue word">
+      <span class="clue-step"><button id="sbNumMinus" aria-label="Fewer words">−</button><output id="sbNum" aria-label="Number of words">1</output><button id="sbNumPlus" aria-label="More words">+</button></span>
+      <button class="clue-go" id="sbClueGo">Give</button>
+    </div>
     <p class="error" id="sbClueErr" role="alert" style="margin:6px 0 0;min-height:0"></p>
-    <button class="primary" id="sbClueGo" style="margin-top:10px">Give clue</button>
   </div>
   <div class="clue-on" id="sbClueOn" hidden><span>Clue: <b id="sbClueShow"></b></span><span id="sbGuesses"></span></div>
   <div class="spy-grid" id="sbGrid"></div>
@@ -2393,7 +2401,7 @@ function renderClue(){
   $("sbClueForm").className = "clue-box t" + t;
   $("sbEnd").hidden = !G.clue;
   if (!G.clue) {
-    $("sbClueWho").textContent = `${TEAMS[t]} spymaster: give your clue`;
+    $("sbClueWho").textContent = `${TEAMS[t]} spymaster’s clue`;
     $("sbNum").textContent = G.clueNum;
     $("sbNumMinus").disabled = G.clueNum <= 1; $("sbNumPlus").disabled = G.clueNum >= left;
   } else {
