@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+      - name: Run test suite
+        run: npm test
+      - name: Save screenshots of failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: tests/output/
+          retention-days: 14
