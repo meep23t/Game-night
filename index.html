@@ -321,6 +321,11 @@ button:disabled{opacity:.4}
 .chain-item small{display:block;color:var(--muted);font-weight:700;margin-bottom:6px}
 .chain-item .txt{font-size:26px;font-weight:800;letter-spacing:-.02em;word-break:break-word}
 .chain-item img{display:block;width:100%;border-radius:12px;background:#fff;border:2px solid var(--line)}
+.tscore{background:var(--surface);border:2px solid var(--cobalt);border-radius:16px;padding:12px 14px;margin-top:6px}
+.tscore .ttl{font-weight:800;margin-bottom:8px}
+.tscore .row{margin-top:8px}
+.tscore .row > span{display:block;font-weight:700;color:var(--muted);font-size:14px;margin-bottom:6px}
+.tscore .bonus{margin-top:10px;font-weight:700;color:var(--mint)}
 .chain-item.first{background:var(--sun);border-color:var(--sun);color:#1E1B3A}
 .chain-item.first small{color:#1E1B3A;opacity:.7}
 
@@ -610,6 +615,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>The next player sees only that guess and draws it. Keep switching between drawing and guessing until everyone has had a turn.</li>
         <li>At the end, flip through the sketchbook page by page and see how the word changed along the way.</li>
         <li>With more than one sketchbook, each one starts with a different player, and the screen always says who’s next.</li>
+        <li><b>Scoring</b> (on by default, under Rules): after each sketchbook, the player who started it picks a favorite drawing and a favorite guess, worth 1 point each. If the last guess matches the word, the starter gets 1 point too. Most points wins.</li>
       </ul>
     </details>
   </div>
@@ -803,6 +809,14 @@ h3.sub{font-size:20px;margin-top:26px}
     <button id="resGuessNo">They missed it</button>
   </div>
   <button id="impAgain" class="primary">Play again</button>
+</section>
+
+<section id="teleEnd" class="center" hidden>
+  <p class="eyebrow">Final scores</p>
+  <p class="big-name" id="teWinner"></p>
+  <ul class="scores" id="teScores" style="text-align:left"></ul>
+  <p class="note">Favorite drawing +1 · Favorite guess +1 · Made it all the way around: +1 for the sketchbook’s starter</p>
+  <button id="teleAgain" class="primary" style="margin-top:18px">Play again</button>
 </section>
 
 <section id="tpass" class="center" hidden>
@@ -1052,7 +1066,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <li><b>Word bowl:</b> after all three rounds, everyone on the winning team gets 2. A tie gives everyone 1. With 2–3 players: 1st 3, 2nd 2, 3rd 1.</li>
       <li><b>Word spies:</b> each board is one game. Everyone on the winning team gets 2. Co-op with 2–3 players: a win gives everyone 2.</li>
       <li><b>Imposter:</b> each round is one game. Everyone on the winning side gets 2.</li>
-      <li><b>Pass the doodle:</b> once every sketchbook is revealed, everyone gets 1.</li>
+      <li><b>Pass the doodle:</b> with scoring on, 1st 3, 2nd 2, 3rd 1. With scoring off, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
     <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
@@ -1850,11 +1864,12 @@ const TELE_HINTS = {
   3: "Phrases and sayings. Tough to draw, funny to guess."
 };
 INTROS.tele = ["Pass the doodle", "Draw it, guess it, draw the guess. Pass the phone around and watch the word change along the way."];
-for (const [k,v] of Object.entries({ teleLevel:1, teleBooks:1, teleTimerOn:true, teleSec:60 })) if (S[k] === undefined) S[k] = v;
+for (const [k,v] of Object.entries({ teleLevel:1, teleBooks:1, teleTimerOn:true, teleSec:60, teleScoring:true })) if (S[k] === undefined) S[k] = v;
 SETTINGS.tele = [
   { key:"teleBooks", label:"Sketchbooks", hint:"Each starts with a different player. More books, longer game", min:1, max:12, step:1 },
   { type:"toggle", key:"teleTimerOn", label:"Drawing timer", hint:"When time runs out, the drawing is done" },
-  { key:"teleSec", label:"Timer length", hint:"Used when the timer is on", min:20, max:180, step:10, unit:"s" }
+  { key:"teleSec", label:"Timer length", hint:"Used when the timer is on", min:20, max:180, step:10, unit:"s" },
+  { type:"toggle", key:"teleScoring", label:"Score the sketchbooks", hint:"Favorite drawing and guess get a point. Off: just for laughs" }
 ];
 function renderTeleLevel(){
   document.querySelectorAll("#teleLevels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.tlevel === S.teleLevel));
@@ -1926,7 +1941,7 @@ function teleRound(){
   G.books = [...Array(k).keys()].map(b => { const word = draw()[0]; return { start: Math.floor(b * n / k), word, entries:[{ type:"word", text:word }] }; });
   G.seq = [];
   for (let s = 0; s < n; s++) for (let b = 0; b < k; b++) G.seq.push({ b, s, p:(G.books[b].start + s) % n });
-  G.pos = 0; tPass();
+  G.pos = 0; G.teleScore = S.players.map(() => 0); G.bookPicks = []; tPass();
 }
 function lastEntry(t){ const e = G.books[t.b].entries; return e[e.length - 1]; }
 function stepLabel(){ const t = G.seq[G.pos]; return `Turn ${G.pos + 1} of ${G.seq.length}` + (S.teleBooks > 1 ? `, sketchbook ${t.b + 1}` : ""); }
@@ -2008,17 +2023,72 @@ function revealNext(){
       ? "It made it all the way around!"
       : last.type === "guess" ? `Started as “${book.word}” and ended as “${last.text}”.` : `Started as “${book.word}.” How close is that last drawing?`;
     $("trList").appendChild(end);
-    if (lastBook) nightRecord("trNext", S.players.map((_, i) => ({ i, pts:1 })));
+    if (S.teleScoring) teleScorePanel(book, last.type === "guess" && norm(last.text) === norm(book.word));
+    else if (lastBook) nightRecord("trNext", S.players.map((_, i) => ({ i, pts:1 })));
   }
-  $("trNext").textContent = more ? "Show next page" : lastBook ? "Play again" : "Next sketchbook";
+  $("trNext").textContent = more ? "Show next page" : lastBook ? (S.teleScoring ? "See scores" : "Play again") : "Next sketchbook";
+  teleNextLock();
   $("trAll").hidden = !more;
   if (G.ri > 1) d.scrollIntoView({ behavior:"smooth", block:"center" });
 }
 $("trNext").onclick = () => {
   const book = G.books[G.rb];
   if (G.ri < book.entries.length) return revealNext();
-  if (G.rb < G.books.length - 1) { G.rb++; renderBook(); } else teleRound();
+  if (S.teleScoring) teleApplyPicks();
+  if (G.rb < G.books.length - 1) { G.rb++; renderBook(); }
+  else if (S.teleScoring) teleEnd();
+  else teleRound();
 };
+// Friendly scoring: the sketchbook's starter picks a favorite drawing and guess (+1 each);
+// the starter gets +1 if the book made it all the way around.
+function teleScorePanel(book, around){
+  const pick = G.bookPicks[G.rb] = G.bookPicks[G.rb] || { draw:null, guess:null, around, applied:false };
+  const opts = t => book.entries.filter(e => e.type === t && e.by !== book.start).map(e => e.by);
+  const box = document.createElement("div"); box.className = "tscore"; box.id = "trScore";
+  const ttl = document.createElement("p"); ttl.className = "ttl"; ttl.textContent = `${name(book.start)}, pick your favorites:`;
+  box.appendChild(ttl);
+  [["draw", "Favorite drawing"], ["guess", "Favorite guess"]].forEach(([t, label]) => {
+    const who = opts(t); if (!who.length) { pick[t] = -1; return; }
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span>${label} (+1)</span><div class="chips"></div>`;
+    who.forEach(i => {
+      const c = document.createElement("button"); c.className = "chip"; c.textContent = name(i);
+      c.setAttribute("aria-pressed", pick[t] === i);
+      c.setAttribute("aria-label", `${label}: ${name(i)}`);
+      c.onclick = () => { pick[t] = i; row.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c)); teleNextLock(); };
+      row.querySelector(".chips").appendChild(c);
+    });
+    box.appendChild(row);
+  });
+  if (around) { const b = document.createElement("p"); b.className = "bonus"; b.textContent = `It made it all the way around! ${name(book.start)} +1`; box.appendChild(b); }
+  $("trList").appendChild(box);
+}
+function teleNextLock(){
+  const book = G.books[G.rb], pick = G.bookPicks[G.rb];
+  const done = G.ri >= book.entries.length;
+  $("trNext").disabled = S.teleScoring && done && !!pick && (pick.draw === null || pick.guess === null);
+}
+function teleApplyPicks(){
+  const book = G.books[G.rb], pick = G.bookPicks[G.rb];
+  if (!pick || pick.applied) return;
+  if (pick.draw >= 0) G.teleScore[pick.draw]++;
+  if (pick.guess >= 0) G.teleScore[pick.guess]++;
+  if (pick.around) G.teleScore[book.start]++;
+  pick.applied = true;
+}
+function teleEnd(){
+  const top = Math.max(...G.teleScore), win = S.players.map((_, i) => i).filter(i => G.teleScore[i] === top);
+  $("teWinner").textContent = !top ? "No points this time" : win.length > 1 ? "It’s a tie!" : `${name(win[0])} wins!`;
+  const ul = $("teScores"); ul.innerHTML = "";
+  S.players.map((_, i) => i).sort((a, b) => G.teleScore[b] - G.teleScore[a] || a - b).forEach(i => {
+    const li = document.createElement("li"), n = document.createElement("span"), b = document.createElement("b");
+    n.textContent = name(i); b.textContent = G.teleScore[i]; li.append(n, b); ul.appendChild(li);
+  });
+  nightRecord("teleAgain", placeAwards(G.teleScore));
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+  show("teleEnd");
+}
+$("teleAgain").onclick = teleRound;
 $("trAll").onclick = () => { const book = G.books[G.rb]; while (G.ri < book.entries.length) revealNext(); };
 
 /* ---------- Mind dial ---------- */
@@ -2247,7 +2317,7 @@ $("playAgain").onclick = newGame;
 let restartArm = 0;
 function resetRestart(){ clearTimeout(restartArm); restartArm = 0; const b = $("startOver"); b.classList.remove("confirm"); b.textContent = "Start over"; }
 $("startOver").onclick = () => {
-  if (G.screen !== "final" && G.screen !== "impResult" && G.screen !== "wfinal" && G.screen !== "spyend" && !restartArm) {
+  if (!["final", "impResult", "wfinal", "spyend", "teleEnd"].includes(G.screen) && !restartArm) {
     const b = $("startOver"); b.classList.add("confirm"); b.textContent = "Tap again to end this game";
     restartArm = setTimeout(resetRestart, 3000); return;
   }
