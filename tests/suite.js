@@ -895,13 +895,19 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
     check('Bigger team’s 3rd scorer doesn’t count (2 v 2)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2');
     check('Results box shows team points only', /Team 1 \+2 · Team 2 \+2/.test(await txt(p, '#nightBox')) && !/Ana|didn’t count/.test(await txt(p, '#nightBox')), await txt(p, '#nightBox'));
-    // team picker edits tonight's teams; newcomer joins smaller team
+    // tonight's teams are locked in game setup; newcomers can be placed; a short team unlocks moves
     await open(p, 'wave');
-    await team(p, '#teamList', 'Eve', 1);
-    check('Changing a team in setup updates tonight’s teams', (await ev(p, () => rosterTeam(5))) === 1);
-    await team(p, '#teamList', 'Eve', 0);
+    check('Tonight’s teams are locked in game setup', (await p.locator('#teamList button.tc-chip').count()) === 0 && (await p.locator('#teamList div.tc-chip').count()) === 5 && /set for the night/.test(await txt(p, '#teamsHint')));
     await p.click('#addPlayer');
-    check('Newcomer joins the smaller team', (await ev(p, () => rosterTeam(S.playerIds.at(-1)))) === 1);
+    const nid = await ev(p, () => S.playerIds.at(-1));
+    check('Newcomer joins the smaller team', (await ev(p, id => rosterTeam(id), nid)) === 1);
+    check('Only the newcomer can be moved', (await p.locator('#teamList button.tc-chip').count()) === 1);
+    await p.click('#teamList button.tc-chip');
+    check('Moving the newcomer updates tonight’s teams', (await ev(p, id => rosterTeam(id), nid)) === 0);
+    await p.click('#teamList button.tc-chip');
+    await p.click('button[aria-label="Sit out Ben"]'); await p.click('button[aria-label="Sit out Dee"]');
+    check('A team left short by sit-outs is flagged in red', /needs at least 2/.test(await txt(p, '#teamCount')) && await p.locator('#teamCount.short').count() === 1, await txt(p, '#teamCount'));
+    check('…and players can then be moved to fix it', (await p.locator('#teamList button.tc-chip').count()) > 1);
     check('Shuffle is hidden tonight (teams are set for the night)', await p.locator('#teamShuffle').isHidden());
     // leaderboard
     await ev(p, () => show('home'));
