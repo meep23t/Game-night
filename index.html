@@ -71,6 +71,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-live{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--cobalt);color:var(--on-cobalt);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
 .night-stale{background:var(--surface);border:3px solid #1E1B3A;border-radius:18px;box-shadow:5px 5px 0 var(--shadow);padding:14px 16px}
 .night-stale p{margin-bottom:12px}
+.resume{margin:0 0 14px}
 .night-stale .row{display:flex;gap:10px}
 .night-stale .row button{flex:1;border-radius:12px;padding:10px;font-weight:700;border:2px solid var(--line)}
 .night-stale .row button.go{background:var(--cobalt);color:var(--on-cobalt);border-color:var(--cobalt)}
@@ -453,6 +454,10 @@ h3.sub{font-size:20px;margin-top:26px}
     <p id="installText"></p>
     <button class="install-go" id="installGo" hidden>Install</button>
     <button class="install-x" id="installX" aria-label="Dismiss">×</button>
+  </div>
+  <div class="night-stale resume" id="resumeBox" hidden>
+    <p><b id="resumeTitle"></b><br><span class="note" id="resumeNote"></span></p>
+    <div class="row"><button class="go" id="resumeGo">Continue</button><button id="resumeX">Discard</button></div>
   </div>
   <header class="hero">
     <h1>Game night</h1>
@@ -1183,13 +1188,74 @@ function pauseTimer(){ T.paused = true; T.remaining = T.end - performance.now();
 function resumeTimer(){ T.paused = false; T.end = performance.now() + T.remaining; loop(); }
 function stopTimer(){ T.locked = true; T.paused = false; cancelAnimationFrame(T.raf); clearTimeout(T.next); }
 
+/* ---------- Save a game in progress ---------- */
+// The game is saved at safe points (between turns, boards, voting...) and whenever the phone locks or
+// switches apps. Reopening offers to continue from there; a turn that was cut off starts over.
+const GAME_KEY = "gamenight-inprogress-v1";
+const CHECKPOINT = new Set(["pass", "summary", "reveal", "clues", "vote", "tpass", "treveal", "wpass", "fbsub", "fbround", "fbpass", "fbturn", "spyround", "spyboard"]);
+const GAME_OVER = new Set(["final", "impResult", "teleEnd", "wfinal", "spyend"]);
+const RESUME = {
+  pass: () => toPass(),
+  summary: () => $("nextTurn").onclick(),          // that turn's points are in; go on to the next turn
+  reveal: () => showReveal(),
+  clues: () => toClues(),
+  vote: () => { renderVote(); show("vote"); },
+  tpass: () => tPass(),
+  treveal: () => renderBook(),
+  wpass: () => wPass(),
+  fbsub: () => fbSubList(),
+  fbround: () => fbRoundIntro(false),
+  fbpass: () => fbPass(),
+  fbturn: () => $("ftNext").onclick(),
+  spyround: () => { G.smOpen = null; renderSpymasters(); show("spyround"); },
+  spyboard: () => { $("sbClueErr").textContent = ""; $("sbMsg").textContent = ""; renderSpy(); show("spyboard"); fitCards($("sbGrid")); spyTurnTimer(); }
+};
+function gameSnap(){
+  if (G.gameOver || !CHECKPOINT.has(G.screen)) return;
+  try {
+    const json = JSON.stringify({ v:1, t:Date.now(), mode:G.mode, screen:G.screen, players:S.players, playerIds:S.playerIds,
+      night: S.night && !S.night.ended ? S.night.started : null, G },
+      (k, v) => v instanceof Set ? { __set:[...v] } : (typeof Node !== "undefined" && v instanceof Node) || k === "resume" ? undefined : v);
+    if (json.length > 2500000) return gameClear();   // e.g. a huge pile of drawings: don't crowd out saved settings
+    localStorage.setItem(GAME_KEY, json);
+  } catch (e) { gameClear(); }
+}
+function gameClear(){ try { localStorage.removeItem(GAME_KEY); } catch (e) {} }
+function gameLoad(){
+  try {
+    const o = JSON.parse(localStorage.getItem(GAME_KEY), (k, v) => v && typeof v === "object" && Array.isArray(v.__set) ? new Set(v.__set) : v);
+    if (!o || o.v !== 1 || !RESUME[o.screen] || Date.now() - o.t > 12 * 3600e3) return null;
+    if (o.night !== (S.night && !S.night.ended ? S.night.started : null)) return null;   // a different game night since
+    return o;
+  } catch (e) { return null; }
+}
+function gameResume(o){
+  stopTimer();
+  Object.assign(G, o.G); G.resume = null; G.gameOver = false;
+  S.players = o.players; S.playerIds = o.playerIds; save(); renderPlayers();
+  RESUME[o.screen]();
+}
+function ago(t){ const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} hr ago`; }
+function renderResume(){
+  const box = $("resumeBox"), o = G.resume;
+  box.hidden = !o; if (!o) return;
+  $("resumeTitle").textContent = `${INTROS[o.mode][0]} in progress`;
+  $("resumeNote").textContent = `Saved ${ago(o.t)} with ${o.players.length} players. Pick up where you left off? A turn that was cut off starts over.`;
+}
+$("resumeGo").onclick = () => { const o = G.resume; if (o) gameResume(o); };
+$("resumeX").onclick = () => { G.resume = null; gameClear(); renderResume(); };
+document.addEventListener("visibilitychange", () => { if (document.hidden) gameSnap(); });
+window.addEventListener("pagehide", gameSnap);
+
 /* ---------- Navigation ---------- */
 function show(id){
   document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== id);
   G.screen = id;
+  if (GAME_OVER.has(id) || (id === "fbturn" && G.ftAction === "again")) { G.gameOver = true; gameClear(); }
+  else if (CHECKPOINT.has(id)) gameSnap();
   $("startOver").hidden = ["home", "setup", "nightStart", "night"].includes(id);
   if (G.nightBoxFor !== id) { $("nightBox").hidden = true; G.nightBoxFor = null; }
-  if (id === "home") renderNightStrip();
+  if (id === "home") { renderNightStrip(); renderResume(); }
   if (id === "nightStart") applyTeamStyle(G.nightDraftStyle); else if (id !== "night") applyTeamStyle();
   resetRestart(); window.scrollTo(0,0);
 }
@@ -1249,7 +1315,7 @@ function renderEstimate(){
 }
 G.newIds = new Set();
 function openSetup(mode){
-  G.mode = mode; G.newIds = new Set();
+  G.mode = mode; G.newIds = new Set(); gameClear(); G.resume = null;
   { const [lo, hi] = PLAYER_RANGE[mode]; $("playerRange").textContent = `${lo}–${hi}`; $("playerRange").setAttribute("aria-label", `${lo} to ${hi} players`); }
   if (nightOn()) nightSyncPlayers();
   renderPlayers();
@@ -1504,6 +1570,7 @@ $("startGame").onclick = () => {
 
 /* ---------- Shared game flow ---------- */
 function newGame(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.scores = S.players.map(() => 0); G.deck = shuffle(G.pool);
   G.teamOn = teamPlay(G.mode); G.teams = G.teamOn ? makeTeams() : null;
   G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
@@ -1721,6 +1788,7 @@ function impStart(){
   impRound();
 }
 function impRound(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   stopTimer();
   G.current = draw();
   const all = [...Array(S.players.length).keys()];
@@ -1982,6 +2050,7 @@ function teleCheck(){
 }
 function teleStart(){ G.pool = TELE_WORDS[S.teleLevel].map(w => [w]); G.deck = shuffle(G.pool); teleRound(); }
 function teleRound(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   stopTimer();
   const n = S.players.length, k = S.teleBooks;
   G.books = [...Array(k).keys()].map(b => { const word = draw()[0]; return { start: Math.floor(b * n / k), word, entries:[{ type:"word", text:word }] }; });
@@ -2194,6 +2263,7 @@ function setEnds(){
   document.querySelectorAll(".end.r").forEach(e => e.textContent = G.current[1]);
 }
 function waveStart(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.pool = WAVE[S.wLevel]; G.deck = shuffle(G.pool);
   G.teamOn = teamPlay("wave"); G.teams = G.teamOn ? makeTeams() : null;
   G.wOrder = []; for (let r = 1; r <= S.wRounds; r++) G.wOrder.push(...turnSeq(r, G.teams));
@@ -2367,7 +2437,7 @@ $("startOver").onclick = () => {
     const b = $("startOver"); b.classList.add("confirm"); b.textContent = "Tap again to end this game";
     restartArm = setTimeout(resetRestart, 3000); return;
   }
-  stopTimer(); openSetup(G.mode);
+  stopTimer(); gameClear(); openSetup(G.mode);
 };
 
 /* ---------- Sound ---------- */
@@ -2562,6 +2632,7 @@ $("goFb").onclick = () => openSetup("fb");
 
 function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go"); }
 function fbStart(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   // 2–3 players: everyone for themselves. One shared turn order, a point per word you describe.
   G.fbCoop = S.players.length < 4;
   G.teams = G.fbCoop ? [S.players.map((_, i) => i), []] : makeTeams();
@@ -2777,6 +2848,7 @@ function spyStart(){
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){
+  G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.spyGame++;
   const big = S.spyBig, n = big ? 25 : 16;
   const words = shuffle(spyPool(S.spyLevel)).slice(0, n);
@@ -3050,6 +3122,7 @@ function nightRecord(beforeId, awards, note){
   };
   if (S.night.mode === "teams") Object.assign(e, nightTeamPoints(e));
   S.night.log.push(e); S.night.last = Date.now(); save();
+  G.gameOver = true; gameClear();   // points are in: never resume (and re-count) this game
   G.nightEntry = e; G.nightCounted = true;
   nightPlace(beforeId); renderNightBox();
 }
@@ -3313,6 +3386,7 @@ $("nightEnd").onclick = () => {
 G.nightStale = nightOn() && Date.now() - S.night.last > NIGHT_STALE_MS;
 
 /* ---------- Init ---------- */
+G.resume = gameLoad();
 renderPlayers(); renderPacks(); renderLevel();
 $("custom").value = S.custom;
 $("soundToggle").setAttribute("aria-checked", S.sound);
