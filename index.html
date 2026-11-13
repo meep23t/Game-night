@@ -155,6 +155,7 @@ textarea{resize:vertical;font-size:15px}
 .tcard ul{list-style:none;padding:0;margin:8px 0 0}
 .tcard li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:16px;border-top:1px solid rgba(30,27,58,.12)}
 .tcard li small{color:#5E5882;font-size:13px;margin-left:6px}
+.tcard ul.tnames{padding-top:8px;border-top:1px solid rgba(30,27,58,.12);font-size:16px;color:#3B3660}
 .night-log .tl{display:flex;gap:10px;font-size:14px;font-weight:700;margin-top:2px}
 .night-log .tl .b{color:#2B44D6} .night-log .tl .p{color:#E2453C}
 :root[data-theme="dark"] .night-log .tl .b{color:#9FB2FF}
@@ -486,8 +487,8 @@ h3.sub{font-size:20px;margin-top:26px}
     <h2>Players <small class="ppl-range" id="playerRange"></small></h2>
     <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
     <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
-    <p class="hint" data-for="fb" style="margin:-4px 0 12px">Two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
-    <p class="hint" data-for="spy" style="margin:-4px 0 12px">Two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. The spymaster role rotates each game.</p>
+    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
+    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
     <div id="players"></div>
     <button id="addPlayer" class="ghost">Add player</button>
     <div id="sitOut" class="sit-out" hidden>
@@ -505,12 +506,12 @@ h3.sub{font-size:20px;margin-top:26px}
 
   <div class="block" id="teamsBlock" hidden>
     <h2>Teams</h2>
-    <p class="hint" id="teamsHint" style="margin:-4px 0 12px">Tap to put each player on a team. Each team needs at least 2 players.</p>
+    <p class="hint" id="teamsHint" style="margin:-4px 0 12px">Each team needs at least 2 players. Tap to put each player on a team.</p>
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
   <p class="block hint" id="fbCoopNote" hidden><b>2–3 players:</b> everyone plays for themselves. Take turns describing while the others guess, and score a point for every word you get them to guess. Most points after three rounds wins.</p>
-  <p class="block hint" id="spyCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on Team Blue. One spymaster gives clues and everyone else guesses. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out!</p>
+  <p class="block hint" id="spyCoopNote" hidden><b>2–3 players: co-op mode.</b> Everyone is on Team Blue. One spymaster gives clues and everyone else guesses. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out!</p>
 
   <div class="block" data-for="act">
     <h2>Word packs</h2>
@@ -545,11 +546,11 @@ h3.sub{font-size:20px;margin-top:26px}
     <details>
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
-        <li>Every card has an easy word worth 1 point and a hard word worth 2. Pick one and act it out before the timer runs out.</li>
-        <li>Tap <b>Got it</b> when someone guesses the word.</li>
-        <li>Tap <b>Skip</b> to pass a word. Once you pass it, it’s gone. It won’t come back this turn.</li>
-        <li>If you skip a word or time runs out, you get no points for that card.</li>
-        <li><b>Playing as teams?</b> Teams take turns acting. Only your teammates guess, and points go to your team.</li>
+        <li>Take turns acting while everyone else guesses. No talking!</li>
+        <li>Every card has an easy word worth 1 point and a hard word worth 2. Pick one and act it out before that card’s timer runs out.</li>
+        <li>Tap <b>Got it</b> when someone guesses the word. Tap <b>Skip</b> to pass; a skipped word is gone for this turn.</li>
+        <li>Skip a card or run out of time and that card scores nothing.</li>
+        <li><b>Teams (needs at least 4 players):</b> teams take turns acting, only your teammates guess, and points go to your team.</li>
       </ul>
     </details>
   </div>
@@ -558,18 +559,16 @@ h3.sub{font-size:20px;margin-top:26px}
     <details>
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
-        <li>Describe the word at the top so your group can guess it. Don’t say the word itself or any word under “Don’t say.”</li>
+        <li>Take turns describing the word at the top so the others can guess it. Don’t say the word itself or any word under “Don’t say.”</li>
         <li>No acting, pointing, or “sounds like.” Words only.</li>
-        <li>Tap <b>Got it</b> when someone guesses the word for 1 point.</li>
+        <li>One timer covers your whole turn, so get through as many cards as you can. Tap <b>Got it</b> for each word guessed: 1 point.</li>
         <li>Say a forbidden word and the card gets a <b>Buzz</b>: it’s gone, and you lose 1 point (unless “Lose a point for a buzz” is off under Rules). Tap <b>Skip</b> to pass on a card for free.</li>
-        <li>Pick how you’ll catch forbidden words before you start:
+        <li><b>Who taps Buzz?</b>
           <ul>
-            <li><b>Buzzer:</b> the next person in line sits beside the describer, watches the screen, and taps <b>Buzz</b>. They sit out guessing that turn.</li>
-            <li><b>Honor system:</b> everyone guesses, and the describer taps <b>Buzz</b> on themselves if they slip.</li>
-            <li><b>Playing as teams?</b> Teams take turns describing. Your teammates guess, and the other team watches the screen and taps <b>Buzz</b> on a forbidden word. Points go to your team.</li>
-      </ul>
+            <li><b>Playing as individuals:</b> either the next person in line sits beside the describer, watches the screen and taps <b>Buzz</b> (they sit out guessing that turn), or play on the honor system and the describer buzzes themselves.</li>
+            <li><b>Playing as teams (needs at least 4 players):</b> your teammates guess, and the other team watches the screen and taps <b>Buzz</b>. Points go to your team.</li>
+          </ul>
         </li>
-        <li>One timer covers your whole turn, so get through as many cards as you can.</li>
       </ul>
     </details>
   </div>
@@ -585,9 +584,9 @@ h3.sub{font-size:20px;margin-top:26px}
       <ul class="rules">
         <li>Everyone secretly gets the same word, except the imposters. They only see “Imposter” (plus the category, if hints are on).</li>
         <li>Pass the phone around. Each player taps their name to see their word, then taps <b>Hide &amp; pass the phone</b> before handing it on.</li>
-        <li>Starting with the first player, go around the circle. Each person says one word or a short clue about the secret word. Don’t make it too obvious, or the imposter will figure it out.</li>
-        <li>Go around once, then talk it over and vote on who you think the imposter is.</li>
-        <li>If the imposter gets caught, they get one guess at the secret word. If they guess it, they still win.</li>
+        <li>Once everyone has seen their word, put the phone down. Going around once in the order shown, each person says one word or a short clue about the secret word. Don’t make it too obvious, or the imposter will figure it out!</li>
+        <li>Talk it over (there’s an optional discussion timer), then vote: on the count of three everyone points at a suspect, and one person taps <b>+</b> for each vote. A tie? The group picks who to go with.</li>
+        <li>Caught imposters get one guess at the secret word, out loud. If they guess it, they still win.</li>
       </ul>
     </details>
   </div>
@@ -631,9 +630,10 @@ h3.sub{font-size:20px;margin-top:26px}
       <ul class="rules">
         <li>Each turn, pass the phone to the clue giver. They see the two ends, like “cold” and “hot,” then swipe the dial to spin it and set a random hidden target. Only they see where it lands.</li>
         <li>The clue giver says one clue that fits that spot. If the target is close to “hot,” you might say “soup.” Near the middle? Maybe “a sunny spring day.”</li>
-        <li>Pass the phone to the group. Talk it over and drag the dial to where you think the target is.</li>
-        <li>The closer you land, the more points: 4 for a bullseye, then 3, then 2. Everyone plays as one team and shares the score.</li>
-        <li><b>Playing as teams?</b> Teams take turns giving clues. Only your teammates move the dial, and the points go to your team.</li>
+        <li>Pass the phone to the guessers. Talk it over and drag the dial to where you think the target is.</li>
+        <li>The closer you land, the more points: 4 for a bullseye, then 3, then 2.</li>
+        <li><b>Playing as individuals:</b> everyone guesses together and shares one group score.</li>
+        <li><b>Teams (needs at least 4 players):</b> teams take turns giving clues, only your teammates move the dial, and the points go to your team.</li>
       </ul>
     </details>
   </div>
@@ -643,17 +643,16 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>First, everyone fills the bowl: pass the phone around, tap your name, and secretly type in your words or short phrases. (Or switch off “Players write the words” and the game fills the bowl for you.)</li>
-        <li>Two teams take turns. On your turn, get your own team to guess as many words from the bowl as you can before time runs out.</li>
-        <li>There are three rounds, each with its own rule:
+        <li>There are three rounds with the same words, each with its own rule:
           <ul>
             <li><b>Round 1, Describe it:</b> say anything except the word.</li>
             <li><b>Round 2, One word:</b> you can say only one word.</li>
             <li><b>Round 3, Act it out:</b> no talking at all.</li>
           </ul>
         </li>
-        <li>The same words come back every round, so pay attention! A round ends when the bowl is empty.</li>
-        <li>Tap <b>Skip</b> to put a word back in the bowl. Each word guessed is 1 point, and the team with the most points after 3 rounds wins.</li>
-        <li><b>2–3 players?</b> Everyone plays for themselves: take turns describing, and score a point for every word you get the others to guess. Most points after three rounds wins.</li>
+        <li>On your turn, get the guessers to guess as many words from the bowl as you can before time runs out. Tap <b>Skip</b> to put a word back. A round ends when the bowl is empty, and the words come back next round, so pay attention!</li>
+        <li><b>4 or more players:</b> two teams take turns, and only your teammates guess. Each word guessed is 1 point for your team, and the team with the most points after 3 rounds wins.</li>
+        <li><b>2–3 players:</b> everyone plays for themselves. Take turns describing, and score a point for every word you get the others to guess. Most points after three rounds wins.</li>
       </ul>
     </details>
   </div>
@@ -672,13 +671,12 @@ h3.sub{font-size:20px;margin-top:26px}
     <details>
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
-        <li>Put the phone in the middle. There are two teams, and each has a spymaster. Only spymasters may look at the secret key, which shows which words belong to each team.</li>
-        <li>Spymasters, sit next to each other so you can look at the key together.</li>
-        <li><b>2–3 players?</b> It’s co-op: everyone is on Team Blue with one spymaster. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out.</li>
+        <li>Put the phone in the middle. The board shows 16 words (25 on the big board).</li>
+        <li><b>4 or more players:</b> two teams, Blue and Pink, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
-        <li>Your team talks it over, taps a word, then taps Reveal. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap End turn.</li>
-        <li>Watch out for the trap card! Reveal it and your team loses right away.</li>
-        <li>The first team to find all its words wins.</li>
+        <li>Your team talks it over, taps a word, then taps <b>Reveal</b>. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap <b>End turn</b>.</li>
+        <li>Watch out for the trap card! Reveal it and your team loses right away. The first team to find all its words wins.</li>
+        <li><b>2–3 players:</b> it’s co-op. Everyone is on Team Blue with one spymaster. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out.</li>
       </ul>
     </details>
   </div>
@@ -1035,7 +1033,7 @@ h3.sub{font-size:20px;margin-top:26px}
   </header>
   <div class="block">
     <h2>Play as</h2>
-    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>Blue vs Pink all night</small></button></div>
+    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players, Blue vs Pink all night</small></button></div>
   </div>
   <div class="block">
     <h2 id="nsListTitle">Players</h2>
@@ -1049,15 +1047,15 @@ h3.sub{font-size:20px;margin-top:26px}
     <p class="nr-step"><b>1. Each game scores itself.</b> While you play, every game keeps its own score with its usual rules, across all of its rounds.</p>
     <p class="nr-step"><b>2. The final result becomes night points.</b> Only when a whole game is finished does its result turn into night points:</p>
     <ul>
-      <li><b>Act it out, Describe it:</b> final scores after all rounds. 1st place 3, 2nd 2, 3rd 1.</li>
-      <li><b>In the range:</b> after all turns, each player’s tally (cluegiver 2, guessers 1 when the guess scores) is ranked. 1st 3, 2nd 2, 3rd 1.</li>
-      <li><b>Word bowl:</b> after all three rounds, everyone on the winning team gets 2. A tie gives everyone 1.</li>
-      <li><b>Word spies:</b> each board is one game. Everyone on the winning team gets 2.</li>
+      <li><b>Act it out, Describe it:</b> final scores after all rounds. 1st place 3, 2nd 2, 3rd 1. Played as teams: like Word bowl.</li>
+      <li><b>In the range:</b> after all turns, each player’s tally (cluegiver 2, guessers 1 when the guess scores) is ranked. 1st 3, 2nd 2, 3rd 1. Played as teams: like Word bowl.</li>
+      <li><b>Word bowl:</b> after all three rounds, everyone on the winning team gets 2. A tie gives everyone 1. With 2–3 players: 1st 3, 2nd 2, 3rd 1.</li>
+      <li><b>Word spies:</b> each board is one game. Everyone on the winning team gets 2. Co-op with 2–3 players: a win gives everyone 2.</li>
       <li><b>Imposter:</b> each round is one game. Everyone on the winning side gets 2.</li>
       <li><b>Pass the doodle:</b> once every sketchbook is revealed, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
-    <p class="nr-step"><b>Teams night:</b> Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
+    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
@@ -1311,8 +1309,8 @@ function renderPlayAs(){
   $("paInd").disabled = $("paTeam").disabled = tn;
   $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played Blue vs Pink with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
     : !tp ? "Everyone plays for themselves."
-    : G.mode === "taboo" ? "Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz. Needs at least 4 players."
-    : "Teams take turns and points go to the team. Your teammates guess. Needs at least 4 players.";
+    : G.mode === "taboo" ? "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz."
+    : "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess.";
   $("paRandomRow").hidden = !tp || tn; $("paRandom").setAttribute("aria-checked", !!S.randomTeams);
 }
 $("paInd").onclick = () => { S.playAs[G.mode] = false; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
@@ -2034,7 +2032,7 @@ const W_HINTS = {
   2: "Trickier scales like boring job to exciting job.",
   3: "Opinion scales like overrated to underrated. Expect debates!"
 };
-INTROS.wave = ["In the range", "One player knows where the hidden target is. They give a clue, and everyone else works together to move the dial to it."];
+INTROS.wave = ["In the range", "One player knows where the hidden target is. They give a clue, and the others move the dial to find it, together or as teams."];
 for (const [k,v] of Object.entries({ wLevel:1, wRounds:2 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.wave = [
   { key:"wRounds", label:"Rounds", hint:"Everyone gives one clue per round", min:1, max:5, step:1 }
@@ -2279,7 +2277,7 @@ const FB_ROUNDS = [
   ["Act it out", "No talking at all. Act out the word for your team."]
 ];
 const TEAMS = ["Team Blue", "Team Pink"];
-INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then two teams race through the same words three times: describe them, use one word, then act them out."];
+INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.fb = [
   { type:"toggle", key:"fbWrite", label:"Players write the words", hint:"Off: the game fills the bowl for you" },
@@ -2481,7 +2479,7 @@ function spyPool(level){
     : SPY_L3;
   return [...new Set(src.filter(single).map(w => w.toLowerCase()))];
 }
-INTROS.spy = ["Word spies", "Two teams, one secret key. Spymasters give one-word clues to help their team find their words, and avoid the trap!"];
+INTROS.spy = ["Word spies", "Spymasters give one-word clues to help their team find their words, and avoid the trap! Two teams with 4 or more players, co-op with 2–3."];
 for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spyTimerOn:false, spySec:120 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
@@ -2818,18 +2816,6 @@ function renderNightBox(){
     const tl = document.createElement("p"); tl.className = "nb-team";
     tl.innerHTML = `<b class="b">Team Blue +${e.team[0]}</b> · <b class="p">Team Pink +${e.team[1]}</b>`;
     nb.appendChild(tl);
-    if (!e.asTeams && e.awards.length) {
-      const ul = document.createElement("ul");
-      e.awards.slice().sort((a, b) => b.pts - a.pts).forEach(a => {
-        const li = document.createElement("li"), s = document.createElement("span"), b = document.createElement("b");
-        const ok = a.id in e.counted;
-        s.textContent = rosterName(a.id) + (ok ? "" : " (didn’t count)"); b.textContent = (ok ? "+" : "") + a.pts;
-        if (!ok) b.style.opacity = ".4";
-        li.append(s, b); ul.appendChild(li);
-      });
-      nb.appendChild(ul);
-      nb.insertAdjacentHTML("beforeend", `<p class="note" style="margin:0 0 10px">Each team’s top ${e.N} count.</p>`);
-    }
   } else if (G.nightCounted) {
     if (e.awards.length) {
       const ul = document.createElement("ul");
@@ -2978,7 +2964,7 @@ function renderNight(){
   const teamsMode = n.mode === "teams";
   $("nightTeams").hidden = !teamsMode; $("nightStand").hidden = teamsMode;
   if (teamsMode) {
-    const { t, counted, missed } = teamNightTotals();
+    const { t } = teamNightTotals();
     $("nightSub").textContent = done
       ? (t[0] === t[1] ? (played ? "It’s a tie between the teams!" : "No games were counted.") : `${TEAMS[t[0] > t[1] ? 0 : 1]} wins game night! 🏆`)
       : `Teams · ${played} game${played === 1 ? "" : "s"} played`;
@@ -2986,13 +2972,8 @@ function renderNight(){
     [0, 1].sort((a, b) => t[b] - t[a] || a - b).forEach(k => {
       const card = document.createElement("div"); card.className = "tcard " + (k ? "p" : "b");
       card.innerHTML = `<div class="hd"><b>${TEAMS[k]}${played && t[k] > t[1 - k] ? '<span class="lead">' + (done ? "Winner" : "Leading") + "</span>" : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
-      const ul = card.querySelector("ul");
-      n.roster.filter(r => (r.team || 0) === k).sort((a, b) => (counted[b.id] || 0) - (counted[a.id] || 0)).forEach(r => {
-        const li = document.createElement("li"), s = document.createElement("span"), v = document.createElement("span");
-        s.textContent = rosterName(r.id);
-        if (missed[r.id]) { const sm = document.createElement("small"); sm.textContent = `didn’t count in ${missed[r.id]} game${missed[r.id] === 1 ? "" : "s"}`; s.appendChild(sm); }
-        v.textContent = counted[r.id] || 0; li.append(s, v); ul.appendChild(li);
-      });
+      const ul = card.querySelector("ul"); ul.className = "tnames";
+      ul.textContent = n.roster.filter(r => (r.team || 0) === k).map(r => rosterName(r.id)).join(", ");
       box.appendChild(card);
     });
   } else {
@@ -3021,8 +3002,7 @@ function renderNight(){
       const tl = document.createElement("span"); tl.className = "tl";
       tl.innerHTML = `<span class="b">Blue +${e.team[0]}</span><span class="p">Pink +${e.team[1]}</span>`;
       li.querySelector(".w").insertBefore(tl, li.querySelector("small"));
-      li.querySelector("small").textContent = e.asTeams ? (e.team[0] === e.team[1] ? "Tie" : `${TEAMS[e.team[0] > e.team[1] ? 0 : 1]} won`)
-        : Object.keys(e.counted).length ? "Counted: " + Object.entries(e.counted).sort((a, b) => b[1] - a[1]).map(([id, v]) => `${rosterName(+id)} ${v}`).join(", ") : "No points";
+      li.querySelector("small").remove();
       log.appendChild(li); return;
     }
     li.querySelector("small").textContent = e.awards.length
