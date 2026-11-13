@@ -409,9 +409,37 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   AREA = 'Word spies';
   try {
     const p = await fresh(b);
-    await setPlayers(p, ['A', 'B', 'C']);
+    // co-op with 2–3 players
+    await setPlayers(p, ['Ana', 'Ben']);
+    await ev(p, () => { S.spyBig = false; S.spyTrap = true; save(); });
+    await open(p, 'spy');
+    check('2 players: setup explains co-op and hides team picker', await p.locator('#spyCoopNote').isVisible() && await p.locator('#teamsBlock').isHidden());
+    await p.click('#startGame');
+    check('2 players start a co-op game', (await screen(p)) === 'spyround' && (await ev(p, () => G.coop)) === true, await txt(p, '#setupError'));
+    check('Co-op: one spymaster with Change', (await p.locator('#srSpies .sm-row').count()) === 1 && /Co-op/.test(await txt(p, '#srFirst')));
+    const cb = await ev(p, () => { const c = r => G.board.filter(x => x.r === r).length; return [G.spyTurn, c(0), c(1)].join(','); });
+    check('Co-op: you are Blue with 6 words, 5 pink clock words', cb === '0,6,5', cb);
+    await p.click('#srGo');
+    check('Co-op: bar shows Blue and Clock counts', /Clock 5/.test(await txt(p, '#sbCount')), await txt(p, '#sbCount'));
+    await p.click('#sbKey');
+    check('Co-op key names the single spymaster and explains the clock', /^Spymaster:/.test(await txt(p, '#skWho')) && /clock/.test(await txt(p, '#skTip')));
+    await p.click('#skHide');
+    await giveClue(p, 1);
+    await p.click('#sbEnd');
+    check('Co-op: ending a turn keeps Blue and the clock takes a pink word', (await ev(p, () => G.spyTurn)) === 0 && /Clock 4/.test(await txt(p, '#sbCount')) && /clock took/.test(await txt(p, '#sbMsg')), await txt(p, '#sbMsg'));
+    await giveClue(p, 1);
+    const pk = await ev(p, () => G.board.findIndex(c => c.r === 1 && !c.open));
+    await p.locator('#sbGrid button').nth(pk).click(); await p.click('#sbReveal');
+    check('Co-op: guessing a pink word ends the turn and the clock also ticks (2 gone)', /Clock 2/.test(await txt(p, '#sbCount')), await txt(p, '#sbCount'));
+    for (let k = 0; k < 2 && (await screen(p)) === 'spyboard'; k++) { await giveClue(p, 1); await p.click('#sbEnd'); }
+    check('Co-op: clock running out loses', (await screen(p)) === 'spyend' && /clock ran out/i.test(await txt(p, '#seReason')), await txt(p, '#seReason'));
+    await p.click('#seAgain'); await p.click('#srGo');
+    await giveClue(p, 6);
+    for (const i of await ev(p, () => G.board.map((c, i) => [c, i]).filter(([c]) => c.r === 0).map(([, i]) => i))) { await p.locator('#sbGrid button').nth(i).click(); await p.click('#sbReveal'); }
+    check('Co-op: finding all blue words wins', (await screen(p)) === 'spyend' && /You win/.test(await txt(p, '#seWin')), await txt(p, '#seWin'));
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await open(p, 'spy'); await p.click('#startGame');
-    check('3 players → blocked with an error', (await screen(p)) === 'setup' && /4/.test(await txt(p, '#setupError')));
+    check('3 players also play co-op', (await ev(p, () => G.coop)) === true);
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
     await ev(p, () => { S.spyBig = false; S.spyTrap = true; save(); });
     await open(p, 'spy'); await p.click('#startGame');
@@ -547,9 +575,9 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   AREA = 'Player ranges';
   try {
     const p = await fresh(b);
-    const want = { goAct:'2–12', goTaboo:'2–12', goFb:'4–12', goTele:'3–12', goWave:'2–12', goImp:'3–12', goSpy:'4–12' };
+    const want = { goAct:'2–12', goTaboo:'2–12', goFb:'4–12', goTele:'3–12', goWave:'2–12', goImp:'3–12', goSpy:'2–12' };
     for (const [id, r] of Object.entries(want)) check(`${id.slice(2)} tile shows ${r}`, (await txt(p, `#${id} .ppl`)).includes(r));
-    for (const [m, r] of [['spy', '4–12'], ['tele', '3–12'], ['act', '2–12']]) { await open(p, m); check(`${m} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
+    for (const [m, r] of [['spy', '2–12'], ['tele', '3–12'], ['act', '2–12']]) { await open(p, m); check(`${m} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
     await ev(p, () => show('home')); await noHScroll(p, 'home with player chips');
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     await p.context().close();
@@ -561,7 +589,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const p = await fresh(b);
     const twelve = Array.from({ length: 12 }, (_, i) => ['Alexandria', 'Benjamin', 'Christopher', 'Dominique', 'Evangeline', 'Francesca', 'Gabriel', 'Harriet', 'Isabella', 'Jonathan', 'Katherine', 'Leonardo'][i]);
     await setPlayers(p, twelve);
-    for (const [g, r] of [['act', '2–12'], ['fb', '4–12'], ['spy', '4–12']]) { await open(p, g); check(`${g} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
+    for (const [g, r] of [['act', '2–12'], ['fb', '4–12'], ['spy', '2–12']]) { await open(p, g); check(`${g} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
     // every game starts with 12 and has no sideways scrolling on its busiest screen
     await open(p, 'imp'); await p.click('#startGame');
     check('Imposter starts with 12', (await screen(p)) === 'reveal'); await noHScroll(p, 'Imposter role list, 12 players');
@@ -690,7 +718,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#resGuessYes');
     check('Imposter guessed it → imposter +2', (await night()).Ben === 4);
     // sit out below minimum
-    await open(p, 'spy');
+    await open(p, 'fb');
     await p.locator('#players .player-row').nth(3).locator('button[aria-label^="Sit out"]').click();
     await p.click('#startGame');
     check('Sitting someone out below the minimum shows the error', (await screen(p)) === 'setup' && /4/.test(await txt(p, '#setupError')));
@@ -701,7 +729,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Renaming keeps the same person’s points', (await night()).Anna === 3);
     // early exit
     const before = await log();
-    await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => show('home'));
+    await open(p, 'spy'); await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => show('home'));
     check('Leaving a game early adds nothing', (await log()) === before);
     // don't count
     await open(p, 'tele'); await p.click('#startGame');

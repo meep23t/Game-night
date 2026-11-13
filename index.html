@@ -481,6 +481,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
+  <p class="block hint" id="spyCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on Team Blue. One spymaster gives clues and everyone else guesses. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out!</p>
 
   <div class="block" data-for="act">
     <h2>Word packs</h2>
@@ -640,6 +641,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <ul class="rules">
         <li>Put the phone in the middle. There are two teams, and each has a spymaster. Only spymasters may look at the secret key, which shows which words belong to each team.</li>
         <li>Spymasters, sit next to each other so you can look at the key together.</li>
+        <li><b>2–3 players?</b> It’s co-op: everyone is on Team Blue with one spymaster. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps Reveal. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap End turn.</li>
         <li>Watch out for the trap card! Reveal it and your team loses right away.</li>
@@ -933,7 +935,7 @@ h3.sub{font-size:20px;margin-top:26px}
   <p class="eyebrow">New board</p>
   <p class="big-name" id="srFirst" style="font-size:clamp(32px,9vw,44px)"></p>
   <div id="srSpies" style="margin:18px 0 6px"></div>
-  <p class="note">Spymasters, sit next to each other so you can look at the key together. Tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!</p>
+  <p class="note" id="srNote"></p>
   <button id="srGo" class="primary">Show the board</button>
 </section>
 
@@ -1105,7 +1107,7 @@ function show(id){
   resetRestart(); window.scrollTo(0,0);
 }
 const MAX_PLAYERS = 12;
-const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[4, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[4, 12] };
+const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[4, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[2, 12] };
 const TILE_MODE = { goAct:"act", goTaboo:"taboo", goFb:"fb", goTele:"tele", goWave:"wave", goImp:"imp", goSpy:"spy" };
 Object.entries(TILE_MODE).forEach(([id, m]) => {
   const [lo, hi] = PLAYER_RANGE[m], c = document.createElement("span");
@@ -1240,7 +1242,9 @@ function teamCheck(){
 }
 function renderTeams(){
   const blk = $("teamsBlock");
-  const on = (G.mode === "fb" || G.mode === "spy") && !S.randomTeams;
+  const coop = G.mode === "spy" && S.players.length < 4;
+  $("spyCoopNote").hidden = !coop;
+  const on = (G.mode === "fb" || (G.mode === "spy" && !coop)) && !S.randomTeams;
   blk.hidden = !on; if (!on) return;
   const box = $("teamList"); box.innerHTML = "";
   S.players.forEach((nm, i) => {
@@ -1333,8 +1337,7 @@ $("startGame").onclick = () => {
   } else if (G.mode === "taboo") {
     G.pool = TABOO[S.level];
   } else if (G.mode === "spy") {
-    if (S.players.length < 4) { $("setupError").textContent = "Word spies needs at least 4 players, so each team has a spymaster and a guesser."; return; }
-    { const err = teamCheck(); if (err) { $("setupError").textContent = err; return; } }
+    if (S.players.length >= 4) { const err = teamCheck(); if (err) { $("setupError").textContent = err; return; } }
     $("setupError").textContent = ""; unlockAudio(); spyStart(); return;
   } else if (G.mode === "fb") {
     if (S.players.length < 4) { $("setupError").textContent = "Word bowl needs at least 4 players, so each team has 2 or more."; return; }
@@ -2341,16 +2344,18 @@ renderSpyLevel();
 $("goSpy").onclick = () => openSetup("spy");
 
 function spyStart(){
-  G.teams = makeTeams();
+  // 2–3 players: co-op. Everyone is Team Blue, pink words are the clock.
+  G.coop = S.players.length < 4;
+  G.teams = G.coop ? [S.players.map((_, i) => i), []] : makeTeams();
   // Random teams: random spymaster per team. Otherwise the picked ones. Play again rotates from there.
-  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * t.length)) : [0, 0];
+  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * Math.max(1, t.length))) : [0, 0];
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){
   G.spyGame++;
   const big = S.spyBig, n = big ? 25 : 16;
   const words = shuffle(spyPool(S.spyLevel)).slice(0, n);
-  const first = Math.random() < .5 ? 0 : 1;
+  const first = G.coop ? 0 : Math.random() < .5 ? 0 : 1;
   const [a, b, by] = big ? [9, 8, 7] : [6, 5, 4];
   const trap = S.spyTrap ? 1 : 0, roles = [];
   for (let i = 0; i < a; i++) roles.push(first);
@@ -2359,17 +2364,20 @@ function spyDeal(){
   if (trap) roles.push("trap");
   G.board = shuffle(roles).map((r, i) => ({ w:words[i], r, open:false }));
   G.spyBig = big; G.spyTurn = first; G.spySel = null;
-  G.spymasters = [0, 1].map(k => G.teams[k][(G.spyBase[k] + G.spyGame) % G.teams[k].length]);
-  $("srFirst").textContent = `${TEAMS[first]} goes first`;
+  G.spymasters = [0, 1].map(k => G.teams[k].length ? G.teams[k][(G.spyBase[k] + G.spyGame) % G.teams[k].length] : null);
+  $("srFirst").textContent = G.coop ? "Co-op: beat the clock" : `${TEAMS[first]} goes first`;
+  $("srNote").textContent = G.coop
+    ? `The spymaster gives clues and everyone else guesses together. After each turn the clock takes one pink word. Find all ${a} blue words before the ${b} pink ones run out! Spymaster, tap “Spymaster key” to peek; everyone else, look away.`
+    : "Spymasters, sit next to each other so you can look at the key together. Tap “Spymaster key” on the board to peek at which words are yours. Everyone else, look away when they do!";
   G.smOpen = null; renderSpymasters();
   show("spyround");
 }
 // Spymasters are pre-filled (rotating each board); "Change" lets the group pick someone else.
 function renderSpymasters(){
   const box = $("srSpies"); box.innerHTML = "";
-  [0, 1].forEach(k => {
+  (G.coop ? [0] : [0, 1]).forEach(k => {
     const row = document.createElement("div"); row.className = "sm-row t" + k;
-    row.innerHTML = `<div class="top"><span class="lbl">${TEAMS[k]} spymaster<b></b></span><button class="chg"></button></div>`;
+    row.innerHTML = `<div class="top"><span class="lbl">${G.coop ? "Spymaster" : TEAMS[k] + " spymaster"}<b></b></span><button class="chg"></button></div>`;
     row.querySelector("b").textContent = name(G.spymasters[k]);
     const chg = row.querySelector(".chg");
     chg.textContent = G.smOpen === k ? "Done" : "Change";
@@ -2395,7 +2403,16 @@ function renderSpymasters(){
 $("srGo").onclick = () => { G.clue = null; G.clueNum = 1; $("sbClueWord").value = ""; $("sbClueErr").textContent = ""; $("sbMsg").textContent = ""; renderSpy(); show("spyboard"); fitCards($("sbGrid")); spyTurnTimer(); };
 // Hand the turn to the other team; their spymaster gives the next clue.
 function spyNextTurn(msg){
-  G.spyTurn = 1 - G.spyTurn; G.spySel = null; G.clue = null; G.clueNum = 1;
+  if (G.coop) {
+    const pink = G.board.map((c, i) => [c, i]).filter(([c]) => c.r === 1 && !c.open);
+    if (pink.length) {
+      const [c] = pink[Math.floor(Math.random() * pink.length)]; c.open = true;
+      msg = `${msg} The clock took “${c.w}”.`;
+    }
+    if (!spyLeft(1)) return spyEndCoop(false, "The clock ran out!");
+    msg = `${msg} ${spyLeft(1)} pink left.`;
+  } else G.spyTurn = 1 - G.spyTurn;
+  G.spySel = null; G.clue = null; G.clueNum = 1;
   $("sbClueWord").value = ""; $("sbClueErr").textContent = "";
   $("sbMsg").textContent = msg; renderSpy(); spyTurnTimer();
 }
@@ -2406,7 +2423,7 @@ function renderClue(){
   $("sbClueForm").className = "clue-box t" + t;
   $("sbEnd").hidden = !G.clue;
   if (!G.clue) {
-    $("sbClueWho").textContent = `${TEAMS[t]} spymaster’s clue`;
+    $("sbClueWho").textContent = G.coop ? "Spymaster’s clue" : `${TEAMS[t]} spymaster’s clue`;
     $("sbNum").textContent = G.clueNum;
     $("sbNumMinus").disabled = G.clueNum <= 1; $("sbNumPlus").disabled = G.clueNum >= left;
   } else {
@@ -2437,14 +2454,14 @@ function spyTurnTimer(){
   el.hidden = false; el.classList.remove("low");
   runTimer(S.spySec * 1000, rem => { el.textContent = fmt(rem); el.classList.toggle("low", rem <= 10000); }, () => {
     buzzer();
-    spyNextTurn(`Time’s up! ${TEAMS[1 - G.spyTurn]}’s turn.`);
+    spyNextTurn(G.coop ? "Time’s up!" : `Time’s up! ${TEAMS[1 - G.spyTurn]}’s turn.`);
   });
 }
 function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
-  $("sbTurn").textContent = `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
-  $("sbCount").textContent = `Left: Blue ${spyLeft(0)} · Pink ${spyLeft(1)}`;
+  $("sbTurn").textContent = G.coop ? "Co-op · your turn" : `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
+  $("sbCount").textContent = G.coop ? `Left: Blue ${spyLeft(0)} · Clock ${spyLeft(1)}` : `Left: Blue ${spyLeft(0)} · Pink ${spyLeft(1)}`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
@@ -2462,20 +2479,25 @@ $("sbReveal").onclick = () => {
   const i = G.spySel; if (i === null) return;
   const c = G.board[i], t = G.spyTurn;
   c.open = true; G.spySel = null;
+  if (G.coop) {
+    if (c.r === "trap") return spyEndCoop(false, "You found the trap card!");
+    if (!spyLeft(0)) return spyEndCoop(true, "You found all your words!");
+    if (!spyLeft(1)) return spyEndCoop(false, "That was the last pink word. The clock ran out!");
+  }
   if (c.r === "trap") return spyEnd(1 - t, `${TEAMS[t]} found the trap card!`);
   if (!spyLeft(0)) return spyEnd(0, "Team Blue found all its words!");
   if (!spyLeft(1)) return spyEnd(1, "Team Pink found all its words!");
   if (c.r === t) {
     ding(); G.clue.left--;
-    if (G.clue.left <= 0) return spyNextTurn(`Correct! That was your last guess. ${TEAMS[1 - t]}’s turn.`);
+    if (G.clue.left <= 0) return spyNextTurn(G.coop ? "Correct! That was your last guess." : `Correct! That was your last guess. ${TEAMS[1 - t]}’s turn.`);
     $("sbMsg").textContent = `Correct! ${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left, or end your turn.`;
   } else {
     tone(220,.3,"triangle",.12);
-    return spyNextTurn(c.r === "by" ? "That word belongs to nobody. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`);
+    return spyNextTurn(c.r === "by" ? "That word belongs to nobody. Turn over!" : G.coop ? "That was a clock word. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`);
   }
   renderSpy();
 };
-$("sbEnd").onclick = () => spyNextTurn(`${TEAMS[1 - G.spyTurn]}’s turn.`);
+$("sbEnd").onclick = () => spyNextTurn(G.coop ? "Turn over." : `${TEAMS[1 - G.spyTurn]}’s turn.`);
 // Shrink the text of any card whose longest word doesn't fit, instead of breaking the word.
 function fitCards(el){
   el.querySelectorAll(".spy-card").forEach(c => {
@@ -2496,7 +2518,7 @@ function spyKeyGrid(el, cross){
   });
 }
 $("sbKey").onclick = () => {
-  $("skWho").textContent = `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
+  $("skWho").textContent = G.coop ? `Spymaster: ${name(G.spymasters[0])}.` : `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
   const t = G.spyTurn, tip = $("skTip");
   $("skClue").hidden = !G.clue; tip.hidden = !!G.clue;
   if (G.clue) {
@@ -2505,12 +2527,23 @@ $("sbKey").onclick = () => {
     tip.textContent = "";
   } else {
     tip.innerHTML = "";
-    const who = document.createElement("b"); who.textContent = `${TEAMS[t]} spymaster:`;
-    tip.append(who, " think of one word that links some of your team’s cards. Avoid the dark trap card!");
+    const who = document.createElement("b"); who.textContent = G.coop ? "Spymaster:" : `${TEAMS[t]} spymaster:`;
+    tip.append(who, G.coop
+      ? " think of one word that links some of your blue cards. Pink cards are the clock. Avoid the dark trap card!"
+      : " think of one word that links some of your team’s cards. Avoid the dark trap card!");
   }
   spyKeyGrid($("skGrid"), true); show("spykey"); fitCards($("skGrid"));
 };
 $("skHide").onclick = () => { show("spyboard"); renderSpy(); };
+function spyEndCoop(win, reason){
+  stopTimer(); $("sbTime").hidden = true;
+  $("seReason").textContent = reason;
+  $("seWin").textContent = win ? "You win!" : "So close!";
+  spyKeyGrid($("seGrid"), false);
+  nightRecord("seAgain", win ? S.players.map((_, i) => ({ i, pts:2 })) : []);
+  if (win) { tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260); } else buzzer();
+  show("spyend"); fitCards($("seGrid"));
+}
 function spyEnd(winner, reason){
   stopTimer(); $("sbTime").hidden = true;
   $("seReason").textContent = reason;
