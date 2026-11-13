@@ -503,8 +503,8 @@ h3.sub{font-size:20px;margin-top:26px}
     <h2>Players <small class="ppl-range" id="playerRange"></small></h2>
     <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
     <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
-    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
-    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
+    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
+    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
     <div id="players"></div>
     <button id="addPlayer" class="ghost">Add player</button>
     <div id="sitOut" class="sit-out" hidden>
@@ -694,7 +694,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>Put the phone in the middle. The board shows 16 words (25 on the big board).</li>
-        <li><b>4 or more players:</b> two teams, Blue and Pink, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
+        <li><b>4 or more players:</b> two teams, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps <b>Reveal</b>. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap <b>End turn</b>.</li>
         <li>Watch out for the trap card! Reveal it and your team loses right away. The first team to find all its words wins.</li>
@@ -1063,7 +1063,7 @@ h3.sub{font-size:20px;margin-top:26px}
   </header>
   <div class="block">
     <h2>Play as</h2>
-    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players, Blue vs Pink all night</small></button></div>
+    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players</small></button></div>
   </div>
   <div class="block">
     <h2 id="nsListTitle">Players</h2>
@@ -1089,7 +1089,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <li><b>Pass the doodle:</b> with scoring on, 1st 3, 2nd 2, 3rd 1. With scoring off, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
-    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
+    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played team against team, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
@@ -1342,7 +1342,7 @@ function renderPlayAs(){
   const tp = teamPlay(G.mode), tn = teamsNight();
   $("paInd").setAttribute("aria-pressed", !tp); $("paTeam").setAttribute("aria-pressed", tp);
   $("paInd").disabled = $("paTeam").disabled = tn;
-  $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played Blue vs Pink with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
+  $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
     : !tp ? "Everyone plays for themselves."
     : G.mode === "taboo" ? "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz."
     : "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess.";
@@ -2995,7 +2995,7 @@ function nightStandings(){
 function nightLeaderText(){
   if (S.night.mode === "teams") {
     const { t } = teamNightTotals();
-    if (!S.night.log.length || (!t[0] && !t[1])) return "Blue vs Pink · no points yet";
+    if (!S.night.log.length || (!t[0] && !t[1])) return `${TEAMS[0]} vs ${TEAMS[1]} · no points yet`;
     return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${TEAMS[t[0] > t[1] ? 0 : 1]} ${plural(TEAMS[t[0] > t[1] ? 0 : 1]) ? "lead" : "leads"} ${Math.max(...t)}–${Math.min(...t)}`;
   }
   const st = nightStandings();

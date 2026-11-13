@@ -879,7 +879,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await ev(p, () => { G.nightDraftTeam = [0, 1, 0, 1, 0]; renderDraft(); });
     await p.click('#nsGo');
     check('Teams night starts with roster teams', (await ev(p, () => S.night.mode)) === 'teams' && (await ev(p, () => S.night.roster.map(r => r.team).join(''))) === '01010');
-    check('Strip shows Blue vs Pink', /Blue vs Pink/.test(await txt(p, '#nightStrip')));
+    check('Strip shows Team Blue vs Team Pink', /Team Blue vs Team Pink/.test(await txt(p, '#nightStrip')));
     // Act it out forced into teams
     await open(p, 'act');
     check('Act it out is locked to teams tonight', await p.locator('#paInd').isDisabled() && /teams game night/.test(await txt(p, '#playAsHint')));
