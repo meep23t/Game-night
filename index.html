@@ -20,6 +20,8 @@
   --paper:#F4F1FF; --surface:#FFFFFF; --ink:#1E1B3A; --muted:#5E5882; --line:#D9D3F2;
   --cobalt:#2B44D6; --on-cobalt:#FFFFFF; --shadow:#1E1B3A;
   --sun:#FFC83D; --pink:#F0588F; --mint:#1FA874; --red:#E2453C;
+  --t0-bg:#BFD4FF; --t0-tint:#E3ECFF; --t0-edge:#2B44D6; --t0-text:#2B44D6; --t0-dtext:#9FB2FF;
+  --t1-bg:#FFC9C2; --t1-tint:#FFE6E2; --t1-edge:#E2453C; --t1-text:#E2453C; --t1-dtext:#FF9A8F;
   --card-bg:#FFFDF7; --card-ink:#1E1B3A;
   color-scheme:light;
   box-sizing:border-box;
@@ -93,7 +95,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-box{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:18px 0}
 .night-box .nb-head{font-weight:800;margin-bottom:8px}
 .night-box .nb-team{margin:0 0 8px;font-size:17px}
-.night-box .nb-team .b{color:#2B44D6} .night-box .nb-team .p{color:#E2453C}
+.night-box .nb-team .b{color:var(--t0-text)} .night-box .nb-team .p{color:var(--t1-text)}
 .night-box ul{list-style:none;padding:0;margin:0 0 10px}
 .night-box li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:16px}
 .night-box li b{color:var(--mint);font-variant-numeric:tabular-nums}
@@ -148,7 +150,7 @@ textarea{resize:vertical;font-size:15px}
 .ns-row .team-seg{flex:none}
 .tcards{margin:4px 0 6px}
 .tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
-.tcard.b{background:#E3ECFF;border-color:#2B44D6} .tcard.p{background:#FFE6E2;border-color:#E2453C}
+.tcard.b{background:var(--t0-tint);border-color:var(--t0-edge)} .tcard.p{background:var(--t1-tint);border-color:var(--t1-edge)}
 .tcard .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .tcard .hd b{font-size:22px;font-weight:800} .tcard .hd .pts{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
 .tcard .lead{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:#FFC83D;font-size:12px;font-weight:800;vertical-align:4px}
@@ -157,9 +159,10 @@ textarea{resize:vertical;font-size:15px}
 .tcard li small{color:#5E5882;font-size:13px;margin-left:6px}
 .tcard ul.tnames{padding-top:8px;border-top:1px solid rgba(30,27,58,.12);font-size:16px;color:#3B3660}
 .night-log .tl{display:flex;gap:10px;font-size:14px;font-weight:700;margin-top:2px}
-.night-log .tl .b{color:#2B44D6} .night-log .tl .p{color:#E2453C}
-:root[data-theme="dark"] .night-log .tl .b{color:#9FB2FF}
-@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .night-log .tl .b{color:#9FB2FF} :root:not([data-theme="light"]) .night-log .tl .p{color:#FF9A8F} }
+.night-log .tl .b{color:var(--t0-text)} .night-log .tl .p{color:var(--t1-text)}
+:root[data-theme="dark"] .night-log .tl .b,:root[data-theme="dark"] .night-box .nb-team .b{color:var(--t0-dtext)}
+:root[data-theme="dark"] .night-log .tl .p,:root[data-theme="dark"] .night-box .nb-team .p{color:var(--t1-dtext)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .night-log .tl .b,:root:not([data-theme="light"]) .night-box .nb-team .b{color:var(--t0-dtext)} :root:not([data-theme="light"]) .night-log .tl .p,:root:not([data-theme="light"]) .night-box .nb-team .p{color:var(--t1-dtext)} }
 #paRandomRow{margin-top:12px}
 details.custom{margin-top:14px}
 summary{font-weight:600;cursor:pointer;padding:4px 0}
@@ -341,8 +344,8 @@ button:disabled{opacity:.4}
 .spy-card.hy{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:anywhere}
 .spy-card:disabled{opacity:1}
 .spy-card.sel{border-color:var(--cobalt);box-shadow:0 0 0 3px var(--cobalt)}
-.spy-card.r-0{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
-.spy-card.r-1{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
+.spy-card.r-0{background:var(--t0-bg);border-color:var(--t0-edge);color:#1E1B3A}
+.spy-card.r-1{background:var(--t1-bg);border-color:var(--t1-edge);color:#1E1B3A}
 .spy-card.r-by{background:#EDE6D6;border-color:#B9AE95;color:#1E1B3A}
 .spy-card.r-trap{background:#1E1B3A;border-color:#1E1B3A;color:#fff}
 .spy-card.done{opacity:.35;text-decoration:line-through}
@@ -350,8 +353,8 @@ button:disabled{opacity:.4}
 .estimate p{font-weight:700;color:var(--ink)}
 .estimate p small{display:block;font-weight:500;color:var(--muted);font-size:14px;margin-top:2px}
 .turn-pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#1E1B3A}
-.turn-pill.t0{background:#BFD4FF}
-.turn-pill.t1{background:#FFC9C2}
+.turn-pill.t0{background:var(--t0-bg)}
+.turn-pill.t1{background:var(--t1-bg)}
 #spyboard .bar{gap:8px;flex-wrap:wrap;row-gap:6px}
 #spyboard .turn-pill{white-space:nowrap}
 #sbCount{font-size:15px;white-space:nowrap}
@@ -371,13 +374,21 @@ button:disabled{opacity:.4}
 .sm-row .pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .sm-row .pick button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--ink)}
 .sm-row .pick button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
-.sm-row.t0{border-left:8px solid #2B44D6} .sm-row.t1{border-left:8px solid #E2453C}
+.sm-row.t0{border-left:8px solid var(--t0-edge)} .sm-row.t1{border-left:8px solid var(--t1-edge)}
 .team-seg button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--muted)}
-.team-seg button[aria-pressed="true"].b{background:#BFD4FF;border-color:#2B44D6;color:#1E1B3A}
-.team-seg button[aria-pressed="true"].p{background:#FFC9C2;border-color:#E2453C;color:#1E1B3A}
+.team-seg button[aria-pressed="true"].b{background:var(--t0-bg);border-color:var(--t0-edge);color:#1E1B3A}
+.team-seg button[aria-pressed="true"].p{background:var(--t1-bg);border-color:var(--t1-edge);color:#1E1B3A}
+.team-seg button{max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts-row{display:flex;flex-direction:column;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ts-row:last-child{border-bottom:0}
+.ts-row input{font-weight:700}
+.ts-swatches{display:flex;gap:8px;flex-wrap:wrap}
+.ts-swatches button{width:34px;height:34px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 2px var(--line)}
+.ts-swatches button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface)}
+.ts-swatches button:disabled{opacity:.25}
 .spy-tools{display:flex;gap:10px}
 .clue-box{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:10px}
-.clue-box.t0{border-color:#2B44D6} .clue-box.t1{border-color:#E2453C}
+.clue-box.t0{border-color:var(--t0-edge)} .clue-box.t1{border-color:var(--t1-edge)}
 .clue-title{font-weight:800;font-size:14px;margin-bottom:6px}
 .clue-row{display:flex;align-items:center;gap:6px}
 .clue-row input{flex:1;min-width:0;padding:8px 10px;font-size:16px}
@@ -507,6 +518,11 @@ h3.sub{font-size:20px;margin-top:26px}
     <div class="pa-seg"><button id="paInd">Individuals</button><button id="paTeam">Teams</button></div>
     <p class="hint" id="playAsHint" style="margin-top:10px"></p>
     <div class="setting" id="paRandomRow" hidden><span>Random teams<small>Shuffled into two even teams</small></span><button class="toggle" role="switch" id="paRandom" aria-label="Random teams"></button></div>
+  </div>
+
+  <div class="block" id="teamStyleBlock" hidden>
+    <h2>Team names &amp; colors</h2>
+    <div id="teamStyleBox"></div>
   </div>
 
   <div class="block" id="teamsBlock" hidden>
@@ -1056,6 +1072,10 @@ h3.sub{font-size:20px;margin-top:26px}
     <button id="nsShuffle" class="ghost" style="margin-top:8px;border-style:solid;color:var(--ink)" hidden>Shuffle teams</button>
     <p class="note" id="nsTeamCount" style="margin:10px 0 0" hidden></p>
   </div>
+  <div class="block" id="nsStyleBlock" hidden>
+    <h2>Team names &amp; colors</h2>
+    <div id="nsStyleBox"></div>
+  </div>
   <details class="block night-rules">
     <summary>How points work</summary>
     <p class="nr-step"><b>1. Each game scores itself.</b> While you play, every game keeps its own score with its usual rules, across all of its rounds.</p>
@@ -1157,6 +1177,7 @@ function show(id){
   $("startOver").hidden = ["home", "setup", "nightStart", "night"].includes(id);
   if (G.nightBoxFor !== id) { $("nightBox").hidden = true; G.nightBoxFor = null; }
   if (id === "home") renderNightStrip();
+  if (id === "nightStart") applyTeamStyle(G.nightDraftStyle); else if (id !== "night") applyTeamStyle();
   resetRestart(); window.scrollTo(0,0);
 }
 const MAX_PLAYERS = 12;
@@ -1335,17 +1356,23 @@ function renderTeams(){
   const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
   $("spyCoopNote").hidden = !(coop && G.mode === "spy");
   $("fbCoopNote").hidden = !(coop && G.mode === "fb");
-  const on = (((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode)) && (teamsNight() || !S.randomTeams);
+  const teamsOn = ((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode);
+  $("teamStyleBlock").hidden = !teamsOn;
+  if (teamsOn) { applyTeamStyle(); teamStyleEditor($("teamStyleBox"), curTeamStyle(), full => { applyTeamStyle(); if (teamsNight()) save(); if (full) renderTeams(); else renderTeamList(); }); }
+  const on = teamsOn && (teamsNight() || !S.randomTeams);
   blk.hidden = !on; if (!on) return;
+  renderTeamList();
+}
+function renderTeamList(){
   const box = $("teamList"); box.innerHTML = "";
   S.players.forEach((nm, i) => {
     const row = document.createElement("div"); row.className = "team-row";
     const n = document.createElement("span"); n.className = "nm"; n.textContent = nm.trim() || `Player ${i + 1}`;
     const seg = document.createElement("span"); seg.className = "team-seg";
-    [["Blue", "b"], ["Pink", "p"]].forEach(([lbl, cls], k) => {
+    [[TSHORT[0], "b"], [TSHORT[1], "p"]].forEach(([lbl, cls], k) => {
       const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
       b.setAttribute("aria-pressed", teamOf(i) === k);
-      b.setAttribute("aria-label", `${n.textContent} on Team ${lbl}`);
+      b.setAttribute("aria-label", `${n.textContent} on ${TEAMS[k]}`);
       b.onclick = () => {
         if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
         else S.teamPick[nm.trim()] = k;
@@ -1358,7 +1385,7 @@ function renderTeams(){
     box.appendChild(row);
   });
   const t = makeTeams();
-  $("teamCount").textContent = `Team Blue: ${t[0].length} · Team Pink: ${t[1].length}`;
+  $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}`;
 }
 
 function renderPacks(){
@@ -2157,7 +2184,7 @@ function waveStart(){
 }
 function wNewCard(){ G.current = draw(); G.target = Math.random() * 100; }
 function wGiver(){ return G.wOrder[G.wTurn]; }
-function wScoreText(){ return G.teamOn ? `Blue ${G.wTeam[0]} · Pink ${G.wTeam[1]}` : `Group score: ${G.wScore}`; }
+function wScoreText(){ return G.teamOn ? `${TSHORT[0]} ${G.wTeam[0]} · ${TSHORT[1]} ${G.wTeam[1]}` : `Group score: ${G.wScore}`; }
 function wStep(){ return `Turn ${G.wTurn + 1} of ${G.wTotal}`; }
 function wPass(){
   $("wpStep").textContent = wStep();
@@ -2248,8 +2275,8 @@ function wFinal(){
   $("wfLabel").textContent = G.teamOn ? "Final score" : "Group score";
   if (G.teamOn) {
     const [a, b] = G.wTeam;
-    $("wfScore").textContent = a === b ? "It’s a tie" : `${TEAMS[a > b ? 0 : 1]} wins`;
-    $("wfMsg").textContent = `Team Blue ${a} · Team Pink ${b}`;
+    $("wfScore").textContent = a === b ? "It’s a tie" : `${wins(TEAMS[a > b ? 0 : 1])}`;
+    $("wfMsg").textContent = `${TEAMS[0]} ${a} · ${TEAMS[1]} ${b}`;
   } else {
     $("wfScore").textContent = `${G.wScore} of ${max}`;
     $("wfMsg").textContent = r >= .75 ? "Total mind readers!" : r >= .5 ? "Great teamwork!" : r >= .25 ? "Not bad. Keep tuning in!" : "Room to grow. Play again!";
@@ -2292,7 +2319,7 @@ $("nextTurn").onclick = () => {
 function toFinal(){
   if (G.teamOn) {
     const [a, b] = teamTotals();
-    $("winner").textContent = a === b ? "It’s a tie" : `${TEAMS[a > b ? 0 : 1]} wins`;
+    $("winner").textContent = a === b ? "It’s a tie" : `${wins(TEAMS[a > b ? 0 : 1])}`;
     renderScores($("finalScores"), "rank");
     const rv = $("review"); rv.innerHTML = "";
     [...new Set(G.missed)].forEach(w => { const s = document.createElement("span"); s.textContent = w; rv.appendChild(s); });
@@ -2346,7 +2373,53 @@ const FB_ROUNDS = [
   ["One word", "You can say only one word as your clue. Choose wisely!"],
   ["Act it out", "No talking at all. Act out the word for your team."]
 ];
-const TEAMS = ["Team Blue", "Team Pink"];
+const TEAMS = ["Team Blue", "Team Pink"], TSHORT = ["Blue", "Pink"];
+// Preset team colors, checked for contrast in light and dark mode.
+const TEAM_COLORS = {
+  blue:   { label:"Blue",   bg:"#BFD4FF", tint:"#E3ECFF", edge:"#2B44D6", text:"#2B44D6", dtext:"#9FB2FF" },
+  pink:   { label:"Pink",   bg:"#FFC9C2", tint:"#FFE6E2", edge:"#E2453C", text:"#D63A31", dtext:"#FF9A8F" },
+  green:  { label:"Green",  bg:"#C6F0D8", tint:"#E4F8EC", edge:"#1A8F5F", text:"#16784F", dtext:"#6FE0A8" },
+  orange: { label:"Orange", bg:"#FFDDB0", tint:"#FFF0DB", edge:"#D9700A", text:"#A85505", dtext:"#FFB866" },
+  purple: { label:"Purple", bg:"#E2D4FF", tint:"#F0E9FF", edge:"#7A4FD6", text:"#6A3FC8", dtext:"#C3A8FF" },
+  teal:   { label:"Teal",   bg:"#BDEDF0", tint:"#E0F7F8", edge:"#0E8C93", text:"#0B7378", dtext:"#6FDDE3" }
+};
+const defaultTeamStyle = () => [{ name:"", color:"blue" }, { name:"", color:"pink" }];
+G.teamStyle = defaultTeamStyle();   // casual play: not saved, so it resets when the app reopens
+function curTeamStyle(){ return teamsNight() && S.night.teamStyle ? S.night.teamStyle : G.teamStyle; }
+// Grammar for custom team names: "Giraffes' turn", "Owls win"; "Team Blue's turn", "Team Blue wins".
+function poss(n){ return /s$/i.test(n) ? n + "’" : n + "’s"; }
+function plural(n){ return /s$/i.test(n) && !/^team /i.test(n); }
+function wins(n){ return `${n} ${plural(n) ? "win" : "wins"}`; }
+function styleName(st, k){ return st[k].name.trim() || `Team ${TEAM_COLORS[st[k].color].label}`; }
+function styleShort(st, k){ return st[k].name.trim() || TEAM_COLORS[st[k].color].label; }
+function applyTeamStyle(st){
+  st = st || curTeamStyle();
+  const r = document.documentElement.style;
+  st.forEach((s, k) => {
+    const c = TEAM_COLORS[s.color] || TEAM_COLORS[k ? "pink" : "blue"];
+    TEAMS[k] = styleName(st, k); TSHORT[k] = styleShort(st, k);
+    for (const f of ["bg", "tint", "edge", "text", "dtext"]) r.setProperty(`--t${k}-${f}`, c[f]);
+  });
+}
+// Name + color editor for both teams. onChange(full) — full=true when a color changed (rebuild), false for typing.
+function teamStyleEditor(box, st, onChange){
+  box.innerHTML = "";
+  st.forEach((s, k) => {
+    const row = document.createElement("div"); row.className = "ts-row";
+    const inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 16; inp.value = s.name;
+    inp.placeholder = `Team ${TEAM_COLORS[s.color].label}`; inp.setAttribute("aria-label", `Team ${k + 1} name`);
+    inp.addEventListener("input", () => { s.name = inp.value; onChange(false); });
+    const sw = document.createElement("div"); sw.className = "ts-swatches";
+    Object.entries(TEAM_COLORS).forEach(([key, c]) => {
+      const b = document.createElement("button"); b.style.background = c.edge;
+      b.setAttribute("aria-label", `Team ${k + 1} color: ${c.label}`); b.setAttribute("aria-pressed", s.color === key);
+      b.disabled = st[1 - k].color === key;   // the two teams can't share a color
+      b.onclick = () => { s.color = key; onChange(true); };
+      sw.appendChild(b);
+    });
+    row.append(inp, sw); box.appendChild(row);
+  });
+}
 INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.fb = [
@@ -2520,7 +2593,7 @@ function fbFinal(){
   if (G.fbCoop) return fbFinalCoop();
   const [a, b] = G.teamScores;
   $("ftRound").textContent = "Final scores";
-  $("ftTitle").textContent = a === b ? "It’s a tie!" : `${TEAMS[a > b ? 0 : 1]} wins!`;
+  $("ftTitle").textContent = a === b ? "It’s a tie!" : `${wins(TEAMS[a > b ? 0 : 1])}!`;
   $("ftList").innerHTML = "";
   fbScores($("ftScores"));
   G.ftAction = "again"; $("ftNext").textContent = "Play again";
@@ -2677,14 +2750,14 @@ function spyTurnTimer(){
   el.hidden = false; el.classList.remove("low");
   runTimer(S.spySec * 1000, rem => { el.textContent = fmt(rem); el.classList.toggle("low", rem <= 10000); }, () => {
     buzzer();
-    spyNextTurn(G.coop ? "Time’s up!" : `Time’s up! ${TEAMS[1 - G.spyTurn]}’s turn.`);
+    spyNextTurn(G.coop ? "Time’s up!" : `Time’s up! ${poss(TEAMS[1 - G.spyTurn])} turn.`);
   });
 }
 function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
-  $("sbTurn").textContent = G.coop ? "Co-op · your turn" : `${TEAMS[t]}’s turn`; $("sbTurn").className = "turn-pill t" + t;
-  $("sbCount").textContent = G.coop ? `Left: Blue ${spyLeft(0)} · Clock ${spyLeft(1)}` : `Left: Blue ${spyLeft(0)} · Pink ${spyLeft(1)}`;
+  $("sbTurn").textContent = G.coop ? "Co-op · your turn" : `${poss(TEAMS[t])} turn`; $("sbTurn").className = "turn-pill t" + t;
+  $("sbCount").textContent = G.coop ? `Left: Blue ${spyLeft(0)} · Clock ${spyLeft(1)}` : `Left: ${TSHORT[0]} ${spyLeft(0)} · ${TSHORT[1]} ${spyLeft(1)}`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
@@ -2712,15 +2785,15 @@ $("sbReveal").onclick = () => {
   if (!spyLeft(1)) return spyEnd(1, "Team Pink found all its words!");
   if (c.r === t) {
     ding(); G.clue.left--;
-    if (G.clue.left <= 0) return spyNextTurn(G.coop ? "Correct! That was your last guess." : `Correct! That was your last guess. ${TEAMS[1 - t]}’s turn.`);
+    if (G.clue.left <= 0) return spyNextTurn(G.coop ? "Correct! That was your last guess." : `Correct! That was your last guess. ${poss(TEAMS[1 - t])} turn.`);
     $("sbMsg").textContent = `Correct! ${G.clue.left} guess${G.clue.left === 1 ? "" : "es"} left, or end your turn.`;
   } else {
     tone(220,.3,"triangle",.12);
-    return spyNextTurn(c.r === "by" ? "That word belongs to nobody. Turn over!" : G.coop ? "That was a clock word. Turn over!" : `That was ${TEAMS[1 - t]}’s word. Turn over!`);
+    return spyNextTurn(c.r === "by" ? "That word belongs to nobody. Turn over!" : G.coop ? "That was a clock word. Turn over!" : `That was ${poss(TEAMS[1 - t])} word. Turn over!`);
   }
   renderSpy();
 };
-$("sbEnd").onclick = () => spyNextTurn(G.coop ? "Turn over." : `${TEAMS[1 - G.spyTurn]}’s turn.`);
+$("sbEnd").onclick = () => spyNextTurn(G.coop ? "Turn over." : `${poss(TEAMS[1 - G.spyTurn])} turn.`);
 // Shrink the text of any card whose longest word doesn't fit, instead of breaking the word.
 function fitCards(el){
   el.querySelectorAll(".spy-card").forEach(c => {
@@ -2741,7 +2814,7 @@ function spyKeyGrid(el, cross){
   });
 }
 $("sbKey").onclick = () => {
-  $("skWho").textContent = G.coop ? `Spymaster: ${name(G.spymasters[0])}.` : `Team Blue: ${name(G.spymasters[0])}. Team Pink: ${name(G.spymasters[1])}.`;
+  $("skWho").textContent = G.coop ? `Spymaster: ${name(G.spymasters[0])}.` : `${TEAMS[0]}: ${name(G.spymasters[0])}. ${TEAMS[1]}: ${name(G.spymasters[1])}.`;
   const t = G.spyTurn, tip = $("skTip");
   $("skClue").hidden = !G.clue; tip.hidden = !!G.clue;
   if (G.clue) {
@@ -2770,7 +2843,7 @@ function spyEndCoop(win, reason){
 function spyEnd(winner, reason){
   stopTimer(); $("sbTime").hidden = true;
   $("seReason").textContent = reason;
-  $("seWin").textContent = `${TEAMS[winner]} wins!`;
+  $("seWin").textContent = `${wins(TEAMS[winner])}!`;
   spyKeyGrid($("seGrid"), false);
   nightRecord("seAgain", G.teams[winner].map(i => ({ i, pts:2 })));
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
@@ -2884,7 +2957,7 @@ function renderNightBox(){
   nb.innerHTML = `<p class="nb-head">🏆 Game night</p>`;
   if (G.nightCounted && e.team) {
     const tl = document.createElement("p"); tl.className = "nb-team";
-    tl.innerHTML = `<b class="b">Team Blue +${e.team[0]}</b> · <b class="p">Team Pink +${e.team[1]}</b>`;
+    tl.innerHTML = `<b class="b">${esc(TEAMS[0])} +${e.team[0]}</b> · <b class="p">${esc(TEAMS[1])} +${e.team[1]}</b>`;
     nb.appendChild(tl);
   } else if (G.nightCounted) {
     if (e.awards.length) {
@@ -2923,7 +2996,7 @@ function nightLeaderText(){
   if (S.night.mode === "teams") {
     const { t } = teamNightTotals();
     if (!S.night.log.length || (!t[0] && !t[1])) return "Blue vs Pink · no points yet";
-    return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${TEAMS[t[0] > t[1] ? 0 : 1]} leads ${Math.max(...t)}–${Math.min(...t)}`;
+    return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${TEAMS[t[0] > t[1] ? 0 : 1]} ${plural(TEAMS[t[0] > t[1] ? 0 : 1]) ? "lead" : "leads"} ${Math.max(...t)}–${Math.min(...t)}`;
   }
   const st = nightStandings();
   if (!S.night.log.length || !st[0].pts) return "No points yet";
@@ -2961,6 +3034,7 @@ function openNightStart(){
   G.nightDraft = S.players.map(n => n.trim()).filter(Boolean);
   while (G.nightDraft.length < 2) G.nightDraft.push("Player " + (G.nightDraft.length + 1));
   G.nightDraftTeam = G.nightDraft.map((_, i) => i % 2);
+  G.nightDraftStyle = defaultTeamStyle();   // names and colors reset for each new game night
   G.nightMode = G.nightMode || "ind";
   renderDraft(); $("nsError").textContent = ""; show("nightStart");
 }
@@ -2970,8 +3044,11 @@ $("nsShuffle").onclick = () => {
   const order = shuffle(G.nightDraft.map((_, i) => i));
   order.forEach((i, k) => G.nightDraftTeam[i] = k % 2); renderDraft();
 };
-function renderDraft(){
+function renderDraft(full = true){
   const teams = G.nightMode === "teams";
+  applyTeamStyle(G.nightDraftStyle);
+  $("nsStyleBlock").hidden = !teams;
+  if (teams && full) teamStyleEditor($("nsStyleBox"), G.nightDraftStyle, f => renderDraft(f));
   $("nsInd").setAttribute("aria-pressed", !teams); $("nsTeam").setAttribute("aria-pressed", teams);
   $("nsListTitle").textContent = teams ? "Players & teams" : "Players";
   const box = $("nsList"); box.innerHTML = "";
@@ -2983,10 +3060,10 @@ function renderDraft(){
     row.appendChild(inp);
     if (teams) {
       const seg = document.createElement("span"); seg.className = "team-seg";
-      [["Blue", "b"], ["Pink", "p"]].forEach(([lbl, cls], k) => {
+      [[TSHORT[0], "b"], [TSHORT[1], "p"]].forEach(([lbl, cls], k) => {
         const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
         b.setAttribute("aria-pressed", G.nightDraftTeam[i] === k);
-        b.setAttribute("aria-label", `${nm || "Player " + (i + 1)} on Team ${lbl}`);
+        b.setAttribute("aria-label", `${nm || "Player " + (i + 1)} on ${TEAMS[k]}`);
         b.onclick = () => { G.nightDraftTeam[i] = k; renderDraft(); };
         seg.appendChild(b);
       });
@@ -3004,7 +3081,7 @@ function renderDraft(){
   $("nsShuffle").hidden = !teams; $("nsTeamCount").hidden = !teams;
   if (teams) {
     const a = G.nightDraftTeam.filter(t => t === 0).length, b = G.nightDraft.length - a;
-    $("nsTeamCount").textContent = `Team Blue: ${a} · Team Pink: ${b}` + (a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
+    $("nsTeamCount").textContent = `${TEAMS[0]}: ${a} · ${TEAMS[1]}: ${b}` + (a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
   }
 }
 $("nsAdd").onclick = () => {
@@ -3018,7 +3095,7 @@ $("nsGo").onclick = () => {
   const teams = G.nightMode === "teams";
   if (teams && [0, 1].some(k => G.nightDraftTeam.filter(t => t === k).length < 2)) { $("nsError").textContent = "A teams night needs at least 2 players on each team."; return; }
   const now = Date.now();
-  S.night = { started:now, last:now, ended:false, mode: teams ? "teams" : "ind", nextId:names.length + 1,
+  S.night = { started:now, last:now, ended:false, mode: teams ? "teams" : "ind", teamStyle: teams ? JSON.parse(JSON.stringify(G.nightDraftStyle)) : null, nextId:names.length + 1,
     roster:names.map((name, i) => teams ? { id:i + 1, name, team:G.nightDraftTeam[i] } : { id:i + 1, name }), log:[] };
   S.players = names.slice(0, MAX_PLAYERS); S.playerIds = S.night.roster.slice(0, MAX_PLAYERS).map(p => p.id);
   G.nightStale = false; save(); renderPlayers(); show("home");
@@ -3032,16 +3109,17 @@ function renderNight(){
   const played = n.log.length;
   $("nightTitle").textContent = done ? "Final results" : "Game night";
   const teamsMode = n.mode === "teams";
+  if (teamsMode && n.teamStyle) applyTeamStyle(n.teamStyle);
   $("nightTeams").hidden = !teamsMode; $("nightStand").hidden = teamsMode;
   if (teamsMode) {
     const { t } = teamNightTotals();
     $("nightSub").textContent = done
-      ? (t[0] === t[1] ? (played ? "It’s a tie between the teams!" : "No games were counted.") : `${TEAMS[t[0] > t[1] ? 0 : 1]} wins game night! 🏆`)
+      ? (t[0] === t[1] ? (played ? "It’s a tie between the teams!" : "No games were counted.") : `${wins(TEAMS[t[0] > t[1] ? 0 : 1])} game night! 🏆`)
       : `Teams · ${played} game${played === 1 ? "" : "s"} played`;
     const box = $("nightTeams"); box.innerHTML = "";
     [0, 1].sort((a, b) => t[b] - t[a] || a - b).forEach(k => {
       const card = document.createElement("div"); card.className = "tcard " + (k ? "p" : "b");
-      card.innerHTML = `<div class="hd"><b>${TEAMS[k]}${played && t[k] > t[1 - k] ? '<span class="lead">' + (done ? "Winner" : "Leading") + "</span>" : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
+      card.innerHTML = `<div class="hd"><b>${esc(TEAMS[k])}${played && t[k] > t[1 - k] ? '<span class="lead">' + (done ? "Winner" : "Leading") + "</span>" : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
       const ul = card.querySelector("ul"); ul.className = "tnames";
       ul.textContent = n.roster.filter(r => (r.team || 0) === k).map(r => rosterName(r.id)).join(", ");
       box.appendChild(card);
@@ -3070,7 +3148,7 @@ function renderNight(){
     li.querySelector("b").textContent = e.label;
     if (e.team) {
       const tl = document.createElement("span"); tl.className = "tl";
-      tl.innerHTML = `<span class="b">Blue +${e.team[0]}</span><span class="p">Pink +${e.team[1]}</span>`;
+      tl.innerHTML = `<span class="b">${esc(TSHORT[0])} +${e.team[0]}</span><span class="p">${esc(TSHORT[1])} +${e.team[1]}</span>`;
       li.querySelector(".w").insertBefore(tl, li.querySelector("small"));
       li.querySelector("small").remove();
       log.appendChild(li); return;

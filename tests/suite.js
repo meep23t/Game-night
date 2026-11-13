@@ -919,6 +919,43 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
 
+  /* ================= TEAM NAMES & COLORS ================= */
+  AREA = 'Team names & colors';
+  try {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await ev(p, () => { S.randomTeams = false; save(); });
+    await open(p, 'spy');
+    check('Team games show the names & colors editor', await p.locator('#teamStyleBlock').isVisible());
+    await p.locator('#teamStyleBox input').nth(0).fill('Giraffes');
+    await p.click('button[aria-label="Team 1 color: Green"]');
+    check('Team 2 can’t pick team 1’s color', await p.locator('button[aria-label="Team 2 color: Green"]').isDisabled());
+    check('Names flow into the picker and count', /Giraffes: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')) && /Giraffes/.test(await txt(p, '#teamList')));
+    await p.click('#startGame'); await p.click('#srGo');
+    check('Word spies uses the team name with correct grammar', /Giraffes’ turn/.test(await txt(p, '#sbTurn')) && /Left: Giraffes/.test(await txt(p, '#sbCount')), await txt(p, '#sbTurn'));
+    check('Team color applies to the board', (await ev(p, () => getComputedStyle($('sbTurn')).backgroundColor)) === 'rgb(198, 240, 216)');
+    await ev(p, () => spyEnd(0, 'x'));
+    check('Plural custom name: "Giraffes win!"', /Giraffes win!/.test(await txt(p, '#seWin')), await txt(p, '#seWin'));
+    await open(p, 'act');
+    check('Not shown for individual play', await p.locator('#teamStyleBlock').isHidden());
+    await p.reload();
+    await open(p, 'spy');
+    check('Casual names and colors reset when the app reopens', /Team Blue: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')));
+    // game night
+    await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsTeam');
+    await p.locator('#nsStyleBox input').nth(1).fill('Owls'); await p.click('button[aria-label="Team 2 color: Orange"]');
+    await p.click('#nsGo');
+    check('Night keeps its team names', /Team Blue: 2 · Owls: 2/.test(await (async () => { await open(p, 'act'); return txt(p, '#teamCount'); })()));
+    await ev(p, () => show('home'));
+    await p.click('#nightStrip button'); await p.click('#nightEnd'); await p.click('#nightEnd');
+    await p.click('#nightEnd'); await p.click('#nsTeam');
+    check('A new game night starts with default names', /Team Blue: 2 · Team Pink: 2/.test(await txt(p, '#nsTeamCount')));
+    await noHScroll(p, 'night start with team editor');
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teamstyle');
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+
   /* ================= LAYOUT: small phone, dark mode ================= */
   AREA = 'Layout';
   for (const dark of [false, true]) {
