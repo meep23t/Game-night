@@ -837,6 +837,63 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
+  /* ================= TEAMS GAME NIGHT ================= */
+  AREA = 'Teams game night';
+  try {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
+    await ev(p, () => show('home'));
+    await p.click('#nightStrip button'); await p.click('#nsTeam');
+    check('Start screen: teams split with count', /Team Blue: 3 · Team Pink: 2/.test(await txt(p, '#nsTeamCount')));
+    await p.click('button[aria-label="Ben on Team Blue"]'); await p.click('button[aria-label="Dee on Team Blue"]');
+    await p.click('#nsGo');
+    check('Teams night needs 2+ per team', /at least 2 players on each team/.test(await txt(p, '#nsError')));
+    await p.click('button[aria-label="Ben on Team Pink"]'); await p.click('button[aria-label="Dee on Team Pink"]');
+    await p.click('#nsShuffle');
+    const sh = await ev(p, () => G.nightDraftTeam.filter(t => t === 0).length);
+    check('Shuffle keeps teams even (3 v 2)', sh === 3 || sh === 2, sh);
+    await ev(p, () => { G.nightDraftTeam = [0, 1, 0, 1, 0]; renderDraft(); });
+    await p.click('#nsGo');
+    check('Teams night starts with roster teams', (await ev(p, () => S.night.mode)) === 'teams' && (await ev(p, () => S.night.roster.map(r => r.team).join(''))) === '01010');
+    check('Strip shows Blue vs Pink', /Blue vs Pink/.test(await txt(p, '#nightStrip')));
+    // Act it out forced into teams
+    await open(p, 'act');
+    check('Act it out is locked to teams tonight', await p.locator('#paInd').isDisabled() && /teams game night/.test(await txt(p, '#playAsHint')));
+    await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); });
+    await p.click('#startGame');
+    while ((await screen(p)) === 'pass') { const k = await ev(p, () => teamOfPlayer(cur())); await p.click('#startTurn'); await p.click('#pickEasy'); await p.click(k === 0 ? '#gotBtn' : '#skipBtn'); await p.clock.runFor(1500); await p.click('#nextTurn'); }
+    check('Team game win = 2 × smaller team size (Blue +4)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '4,0');
+    // Imposter: individual → top N
+    await open(p, 'imp'); await p.click('#startGame');
+    await ev(p, () => { G.imps = new Set([1]); G.votes = new Set([0]); $('revealBtn').onclick(); });
+    check('Individual game: each team’s top 2 count (Ben +2 for Pink)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '0,2');
+    // Pass the doodle: everyone +1, top 2 each
+    await open(p, 'tele'); await ev(p, () => { S.teleBooks = 1; save(); }); await p.click('#startGame');
+    await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
+    check('Bigger team’s 3rd scorer doesn’t count', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2' && /didn’t count/.test(await txt(p, '#nightBox')));
+    // team picker edits tonight's teams; newcomer joins smaller team
+    await open(p, 'wave');
+    await p.click('button[aria-label="Eve on Team Pink"]');
+    check('Changing a team in setup updates tonight’s teams', (await ev(p, () => rosterTeam(5))) === 1);
+    await p.click('button[aria-label="Eve on Team Blue"]');
+    await p.click('#addPlayer');
+    check('Newcomer joins the smaller team', (await ev(p, () => rosterTeam(S.playerIds.at(-1)))) === 1);
+    check('Rules hide the Random teams switch tonight', (await p.locator('#settings .setting', { hasText: 'Random teams' }).count()) === 0);
+    // leaderboard
+    await ev(p, () => show('home'));
+    check('Strip shows the leading team', /Team Blue leads 6–4/.test(await txt(p, '#nightStrip')), await txt(p, '#nightStrip'));
+    await p.click('#nightStrip button');
+    check('Leaderboard shows team cards with totals', (await p.locator('#nightTeams .tcard').count()) === 2 && /Team Blue[\s\S]*6/.test(await txt(p, '#nightTeams')) && await p.locator('#nightStand').isHidden());
+    check('Player lines show counted points and misses', /Eve\s*didn’t count in 1 game/.test(await txt(p, '#nightTeams')), await txt(p, '#nightTeams'));
+    check('Game log shows team points', /Blue \+4/.test(await txt(p, '#nightLog')) && /Pink \+2/.test(await txt(p, '#nightLog')));
+    await noHScroll(p, 'teams leaderboard');
+    await p.click('#nightEnd'); await p.click('#nightEnd');
+    check('Ending crowns the winning team', /Team Blue wins game night/.test(await txt(p, '#nightSub')));
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teamsnight');
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+
   /* ================= LAYOUT: small phone, dark mode ================= */
   AREA = 'Layout';
   for (const dark of [false, true]) {

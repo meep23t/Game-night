@@ -92,6 +92,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-log .w small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
 .night-box{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:18px 0}
 .night-box .nb-head{font-weight:800;margin-bottom:8px}
+.night-box .nb-team{margin:0 0 8px;font-size:17px}
+.night-box .nb-team .b{color:#2B44D6} .night-box .nb-team .p{color:#E2453C}
 .night-box ul{list-style:none;padding:0;margin:0 0 10px}
 .night-box li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:16px}
 .night-box li b{color:var(--mint);font-variant-numeric:tabular-nums}
@@ -142,6 +144,21 @@ textarea{resize:vertical;font-size:15px}
 .pa-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .pa-seg button{border:2px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-weight:800;font-size:17px}
 .pa-seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.pa-seg button small{display:block;font-weight:600;font-size:13px;opacity:.75;margin-top:2px}
+.ns-row .team-seg{flex:none}
+.tcards{margin:4px 0 6px}
+.tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
+.tcard.b{background:#E3ECFF;border-color:#2B44D6} .tcard.p{background:#FFE6E2;border-color:#E2453C}
+.tcard .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tcard .hd b{font-size:22px;font-weight:800} .tcard .hd .pts{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.tcard .lead{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:#FFC83D;font-size:12px;font-weight:800;vertical-align:4px}
+.tcard ul{list-style:none;padding:0;margin:8px 0 0}
+.tcard li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:16px;border-top:1px solid rgba(30,27,58,.12)}
+.tcard li small{color:#5E5882;font-size:13px;margin-left:6px}
+.night-log .tl{display:flex;gap:10px;font-size:14px;font-weight:700;margin-top:2px}
+.night-log .tl .b{color:#2B44D6} .night-log .tl .p{color:#E2453C}
+:root[data-theme="dark"] .night-log .tl .b{color:#9FB2FF}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .night-log .tl .b{color:#9FB2FF} :root:not([data-theme="light"]) .night-log .tl .p{color:#FF9A8F} }
 #paRandomRow{margin-top:12px}
 details.custom{margin-top:14px}
 summary{font-weight:600;cursor:pointer;padding:4px 0}
@@ -1017,9 +1034,15 @@ h3.sub{font-size:20px;margin-top:26px}
     <p>Who’s playing tonight? Every game you finish adds points to the leaderboard. Before each game you can sit people out or add someone new.</p>
   </header>
   <div class="block">
-    <h2>Players</h2>
+    <h2>Play as</h2>
+    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>Blue vs Pink all night</small></button></div>
+  </div>
+  <div class="block">
+    <h2 id="nsListTitle">Players</h2>
     <div id="nsList"></div>
     <button id="nsAdd" class="ghost">Add player</button>
+    <button id="nsShuffle" class="ghost" style="margin-top:8px;border-style:solid;color:var(--ink)" hidden>Shuffle teams</button>
+    <p class="note" id="nsTeamCount" style="margin:10px 0 0" hidden></p>
   </div>
   <details class="block night-rules">
     <summary>How points work</summary>
@@ -1034,6 +1057,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <li><b>Pass the doodle:</b> once every sketchbook is revealed, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
+    <p class="nr-step"><b>Teams night:</b> Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
@@ -1045,6 +1069,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <h1 id="nightTitle">Game night</h1>
     <p id="nightSub"></p>
   </header>
+  <div class="tcards" id="nightTeams" hidden></div>
   <ol class="standings" id="nightStand"></ol>
   <h3 class="sub">Games tonight</h3>
   <ul class="result-list night-log" id="nightLog"></ul>
@@ -1235,7 +1260,9 @@ function movePlayer(a, b){
 $("addPlayer").onclick = () => {
   if (nightOn()) {
     const id = S.night.nextId++, nm = "Player " + (S.night.roster.length + 1);
-    S.night.roster.push({ id, name:nm }); S.players.push(nm); S.playerIds.push(id);
+    const sizes = [0, 1].map(k => S.night.roster.filter(r => (r.team || 0) === k).length);
+    S.night.roster.push({ id, name:nm, team: teamsNight() ? (sizes[1] < sizes[0] ? 1 : 0) : undefined });   // newcomers join the smaller team
+    S.players.push(nm); S.playerIds.push(id);
   } else { S.players.push("Player " + (S.players.length+1)); S.playerIds.push(null); }
   save(); renderPlayers();
 };
@@ -1243,16 +1270,19 @@ $("addPlayer").onclick = () => {
 if (S.randomTeams === undefined) S.randomTeams = false;
 if (!S.teamPick || typeof S.teamPick !== "object") S.teamPick = {};
 // Manual picks are remembered by name; anyone without a pick defaults to alternating seats.
-function teamOf(i){ const v = S.teamPick[S.players[i].trim()]; return v === 0 || v === 1 ? v : i % 2; }
+function teamOf(i){
+  if (teamsNight() && S.playerIds[i] != null) return rosterTeam(S.playerIds[i]);   // tonight's teams
+  const v = S.teamPick[S.players[i].trim()]; return v === 0 || v === 1 ? v : i % 2;
+}
 function makeTeams(){
   const t = [[], []];
-  if (S.randomTeams) shuffle(S.players.map((_, i) => i)).forEach((i, k) => t[k % 2].push(i));
+  if (S.randomTeams && !teamsNight()) shuffle(S.players.map((_, i) => i)).forEach((i, k) => t[k % 2].push(i));
   else S.players.forEach((_, i) => t[teamOf(i)].push(i));
   t.forEach(x => x.sort((a, b) => a - b));   // keep seating order within each team
   return t;
 }
 function teamCheck(){
-  if (S.randomTeams) return "";
+  if (S.randomTeams && !teamsNight()) return "";
   const t = makeTeams();
   for (const k of [0, 1]) if (t[k].length < 2) return `${TEAMS[k]} needs at least 2 players. Move someone over under Teams.`;
   return "";
@@ -1260,7 +1290,10 @@ function teamCheck(){
 // Play as Individuals or Teams (Act it out, Describe it, In the range).
 const TEAM_CAPABLE = ["act", "taboo", "wave"];
 if (!S.playAs || typeof S.playAs !== "object") S.playAs = {};
-function teamPlay(mode){ return TEAM_CAPABLE.includes(mode) && !!S.playAs[mode]; }
+function teamPlay(mode){
+  if (!TEAM_CAPABLE.includes(mode)) return false;
+  return teamsNight() ? S.players.length >= 4 : !!S.playAs[mode];   // teams night: always teams when there are enough players
+}
 function teamOfPlayer(i){ return G.teams && G.teams[1].includes(i) ? 1 : 0; }
 // One round of turns. Individuals: seat order. Teams: Blue, Pink, Blue, Pink… with equal turns per team;
 // the smaller team's players take extra turns, starting where they left off.
@@ -1273,12 +1306,14 @@ function turnSeq(round, teams){
 function renderPlayAs(){
   const on = TEAM_CAPABLE.includes(G.mode);
   $("playAsBlock").hidden = !on; if (!on) return;
-  const tp = teamPlay(G.mode);
+  const tp = teamPlay(G.mode), tn = teamsNight();
   $("paInd").setAttribute("aria-pressed", !tp); $("paTeam").setAttribute("aria-pressed", tp);
-  $("playAsHint").textContent = !tp ? "Everyone plays for themselves."
+  $("paInd").disabled = $("paTeam").disabled = tn;
+  $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played Blue vs Pink with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
+    : !tp ? "Everyone plays for themselves."
     : G.mode === "taboo" ? "Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz. Needs at least 4 players."
     : "Teams take turns and points go to the team. Your teammates guess. Needs at least 4 players.";
-  $("paRandomRow").hidden = !tp; $("paRandom").setAttribute("aria-checked", !!S.randomTeams);
+  $("paRandomRow").hidden = !tp || tn; $("paRandom").setAttribute("aria-checked", !!S.randomTeams);
 }
 $("paInd").onclick = () => { S.playAs[G.mode] = false; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
 $("paTeam").onclick = () => { S.playAs[G.mode] = true; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
@@ -1288,7 +1323,7 @@ function renderTeams(){
   const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
   $("spyCoopNote").hidden = !(coop && G.mode === "spy");
   $("fbCoopNote").hidden = !(coop && G.mode === "fb");
-  const on = (((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode)) && !S.randomTeams;
+  const on = (((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode)) && (teamsNight() || !S.randomTeams);
   blk.hidden = !on; if (!on) return;
   const box = $("teamList"); box.innerHTML = "";
   S.players.forEach((nm, i) => {
@@ -1299,7 +1334,11 @@ function renderTeams(){
       const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
       b.setAttribute("aria-pressed", teamOf(i) === k);
       b.setAttribute("aria-label", `${n.textContent} on Team ${lbl}`);
-      b.onclick = () => { S.teamPick[nm.trim()] = k; save(); renderTeams(); $("setupError").textContent = ""; };
+      b.onclick = () => {
+        if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
+        else S.teamPick[nm.trim()] = k;
+        save(); renderTeams(); renderEstimate(); $("setupError").textContent = "";
+      };
       seg.appendChild(b);
     });
     const ctrls = document.createElement("span"); ctrls.className = "team-ctrls"; ctrls.appendChild(seg);
@@ -1344,6 +1383,7 @@ const SETTINGS = {
 function renderSettings(){
   const box = $("settings"); box.innerHTML = "";
   SETTINGS[G.mode].forEach(s => {
+    if (s.key === "randomTeams" && teamsNight()) return;   // tonight's teams are fixed
     if (s.type === "toggle") {
       const row = document.createElement("div"); row.className = "setting";
       row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
@@ -2463,7 +2503,7 @@ function spyStart(){
   G.coop = S.players.length < 4;
   G.teams = G.coop ? [S.players.map((_, i) => i), []] : makeTeams();
   // Random teams: random spymaster per team. Otherwise the picked ones. Play again rotates from there.
-  G.spyBase = S.randomTeams ? G.teams.map(t => Math.floor(Math.random() * Math.max(1, t.length))) : [0, 0];
+  G.spyBase = S.randomTeams && !teamsNight() ? G.teams.map(t => Math.floor(Math.random() * Math.max(1, t.length))) : [0, 0];
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){
@@ -2690,6 +2730,8 @@ document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = ICON[el.da
 const NIGHT_STALE_MS = 12 * 60 * 60 * 1000;
 const PLACE_PTS = [3, 2, 1];
 function nightOn(){ return !!(S.night && !S.night.ended); }
+function teamsNight(){ return nightOn() && S.night.mode === "teams"; }
+function rosterTeam(id){ const r = S.night && S.night.roster.find(p => p.id === id); return r && r.team === 1 ? 1 : 0; }
 function rosterName(id){ const r = S.night && S.night.roster.find(p => p.id === id); return r ? (r.name.trim() || "Player") : "Player"; }
 function nightRename(id, nm){ const r = id != null && S.night.roster.find(p => p.id === id); if (r) r.name = nm; }
 
@@ -2736,14 +2778,59 @@ function nightRecord(beforeId, awards, note){
     awards: awards.filter(a => a.pts > 0 && S.playerIds[a.i] != null).map(a => ({ id:S.playerIds[a.i], pts:a.pts, raw:a.raw })),
     note: note || ""
   };
+  if (S.night.mode === "teams") Object.assign(e, nightTeamPoints(e));
   S.night.log.push(e); S.night.last = Date.now(); save();
   G.nightEntry = e; G.nightCounted = true;
   nightPlace(beforeId); renderNightBox();
 }
+// Teams night: turn one game's result into team points, fairly for uneven teams.
+// N = players on the smaller side in this game. Team-format games: winner gets 2×N (tie: N each).
+// Other games: each team's top N individual scores count.
+function nightTeamPoints(e){
+  const side = [[], []]; e.players.forEach(id => side[rosterTeam(id)].push(id));
+  const N = Math.min(side[0].length, side[1].length);
+  const asTeams = (TEAM_CAPABLE.includes(G.mode) && !!G.teamOn) || (G.mode === "fb" && !G.fbCoop) || (G.mode === "spy" && !G.coop);
+  const team = [0, 0], counted = {};
+  if (asTeams) {
+    const won = [0, 1].map(k => e.awards.some(a => rosterTeam(a.id) === k));
+    if (won[0] && won[1]) { team[0] = team[1] = N; }
+    else if (won[0] || won[1]) team[won[0] ? 0 : 1] = 2 * N;
+    return { team, counted, asTeams:true, N };
+  }
+  [0, 1].forEach(k => e.awards.filter(a => rosterTeam(a.id) === k).sort((x, y) => y.pts - x.pts).slice(0, N)
+    .forEach(a => { counted[a.id] = a.pts; team[k] += a.pts; }));
+  return { team, counted, asTeams:false, N };
+}
+function teamNightTotals(){
+  const t = [0, 0], counted = {}, missed = {};
+  S.night.log.forEach(e => {
+    if (!e.team) return;
+    t[0] += e.team[0]; t[1] += e.team[1];
+    Object.entries(e.counted || {}).forEach(([id, v]) => counted[id] = (counted[id] || 0) + v);
+    if (!e.asTeams) e.awards.forEach(a => { if (!(a.id in (e.counted || {}))) missed[a.id] = (missed[a.id] || 0) + 1; });
+  });
+  return { t, counted, missed };
+}
 function renderNightBox(){
   const nb = $("nightBox"), e = G.nightEntry;
   nb.innerHTML = `<p class="nb-head">🏆 Game night</p>`;
-  if (G.nightCounted) {
+  if (G.nightCounted && e.team) {
+    const tl = document.createElement("p"); tl.className = "nb-team";
+    tl.innerHTML = `<b class="b">Team Blue +${e.team[0]}</b> · <b class="p">Team Pink +${e.team[1]}</b>`;
+    nb.appendChild(tl);
+    if (!e.asTeams && e.awards.length) {
+      const ul = document.createElement("ul");
+      e.awards.slice().sort((a, b) => b.pts - a.pts).forEach(a => {
+        const li = document.createElement("li"), s = document.createElement("span"), b = document.createElement("b");
+        const ok = a.id in e.counted;
+        s.textContent = rosterName(a.id) + (ok ? "" : " (didn’t count)"); b.textContent = (ok ? "+" : "") + a.pts;
+        if (!ok) b.style.opacity = ".4";
+        li.append(s, b); ul.appendChild(li);
+      });
+      nb.appendChild(ul);
+      nb.insertAdjacentHTML("beforeend", `<p class="note" style="margin:0 0 10px">Each team’s top ${e.N} count.</p>`);
+    }
+  } else if (G.nightCounted) {
     if (e.awards.length) {
       const ul = document.createElement("ul");
       e.awards.slice().sort((a, b) => b.pts - a.pts).forEach(a => {
@@ -2777,6 +2864,11 @@ function nightStandings(){
     .sort((a, b) => b.pts - a.pts || b.games - a.games || a.name.localeCompare(b.name));
 }
 function nightLeaderText(){
+  if (S.night.mode === "teams") {
+    const { t } = teamNightTotals();
+    if (!S.night.log.length || (!t[0] && !t[1])) return "Blue vs Pink · no points yet";
+    return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${TEAMS[t[0] > t[1] ? 0 : 1]} leads ${Math.max(...t)}–${Math.min(...t)}`;
+  }
   const st = nightStandings();
   if (!S.night.log.length || !st[0].pts) return "No points yet";
   const top = st.filter(r => r.pts === st[0].pts);
@@ -2812,33 +2904,66 @@ function renderNightStrip(){
 function openNightStart(){
   G.nightDraft = S.players.map(n => n.trim()).filter(Boolean);
   while (G.nightDraft.length < 2) G.nightDraft.push("Player " + (G.nightDraft.length + 1));
+  G.nightDraftTeam = G.nightDraft.map((_, i) => i % 2);
+  G.nightMode = G.nightMode || "ind";
   renderDraft(); $("nsError").textContent = ""; show("nightStart");
 }
+$("nsInd").onclick = () => { G.nightMode = "ind"; renderDraft(); };
+$("nsTeam").onclick = () => { G.nightMode = "teams"; renderDraft(); };
+$("nsShuffle").onclick = () => {
+  const order = shuffle(G.nightDraft.map((_, i) => i));
+  order.forEach((i, k) => G.nightDraftTeam[i] = k % 2); renderDraft();
+};
 function renderDraft(){
+  const teams = G.nightMode === "teams";
+  $("nsInd").setAttribute("aria-pressed", !teams); $("nsTeam").setAttribute("aria-pressed", teams);
+  $("nsListTitle").textContent = teams ? "Players & teams" : "Players";
   const box = $("nsList"); box.innerHTML = "";
   G.nightDraft.forEach((nm, i) => {
-    const row = document.createElement("div"); row.className = "player-row";
+    const row = document.createElement("div"); row.className = "player-row ns-row";
     const inp = document.createElement("input"); inp.type = "text"; inp.value = nm; inp.maxLength = 24;
     inp.setAttribute("aria-label", "Player " + (i + 1) + " name");
     inp.addEventListener("input", () => { G.nightDraft[i] = inp.value; });
     row.appendChild(inp);
+    if (teams) {
+      const seg = document.createElement("span"); seg.className = "team-seg";
+      [["Blue", "b"], ["Pink", "p"]].forEach(([lbl, cls], k) => {
+        const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
+        b.setAttribute("aria-pressed", G.nightDraftTeam[i] === k);
+        b.setAttribute("aria-label", `${nm || "Player " + (i + 1)} on Team ${lbl}`);
+        b.onclick = () => { G.nightDraftTeam[i] = k; renderDraft(); };
+        seg.appendChild(b);
+      });
+      row.appendChild(seg);
+    }
     if (G.nightDraft.length > 2) {
       const rm = document.createElement("button"); rm.className = "icon-btn"; rm.textContent = "×";
       rm.setAttribute("aria-label", "Remove " + (nm || "player"));
-      rm.onclick = () => { G.nightDraft.splice(i, 1); renderDraft(); };
+      rm.onclick = () => { G.nightDraft.splice(i, 1); G.nightDraftTeam.splice(i, 1); renderDraft(); };
       row.appendChild(rm);
     }
     box.appendChild(row);
   });
   $("nsAdd").hidden = G.nightDraft.length >= 12;
+  $("nsShuffle").hidden = !teams; $("nsTeamCount").hidden = !teams;
+  if (teams) {
+    const a = G.nightDraftTeam.filter(t => t === 0).length, b = G.nightDraft.length - a;
+    $("nsTeamCount").textContent = `Team Blue: ${a} · Team Pink: ${b}` + (a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
+  }
 }
-$("nsAdd").onclick = () => { G.nightDraft.push("Player " + (G.nightDraft.length + 1)); renderDraft(); };
+$("nsAdd").onclick = () => {
+  const a = G.nightDraftTeam.filter(t => t === 0).length;
+  G.nightDraft.push("Player " + (G.nightDraft.length + 1)); G.nightDraftTeam.push(a > G.nightDraft.length - 1 - a ? 1 : 0); renderDraft();
+};
 $("nsBack").onclick = () => show("home");
 $("nsGo").onclick = () => {
   const names = G.nightDraft.map(s => s.trim());
   if (names.some(n => !n)) { $("nsError").textContent = "Give every player a name."; return; }
+  const teams = G.nightMode === "teams";
+  if (teams && [0, 1].some(k => G.nightDraftTeam.filter(t => t === k).length < 2)) { $("nsError").textContent = "A teams night needs at least 2 players on each team."; return; }
   const now = Date.now();
-  S.night = { started:now, last:now, ended:false, nextId:names.length + 1, roster:names.map((name, i) => ({ id:i + 1, name })), log:[] };
+  S.night = { started:now, last:now, ended:false, mode: teams ? "teams" : "ind", nextId:names.length + 1,
+    roster:names.map((name, i) => teams ? { id:i + 1, name, team:G.nightDraftTeam[i] } : { id:i + 1, name }), log:[] };
   S.players = names.slice(0, MAX_PLAYERS); S.playerIds = S.night.roster.slice(0, MAX_PLAYERS).map(p => p.id);
   G.nightStale = false; save(); renderPlayers(); show("home");
 };
@@ -2850,6 +2975,27 @@ function renderNight(){
   const n = S.night, st = nightStandings(), done = n.ended;
   const played = n.log.length;
   $("nightTitle").textContent = done ? "Final results" : "Game night";
+  const teamsMode = n.mode === "teams";
+  $("nightTeams").hidden = !teamsMode; $("nightStand").hidden = teamsMode;
+  if (teamsMode) {
+    const { t, counted, missed } = teamNightTotals();
+    $("nightSub").textContent = done
+      ? (t[0] === t[1] ? (played ? "It’s a tie between the teams!" : "No games were counted.") : `${TEAMS[t[0] > t[1] ? 0 : 1]} wins game night! 🏆`)
+      : `Teams · ${played} game${played === 1 ? "" : "s"} played`;
+    const box = $("nightTeams"); box.innerHTML = "";
+    [0, 1].sort((a, b) => t[b] - t[a] || a - b).forEach(k => {
+      const card = document.createElement("div"); card.className = "tcard " + (k ? "p" : "b");
+      card.innerHTML = `<div class="hd"><b>${TEAMS[k]}${played && t[k] > t[1 - k] ? '<span class="lead">' + (done ? "Winner" : "Leading") + "</span>" : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
+      const ul = card.querySelector("ul");
+      n.roster.filter(r => (r.team || 0) === k).sort((a, b) => (counted[b.id] || 0) - (counted[a.id] || 0)).forEach(r => {
+        const li = document.createElement("li"), s = document.createElement("span"), v = document.createElement("span");
+        s.textContent = rosterName(r.id);
+        if (missed[r.id]) { const sm = document.createElement("small"); sm.textContent = `didn’t count in ${missed[r.id]} game${missed[r.id] === 1 ? "" : "s"}`; s.appendChild(sm); }
+        v.textContent = counted[r.id] || 0; li.append(s, v); ul.appendChild(li);
+      });
+      box.appendChild(card);
+    });
+  } else {
   const top = st.filter(r => played && r.pts && r.pts === st[0].pts);
   $("nightSub").textContent = done
     ? (top.length === 1 ? `${top[0].name} wins game night! 🏆` : top.length ? `It’s a tie between ${top.map(r => r.name).join(" and ")}!` : "No games were counted.")
@@ -2865,11 +3011,20 @@ function renderNight(){
     li.querySelector(".pt").textContent = r.pts;
     ol.appendChild(li);
   });
+  }
   const log = $("nightLog"); log.innerHTML = "";
   n.log.slice().reverse().forEach(e => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="w"><b></b><small></small></span>`;
     li.querySelector("b").textContent = e.label;
+    if (e.team) {
+      const tl = document.createElement("span"); tl.className = "tl";
+      tl.innerHTML = `<span class="b">Blue +${e.team[0]}</span><span class="p">Pink +${e.team[1]}</span>`;
+      li.querySelector(".w").insertBefore(tl, li.querySelector("small"));
+      li.querySelector("small").textContent = e.asTeams ? (e.team[0] === e.team[1] ? "Tie" : `${TEAMS[e.team[0] > e.team[1] ? 0 : 1]} won`)
+        : Object.keys(e.counted).length ? "Counted: " + Object.entries(e.counted).sort((a, b) => b[1] - a[1]).map(([id, v]) => `${rosterName(+id)} ${v}`).join(", ") : "No points";
+      log.appendChild(li); return;
+    }
     li.querySelector("small").textContent = e.awards.length
       ? e.awards.slice().sort((a, b) => b.pts - a.pts).map(a => `${rosterName(a.id)} +${a.pts}`).join(" · ")
       : "No points";
