@@ -1273,7 +1273,7 @@ function renderPlayers(){
   S.players.forEach((name,i) => {
     const row = document.createElement("div"); row.className = "player-row";
     const inp = document.createElement("input"); inp.type = "text"; inp.value = name; inp.maxLength = 24;
-    inp.setAttribute("aria-label", "Player " + (i+1) + " name");
+    inp.setAttribute("aria-label", "Player " + (i+1) + " name"); inp.placeholder = "Player " + (i + 1);
     inp.addEventListener("input", () => {
       S.players[i] = inp.value;
       if (night) nightRename(S.playerIds[i], inp.value);
@@ -1306,13 +1306,14 @@ function movePlayer(a, b){
 }
 $("addPlayer").onclick = () => {
   if (nightOn()) {
-    const id = S.night.nextId++, nm = "Player " + (S.night.roster.length + 1);
+    const id = S.night.nextId++, nm = "";
     const sizes = [0, 1].map(k => S.night.roster.filter(r => (r.team || 0) === k).length);
     S.night.roster.push({ id, name:nm, team: teamsNight() ? (sizes[1] < sizes[0] ? 1 : 0) : undefined });   // newcomers join the smaller team
     G.newIds.add(id);   // can still be moved to the other team during this setup
     S.players.push(nm); S.playerIds.push(id);
-  } else { S.players.push("Player " + (S.players.length+1)); S.playerIds.push(null); }
+  } else { S.players.push(""); S.playerIds.push(null); }
   save(); renderPlayers();
+  const ins = $("players").querySelectorAll("input"); if (ins.length) ins[ins.length - 1].focus();   // ready to type the name
 };
 /* ---------- Teams (Word bowl, Word spies) ---------- */
 delete S.randomTeams;   // replaced by the Shuffle teams button
