@@ -931,7 +931,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('button[aria-label="Team 1 color: Green"]');
     check('Team 2 can’t pick team 1’s color', await p.locator('button[aria-label="Team 2 color: Green"]').isDisabled());
     check('Names flow into the picker and count', /Giraffes: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')) && /Giraffes/.test(await txt(p, '#teamList')));
-    await p.click('#startGame'); await p.click('#srGo');
+    await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => { G.spyTurn = 0; renderSpy(); });
     check('Word spies uses the team name with correct grammar', /Giraffes’ turn/.test(await txt(p, '#sbTurn')) && /Left: Giraffes/.test(await txt(p, '#sbCount')), await txt(p, '#sbTurn'));
     check('Team color applies to the board', (await ev(p, () => getComputedStyle($('sbTurn')).backgroundColor)) === 'rgb(198, 240, 216)');
     await ev(p, () => spyEnd(0, 'x'));
