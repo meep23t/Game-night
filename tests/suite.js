@@ -943,7 +943,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Casual names and colors reset when the app reopens', /Team Blue: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')));
     // game night
     await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsTeam');
-    await p.locator('#nsStyleBox input').nth(1).fill('Owls'); await p.click('button[aria-label="Team 2 color: Orange"]');
+    await p.locator('#nsStyleBox input').nth(1).fill('Owls'); await p.click('#nsStyleBox button[aria-label="Team 2 color: Orange"]');
     await p.click('#nsGo');
     check('Night keeps its team names', /Team Blue: 2 · Owls: 2/.test(await (async () => { await open(p, 'act'); return txt(p, '#teamCount'); })()));
     await ev(p, () => show('home'));
