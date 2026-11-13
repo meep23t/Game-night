@@ -954,7 +954,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teamstyle');
     await p.context().close();
-  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
   /* ================= LAYOUT: small phone, dark mode ================= */
   AREA = 'Layout';
