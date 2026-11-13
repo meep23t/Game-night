@@ -169,11 +169,31 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   AREA = 'Word bowl';
   try {
     const p = await fresh(b);
+    // co-op with 2 players: auto words, clear all 3 rounds
+    await setPlayers(p, ['Ana', 'Ben']);
+    await ev(p, () => { S.fbWrite = false; S.fbPer = 3; S.fbSec = 45; save(); });
+    await open(p, 'fb');
+    check('2 players: setup explains co-op and hides team picker', await p.locator('#fbCoopNote').isVisible() && await p.locator('#teamsBlock').isHidden());
+    await p.click('#startGame');
+    check('2 players start a co-op game', (await screen(p)) === 'fbround' && (await ev(p, () => G.fbCoop)) === true && /Your team/.test(await txt(p, '#frScores')), await txt(p, '#frScores'));
+    const describers = [];
+    for (let round = 1; round <= 3; round++) {
+      await p.click('#frGo'); describers.push(await txt(p, '#fpName'));
+      if (round === 1) check('Co-op pass screen says everyone else guesses', /Everyone else guesses/.test(await txt(p, '#fpTeam')));
+      await p.click('#fpGo'); await p.clock.runFor(10000);
+      for (let k = 0; k < 6; k++) await p.click('#fbGot');
+      await p.clock.runFor(1500); await p.click('#ftNext');
+    }
+    check('Co-op: describer rotates between players', new Set(describers).size === 2, describers.join(','));
+    check('Co-op final shows the time and par', (await screen(p)) === 'fbturn' && /Cleared in 0:30/.test(await txt(p, '#ftTitle')) && /Par 3:36/.test(await txt(p, '#ftList')), (await txt(p, '#ftTitle')) + ' | ' + (await txt(p, '#ftList')));
+    check('Co-op: beat par and first-time note', /Beat par/.test(await txt(p, '#ftList')) && /First time/.test(await txt(p, '#ftList')));
+    check('Co-op: best time is remembered', (await ev(p, () => S.fbBest[6])) === 30000, await ev(p, () => JSON.stringify(S.fbBest)));
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
-    await ev(p, () => { S.fbWrite = true; S.fbPer = 2; S.fbSec = 45; save(); });
+    await ev(p, () => { S.fbWrite = true; S.fbPer = 2; save(); });
     await open(p, 'fb'); await p.click('#startGame');
-    check('3 players → blocked with an error', (await screen(p)) === 'setup' && /4/.test(await txt(p, '#setupError')), await txt(p, '#setupError'));
-    await ev(p, () => { S.players.push('Dee'); S.playerIds.push(null); renderPlayers(); });
+    check('3 players also play co-op (word writing first)', (await screen(p)) === 'fbsub' && (await ev(p, () => G.fbCoop)) === true);
+    await ev(p, () => { S.players.push('Dee'); S.playerIds.push(null); save(); });
+    await open(p, 'fb');
     await p.click('#startGame');
     check('4 players: word-writing screen', (await screen(p)) === 'fbsub');
     check('Teams alternate by seat (Ana+Cy vs Ben+Dee)', (await ev(p, () => JSON.stringify(G.teams))) === '[[0,2],[1,3]]');
@@ -575,7 +595,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   AREA = 'Player ranges';
   try {
     const p = await fresh(b);
-    const want = { goAct:'2–12', goTaboo:'2–12', goFb:'4–12', goTele:'3–12', goWave:'2–12', goImp:'3–12', goSpy:'2–12' };
+    const want = { goAct:'2–12', goTaboo:'2–12', goFb:'2–12', goTele:'3–12', goWave:'2–12', goImp:'3–12', goSpy:'2–12' };
     for (const [id, r] of Object.entries(want)) check(`${id.slice(2)} tile shows ${r}`, (await txt(p, `#${id} .ppl`)).includes(r));
     for (const [m, r] of [['spy', '2–12'], ['tele', '3–12'], ['act', '2–12']]) { await open(p, m); check(`${m} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
     await ev(p, () => show('home')); await noHScroll(p, 'home with player chips');
@@ -589,7 +609,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const p = await fresh(b);
     const twelve = Array.from({ length: 12 }, (_, i) => ['Alexandria', 'Benjamin', 'Christopher', 'Dominique', 'Evangeline', 'Francesca', 'Gabriel', 'Harriet', 'Isabella', 'Jonathan', 'Katherine', 'Leonardo'][i]);
     await setPlayers(p, twelve);
-    for (const [g, r] of [['act', '2–12'], ['fb', '4–12'], ['spy', '2–12']]) { await open(p, g); check(`${g} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
+    for (const [g, r] of [['act', '2–12'], ['fb', '2–12'], ['spy', '2–12']]) { await open(p, g); check(`${g} setup shows ${r}`, (await txt(p, '#playerRange')) === r); }
     // every game starts with 12 and has no sideways scrolling on its busiest screen
     await open(p, 'imp'); await p.click('#startGame');
     check('Imposter starts with 12', (await screen(p)) === 'reveal'); await noHScroll(p, 'Imposter role list, 12 players');
@@ -718,11 +738,12 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#resGuessYes');
     check('Imposter guessed it → imposter +2', (await night()).Ben === 4);
     // sit out below minimum
-    await open(p, 'fb');
+    await open(p, 'imp');
     await p.locator('#players .player-row').nth(3).locator('button[aria-label^="Sit out"]').click();
+    await p.locator('#players .player-row').nth(2).locator('button[aria-label^="Sit out"]').click();
     await p.click('#startGame');
-    check('Sitting someone out below the minimum shows the error', (await screen(p)) === 'setup' && /4/.test(await txt(p, '#setupError')));
-    await p.click('#sitOutChips button');
+    check('Sitting someone out below the minimum shows the error', (await screen(p)) === 'setup' && /3/.test(await txt(p, '#setupError')), await txt(p, '#setupError'));
+    await p.locator('#sitOutChips button').nth(0).click(); await p.locator('#sitOutChips button').nth(0).click();
     check('Adding them back works', (await ev(p, () => S.players.length)) === 4);
     // rename mid-night keeps points
     await p.locator('#players input').nth(0).fill('Anna');

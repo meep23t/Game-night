@@ -481,6 +481,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
+  <p class="block hint" id="fbCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on one team and takes turns describing while the others guess. Empty the bowl in all three rounds as fast as you can and try to beat par.</p>
   <p class="block hint" id="spyCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on Team Blue. One spymaster gives clues and everyone else guesses. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out!</p>
 
   <div class="block" data-for="act">
@@ -621,6 +622,7 @@ h3.sub{font-size:20px;margin-top:26px}
         </li>
         <li>The same words come back every round, so pay attention! A round ends when the bowl is empty.</li>
         <li>Tap <b>Skip</b> to put a word back in the bowl. Each word guessed is 1 point, and the team with the most points after 3 rounds wins.</li>
+        <li><b>2–3 players?</b> It’s co-op: everyone is on one team and takes turns describing. Empty the bowl in all three rounds as fast as you can and try to beat par (about 12 seconds per word per round).</li>
       </ul>
     </details>
   </div>
@@ -1107,7 +1109,7 @@ function show(id){
   resetRestart(); window.scrollTo(0,0);
 }
 const MAX_PLAYERS = 12;
-const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[4, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[2, 12] };
+const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[2, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[2, 12] };
 const TILE_MODE = { goAct:"act", goTaboo:"taboo", goFb:"fb", goTele:"tele", goWave:"wave", goImp:"imp", goSpy:"spy" };
 Object.entries(TILE_MODE).forEach(([id, m]) => {
   const [lo, hi] = PLAYER_RANGE[m], c = document.createElement("span");
@@ -1242,9 +1244,10 @@ function teamCheck(){
 }
 function renderTeams(){
   const blk = $("teamsBlock");
-  const coop = G.mode === "spy" && S.players.length < 4;
-  $("spyCoopNote").hidden = !coop;
-  const on = (G.mode === "fb" || (G.mode === "spy" && !coop)) && !S.randomTeams;
+  const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
+  $("spyCoopNote").hidden = !(coop && G.mode === "spy");
+  $("fbCoopNote").hidden = !(coop && G.mode === "fb");
+  const on = (G.mode === "fb" || G.mode === "spy") && !coop && !S.randomTeams;
   blk.hidden = !on; if (!on) return;
   const box = $("teamList"); box.innerHTML = "";
   S.players.forEach((nm, i) => {
@@ -1340,8 +1343,7 @@ $("startGame").onclick = () => {
     if (S.players.length >= 4) { const err = teamCheck(); if (err) { $("setupError").textContent = err; return; } }
     $("setupError").textContent = ""; unlockAudio(); spyStart(); return;
   } else if (G.mode === "fb") {
-    if (S.players.length < 4) { $("setupError").textContent = "Word bowl needs at least 4 players, so each team has 2 or more."; return; }
-    { const err = teamCheck(); if (err) { $("setupError").textContent = err; return; } }
+    if (S.players.length >= 4) { const err = teamCheck(); if (err) { $("setupError").textContent = err; return; } }
     $("setupError").textContent = ""; unlockAudio(); fbStart(); return;
   } else if (G.mode === "wave") {
     if (S.players.length < 2) { $("setupError").textContent = "In the range needs at least 2 players."; return; }
@@ -2161,7 +2163,10 @@ $("goFb").onclick = () => openSetup("fb");
 
 function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go"); }
 function fbStart(){
-  G.teams = makeTeams();
+  // 2–3 players: co-op. One team, beat the clock.
+  G.fbCoop = S.players.length < 4;
+  G.teams = G.fbCoop ? [S.players.map((_, i) => i), []] : makeTeams();
+  G.fbTime = 0;
   if (!S.fbWrite) {
     G.fbWords = shuffle([...TABOO[1], ...TABOO[2]].map(c => c[0])).slice(0, S.players.length * S.fbPer);
     return fbRoundIntro(true);
@@ -2207,6 +2212,13 @@ $("fbStart").onclick = () => { G.fbWords = G.fbSubs.flat(); fbRoundIntro(true); 
 
 function fbScores(el){
   el.innerHTML = "";
+  if (G.fbCoop) {
+    const li = document.createElement("li");
+    const n = document.createElement("span"); n.textContent = "Your team";
+    const sm = document.createElement("small"); sm.textContent = G.teams[0].map(name).join(", "); n.appendChild(sm);
+    const b = document.createElement("b"); b.textContent = `⏱ ${fmt(G.fbTime)}`;
+    li.append(n, b); el.appendChild(li); return;
+  }
   TEAMS.forEach((t, k) => {
     const li = document.createElement("li");
     const n = document.createElement("span"); n.textContent = t;
@@ -2230,7 +2242,7 @@ function fbPass(){
   const [nm, rule] = FB_ROUNDS[G.fbRound - 1];
   $("fpRound").textContent = `Round ${G.fbRound} of 3: ${nm}`;
   $("fpName").textContent = name(fbCurrent());
-  $("fpTeam").textContent = TEAMS[G.fbTeam];
+  $("fpTeam").textContent = G.fbCoop ? "Everyone else guesses" : TEAMS[G.fbTeam];
   $("fpRule").textContent = rule;
   $("fpLeft").textContent = `${G.bowl.length} word${G.bowl.length === 1 ? "" : "s"} left in the bowl`;
   show("fbpass");
@@ -2272,6 +2284,7 @@ $("fbPause").onclick = () => {
   fbBtns(!off);
 };
 function fbEndTurn(empty){
+  G.fbTime += empty ? Math.max(0, T.total - Math.max(0, T.end - performance.now())) : T.total;
   stopTimer(); fbBtns(false); G.fbEmpty = empty;
   if (!empty) { buzzer(); popFxEl($("fbPop"), "Time’s up", "red", true); }
   else popFxEl($("fbPop"), "Bowl empty!", "green", true);
@@ -2287,14 +2300,38 @@ function fbTurnSummary(){
     li.innerHTML = `<span class="mark y">✓</span><span class="w"></span>`;
     li.querySelector(".w").textContent = w; list.appendChild(li);
   });
-  G.fbPtr[G.fbTeam]++; G.fbTeam = 1 - G.fbTeam;
+  G.fbPtr[G.fbTeam]++; if (!G.fbCoop) G.fbTeam = 1 - G.fbTeam;
   fbScores($("ftScores"));
   if (!G.fbEmpty) { G.ftAction = "pass"; $("ftNext").textContent = `Pass to ${name(fbCurrent())}`; }
   else if (G.fbRound < 3) { G.ftAction = "round"; $("ftNext").textContent = `On to round ${G.fbRound + 1}`; }
-  else { G.ftAction = "final"; $("ftNext").textContent = "See who won"; }
+  else { G.ftAction = "final"; $("ftNext").textContent = G.fbCoop ? "See your time" : "See who won"; }
+  show("fbturn");
+}
+const FB_PAR_PER_WORD = 12;   // seconds per word per round
+function fbFinalCoop(){
+  const words = G.fbWords.length, par = words * 3 * FB_PAR_PER_WORD * 1000, t = G.fbTime;
+  if (!S.fbBest || typeof S.fbBest !== "object") S.fbBest = {};
+  const prev = S.fbBest[words], best = prev ? Math.min(prev, t) : t;
+  S.fbBest[words] = best; save();
+  const beat = t <= par;
+  $("ftRound").textContent = "Final time";
+  $("ftTitle").textContent = `Cleared in ${fmt(t)}`;
+  const list = $("ftList"); list.innerHTML = "";
+  const line = (ok, text, side) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${ok ? "y" : "n"}">${ok ? "✓" : "✕"}</span><span class="w"></span><span class="p"></span>`;
+    li.querySelector(".w").textContent = text; li.querySelector(".p").textContent = side; list.appendChild(li);
+  };
+  line(beat, beat ? `Beat par by ${fmt(par - t)}!` : `Missed par by ${fmt(t - par)}`, `Par ${fmt(par)}`);
+  line(!prev || t <= prev, !prev ? "First time with this many words" : t < prev ? "New best time!" : `Best: ${fmt(prev)}`, `${words} words`);
+  fbScores($("ftScores"));
+  G.ftAction = "again"; $("ftNext").textContent = "Play again";
+  nightRecord("ftNext", beat ? S.players.map((_, i) => ({ i, pts:2 })) : []);
+  if (beat) { tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260); } else tone(330,.3,"triangle",.12);
   show("fbturn");
 }
 function fbFinal(){
+  if (G.fbCoop) return fbFinalCoop();
   const [a, b] = G.teamScores;
   $("ftRound").textContent = "Final scores";
   $("ftTitle").textContent = a === b ? "It’s a tie!" : `${TEAMS[a > b ? 0 : 1]} wins!`;
