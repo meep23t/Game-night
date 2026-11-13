@@ -1235,12 +1235,11 @@ function gameResume(o){
   S.players = o.players; S.playerIds = o.playerIds; save(); renderPlayers();
   RESUME[o.screen]();
 }
-function ago(t){ const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} hr ago`; }
 function renderResume(){
   const box = $("resumeBox"), o = G.resume;
   box.hidden = !o; if (!o) return;
   $("resumeTitle").textContent = `${INTROS[o.mode][0]} in progress`;
-  $("resumeNote").textContent = `Saved ${ago(o.t)} with ${o.players.length} players. Pick up where you left off? A turn that was cut off starts over.`;
+  $("resumeNote").textContent = "Pick up where you left off?";
 }
 $("resumeGo").onclick = () => { const o = G.resume; if (o) gameResume(o); };
 $("resumeX").onclick = () => { G.resume = null; gameClear(); renderResume(); };
