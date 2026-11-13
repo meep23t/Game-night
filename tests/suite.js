@@ -683,6 +683,57 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
 
+  /* ================= PLAY AS TEAMS (Act it out, Describe it, In the range) ================= */
+  AREA = 'Play as teams';
+  try {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
+    await ev(p, () => { S.rounds = 2; S.perTurn = 1; S.randomTeams = false; S.teamPick = {}; save(); });
+    await open(p, 'act');
+    check('Act it out shows Play as, Individuals by default', await p.locator('#playAsBlock').isVisible() && (await p.locator('#paInd').getAttribute('aria-pressed')) === 'true' && await p.locator('#teamsBlock').isHidden());
+    await p.click('#paTeam');
+    check('Teams shows the team picker and random switch', await p.locator('#teamsBlock').isVisible() && await p.locator('#paRandomRow').isVisible());
+    await p.click('#startGame');
+    check('Turns alternate teams, smaller team takes the extra turn', (await ev(p, () => G.seq.map(name).join(','))) === 'Ana,Ben,Cy,Dee,Eve,Ben', await ev(p, () => G.seq.map(name).join(',')));
+    check('Pass screen names the team', /Team Blue: you’re acting for your team/.test(await txt(p, '#passNote')));
+    check('Scores show team totals', /Team Blue/.test(await txt(p, '#passScores')) && /Team Pink/.test(await txt(p, '#passScores')));
+    let turns = 0;
+    while ((await screen(p)) === 'pass' && turns < 20) {
+      turns++;
+      const team = await ev(p, () => teamOfPlayer(cur()));
+      await p.click('#startTurn'); await p.click('#pickEasy');
+      await p.click(team === 0 ? '#gotBtn' : '#skipBtn'); await p.clock.runFor(1500); await p.click('#nextTurn');
+    }
+    check('2 rounds × 6 turns = 12 turns', turns === 12, turns);
+    check('Final names the winning team', /Team Blue wins/.test(await txt(p, '#winner')) && /6/.test(await txt(p, '#finalScores')), await txt(p, '#winner'));
+    // Describe it teams
+    await open(p, 'taboo'); await p.click('#paTeam');
+    check('Describe it hint: other team buzzes', /other team watches the screen and taps Buzz/.test(await txt(p, '#playAsHint')));
+    await ev(p, () => { S.rounds = 1; S.turnSec = 30; save(); });
+    await p.click('#startGame');
+    check('Describe it pass screen tells the other team to buzz', /Team Pink, watch the screen and tap Buzz/.test(await txt(p, '#passNote')), await txt(p, '#passNote'));
+    await p.click('#startTurn'); await p.click('#tGot'); await p.click('#tGot');
+    check('Describe it points go to the describer’s team', (await ev(p, () => teamTotals().join(','))) === '2,0');
+    await ev(p, () => stopTimer());
+    // In the range teams
+    await open(p, 'wave'); await p.click('#paTeam'); await ev(p, () => { S.wRounds = 1; save(); });
+    await p.click('#startGame');
+    check('In the range: teams alternate clue givers', (await ev(p, () => G.wOrder.map(name).join(','))) === 'Ana,Ben,Cy,Dee,Eve,Ben');
+    await p.click('#wpGo'); await ev(p, () => wSpin()); await p.clock.runFor(2000);
+    check('Cluegiver passes to their team', /pass to your team/.test(await txt(p, '#wsDone')));
+    await p.click('#wsDone'); await ev(p, () => { G.needle = G.target; drawGuess(); }); await p.click('#wgDone');
+    check('In the range points go to the cluegiver’s team', (await ev(p, () => G.wTeam.join(','))) === '4,0' && /Blue 4 · Pink 0/.test(await txt(p, '#wrScore')), await txt(p, '#wrScore'));
+    // under 4 players
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await open(p, 'act'); await p.click('#paTeam'); await p.click('#startGame');
+    check('Teams with 3 players → clear error', /at least 4 players/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
+    await p.click('#paInd'); await p.click('#startGame');
+    check('Switching back to Individuals plays as before', (await screen(p)) === 'pass' && (await ev(p, () => G.seq.join(','))) === '0,1,2');
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'playas');
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+
   /* ================= PLAYER SETUP ================= */
   AREA = 'Player setup';
   try {

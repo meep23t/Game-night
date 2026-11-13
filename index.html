@@ -139,6 +139,10 @@ textarea{resize:vertical;font-size:15px}
 .seg button small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
 .seg button[aria-pressed="true"] small{color:var(--on-cobalt);opacity:.85}
+.pa-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pa-seg button{border:2px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-weight:800;font-size:17px}
+.pa-seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+#paRandomRow{margin-top:12px}
 details.custom{margin-top:14px}
 summary{font-weight:600;cursor:pointer;padding:4px 0}
 .hint{font-size:14px;color:var(--muted);margin:6px 0 8px}
@@ -475,6 +479,13 @@ h3.sub{font-size:20px;margin-top:26px}
     </div>
   </div>
 
+  <div class="block" id="playAsBlock" hidden>
+    <h2>Play as</h2>
+    <div class="pa-seg"><button id="paInd">Individuals</button><button id="paTeam">Teams</button></div>
+    <p class="hint" id="playAsHint" style="margin-top:10px"></p>
+    <div class="setting" id="paRandomRow" hidden><span>Random teams<small>Shuffled into two even teams</small></span><button class="toggle" role="switch" id="paRandom" aria-label="Random teams"></button></div>
+  </div>
+
   <div class="block" id="teamsBlock" hidden>
     <h2>Teams</h2>
     <p class="hint" id="teamsHint" style="margin:-4px 0 12px">Tap to put each player on a team. Each team needs at least 2 players.</p>
@@ -521,6 +532,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Tap <b>Got it</b> when someone guesses the word.</li>
         <li>Tap <b>Skip</b> to pass a word. Once you pass it, it’s gone. It won’t come back this turn.</li>
         <li>If you skip a word or time runs out, you get no points for that card.</li>
+        <li><b>Playing as teams?</b> Teams take turns acting. Only your teammates guess, and points go to your team.</li>
       </ul>
     </details>
   </div>
@@ -537,7 +549,8 @@ h3.sub{font-size:20px;margin-top:26px}
           <ul>
             <li><b>Buzzer:</b> the next person in line sits beside the describer, watches the screen, and taps <b>Buzz</b>. They sit out guessing that turn.</li>
             <li><b>Honor system:</b> everyone guesses, and the describer taps <b>Buzz</b> on themselves if they slip.</li>
-          </ul>
+            <li><b>Playing as teams?</b> Teams take turns describing. Your teammates guess, and the other team watches the screen and taps <b>Buzz</b> on a forbidden word. Points go to your team.</li>
+      </ul>
         </li>
         <li>One timer covers your whole turn, so get through as many cards as you can.</li>
       </ul>
@@ -603,6 +616,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>The clue giver says one clue that fits that spot. If the target is close to “hot,” you might say “soup.” Near the middle? Maybe “a sunny spring day.”</li>
         <li>Pass the phone to the group. Talk it over and drag the dial to where you think the target is.</li>
         <li>The closer you land, the more points: 4 for a bullseye, then 3, then 2. Everyone plays as one team and shares the score.</li>
+        <li><b>Playing as teams?</b> Teams take turns giving clues. Only your teammates move the dial, and the points go to your team.</li>
       </ul>
     </details>
   </div>
@@ -869,7 +883,7 @@ h3.sub{font-size:20px;margin-top:26px}
 </section>
 
 <section id="wfinal" class="center" hidden>
-  <p class="eyebrow">Group score</p>
+  <p class="eyebrow" id="wfLabel">Group score</p>
   <p class="big-name" id="wfScore"></p>
   <p class="note" id="wfMsg"></p>
   <ul class="result-list" id="wfList" style="text-align:left"></ul>
@@ -1120,7 +1134,8 @@ Object.entries(TILE_MODE).forEach(([id, m]) => {
    Rough [fast, slow] seconds. Fast: people guess/finish at about half the timer.
    Slow: every timer runs out. Includes passing the phone between turns. */
 function estimate(mode, o){
-  const n = S.players.length, x = Object.assign({}, S, o || {});
+  const x = Object.assign({}, S, o || {});
+  const n = teamPlay(mode) && S.players.length >= 4 ? 2 * Math.max(...makeTeams().map(t => t.length)) : S.players.length;   // turns per round
   switch (mode) {
     case "act": {
       const turns = n * x.rounds, avg = (x.easy + x.hard) / 2;
@@ -1172,7 +1187,7 @@ function openSetup(mode){
   $("setupIntro").textContent = INTROS[mode][1];
   document.querySelectorAll("[data-for]").forEach(el => el.hidden = el.dataset.for !== mode);
   renderSettings(); $("setupError").textContent = "";
-  renderEstimate();
+  renderPlayAs(); renderTeams(); renderEstimate();
   show("setup");
 }
 $("goAct").onclick = () => openSetup("act");
@@ -1242,12 +1257,38 @@ function teamCheck(){
   for (const k of [0, 1]) if (t[k].length < 2) return `${TEAMS[k]} needs at least 2 players. Move someone over under Teams.`;
   return "";
 }
+// Play as Individuals or Teams (Act it out, Describe it, In the range).
+const TEAM_CAPABLE = ["act", "taboo", "wave"];
+if (!S.playAs || typeof S.playAs !== "object") S.playAs = {};
+function teamPlay(mode){ return TEAM_CAPABLE.includes(mode) && !!S.playAs[mode]; }
+function teamOfPlayer(i){ return G.teams && G.teams[1].includes(i) ? 1 : 0; }
+// One round of turns. Individuals: seat order. Teams: Blue, Pink, Blue, Pink… with equal turns per team;
+// the smaller team's players take extra turns, starting where they left off.
+function turnSeq(round, teams){
+  if (!teams) return S.players.map((_, i) => i);
+  const m = Math.max(teams[0].length, teams[1].length), seq = [];
+  for (let j = 0; j < m; j++) for (const k of [0, 1]) { const t = teams[k]; seq.push(t[(j + (round - 1) * m) % t.length]); }
+  return seq;
+}
+function renderPlayAs(){
+  const on = TEAM_CAPABLE.includes(G.mode);
+  $("playAsBlock").hidden = !on; if (!on) return;
+  const tp = teamPlay(G.mode);
+  $("paInd").setAttribute("aria-pressed", !tp); $("paTeam").setAttribute("aria-pressed", tp);
+  $("playAsHint").textContent = !tp ? "Everyone plays for themselves."
+    : G.mode === "taboo" ? "Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz. Needs at least 4 players."
+    : "Teams take turns and points go to the team. Your teammates guess. Needs at least 4 players.";
+  $("paRandomRow").hidden = !tp; $("paRandom").setAttribute("aria-checked", !!S.randomTeams);
+}
+$("paInd").onclick = () => { S.playAs[G.mode] = false; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
+$("paTeam").onclick = () => { S.playAs[G.mode] = true; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
+$("paRandom").onclick = () => { S.randomTeams = !S.randomTeams; save(); renderPlayAs(); renderTeams(); };
 function renderTeams(){
   const blk = $("teamsBlock");
   const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
   $("spyCoopNote").hidden = !(coop && G.mode === "spy");
   $("fbCoopNote").hidden = !(coop && G.mode === "fb");
-  const on = (G.mode === "fb" || G.mode === "spy") && !coop && !S.randomTeams;
+  const on = (((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode)) && !S.randomTeams;
   blk.hidden = !on; if (!on) return;
   const box = $("teamList"); box.innerHTML = "";
   S.players.forEach((nm, i) => {
@@ -1334,6 +1375,10 @@ function draw(){ if (!G.deck.length) G.deck = shuffle(G.pool); return G.deck.pop
 
 $("startGame").onclick = () => {
   if (S.players.some(n => !n.trim())) { $("setupError").textContent = "Give every player a name."; return; }
+  if (teamPlay(G.mode)) {
+    if (S.players.length < 4) { $("setupError").textContent = "Teams need at least 4 players (2 per team). Add players or switch to Individuals."; return; }
+    const err = teamCheck(); if (err) { $("setupError").textContent = err; return; }
+  }
   if (G.mode === "act") {
     G.pool = [...S.packs.flatMap(p => PACKS[p]), ...parseCustom()];
     if (!G.pool.length) { $("setupError").textContent = "Pick at least one word pack or add your own words."; return; }
@@ -1362,11 +1407,25 @@ $("startGame").onclick = () => {
 /* ---------- Shared game flow ---------- */
 function newGame(){
   G.scores = S.players.map(() => 0); G.deck = shuffle(G.pool);
-  G.round = 1; G.turn = 0; G.missed = []; toPass();
+  G.teamOn = teamPlay(G.mode); G.teams = G.teamOn ? makeTeams() : null;
+  G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
 }
+function cur(){ return G.seq[G.turn]; }
+function teamTotals(){ return [0, 1].map(k => G.teams[k].reduce((s, i) => s + G.scores[i], 0)); }
 function name(i){ return S.players[i].trim(); }
 function renderScores(el, highlight){
   el.innerHTML = "";
+  if (G.teamOn) {
+    const tt = teamTotals(), hl = highlight === "rank" ? null : teamOfPlayer(highlight);
+    [0, 1].sort((a, b) => highlight === "rank" ? tt[b] - tt[a] : a - b).forEach(k => {
+      const li = document.createElement("li"); if (k === hl) li.className = "me";
+      const n = document.createElement("span"); n.textContent = TEAMS[k];
+      const sm = document.createElement("small"); sm.textContent = G.teams[k].map(name).join(", "); n.appendChild(sm);
+      const b = document.createElement("b"); b.textContent = tt[k];
+      li.append(n, b); el.appendChild(li);
+    });
+    return;
+  }
   S.players.map((_,i) => i).sort((a,b) => highlight === "rank" ? G.scores[b]-G.scores[a] : a-b).forEach(i => {
     const li = document.createElement("li"); if (i === highlight) li.className = "me";
     const n = document.createElement("span"); n.textContent = name(i);
@@ -1376,9 +1435,14 @@ function renderScores(el, highlight){
 }
 function toPass(){
   $("passRound").textContent = `Round ${G.round} of ${S.rounds}`;
-  $("passName").textContent = name(G.turn);
-  $("passNote").textContent = G.mode === "act" ? "You’re acting. Keep the screen to yourself." : "You’re describing. Keep the screen to yourself.";
-  renderScores($("passScores"), G.turn);
+  $("passName").textContent = name(cur());
+  if (G.teamOn) {
+    const k = teamOfPlayer(cur());
+    $("passNote").textContent = G.mode === "act"
+      ? `${TEAMS[k]}: you’re acting for your team. Keep the screen to yourself.`
+      : `${TEAMS[k]}: you’re describing for your team. ${TEAMS[1 - k]}, watch the screen and tap Buzz on a forbidden word.`;
+  } else $("passNote").textContent = G.mode === "act" ? "You’re acting. Keep the screen to yourself." : "You’re describing. Keep the screen to yourself.";
+  renderScores($("passScores"), cur());
   show("pass");
 }
 $("startTurn").onclick = () => {
@@ -1442,7 +1506,7 @@ function finishCard(got, skipped){
   const word = isHard ? G.current[1] : G.current[0];
   const pts = isHard ? 2 : 1;
   G.turnLog.push({ word, got, pts, kind: got ? "got" : skipped ? "skip" : "time" });
-  if (got) G.scores[G.turn] += pts; else G.missed.push(word);
+  if (got) G.scores[cur()] += pts; else G.missed.push(word);
   const card = $("actCard");
   if (got) { card.classList.add("got"); $("flash").textContent = `+${pts}`; ding(); }
   else if (skipped) { card.classList.add("timesup"); $("flash").textContent = "Skipped"; tone(300,.2,"triangle",.12); }
@@ -1470,7 +1534,7 @@ function tabooDeal(){
   $("tWord").textContent = G.current[0];
   const ul = $("tDont"); ul.innerHTML = "";
   G.current[1].forEach(w => { const li = document.createElement("li"); li.textContent = w; ul.appendChild(li); });
-  $("tPts").textContent = `${name(G.turn)}: ${String(turnPts()).replace("-", "−")} pts`;
+  $("tPts").textContent = `${name(cur())}: ${String(turnPts()).replace("-", "−")} pts`;
 }
 function setTButtons(on){ ["tGot","tSkip","tBuzz"].forEach(id => $(id).disabled = !on); }
 function popFx(text, color, hold){
@@ -1482,10 +1546,10 @@ function tabooMark(kind){
   const got = kind === "got";
   const pen = kind === "buzz" && S.tabooPenalty;
   G.turnLog.push({ word:G.current[0], got, pts:1, kind, pen });
-  if (got) { G.scores[G.turn] += 1; ding(); popFx("+1","green"); }
+  if (got) { G.scores[cur()] += 1; ding(); popFx("+1","green"); }
   else {
     G.missed.push(G.current[0]);
-    if (pen) G.scores[G.turn] -= 1;
+    if (pen) G.scores[cur()] -= 1;
     if (kind === "buzz") { tone(180,.35,"sawtooth",.16); popFx(pen ? "Buzz! −1" : "Buzz!","red"); }
     else { tone(300,.15,"triangle",.1); popFx("Skipped","gray"); }
   }
@@ -1977,23 +2041,27 @@ function setEnds(){
 }
 function waveStart(){
   G.pool = WAVE[S.wLevel]; G.deck = shuffle(G.pool);
-  G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = S.players.length * S.wRounds;
+  G.teamOn = teamPlay("wave"); G.teams = G.teamOn ? makeTeams() : null;
+  G.wOrder = []; for (let r = 1; r <= S.wRounds; r++) G.wOrder.push(...turnSeq(r, G.teams));
+  G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = G.wOrder.length; G.wTeam = [0, 0];
   G.wInd = S.players.map(() => 0);
   wNewCard(); wPass();
 }
 function wNewCard(){ G.current = draw(); G.target = Math.random() * 100; }
-function wGiver(){ return G.wTurn % S.players.length; }
+function wGiver(){ return G.wOrder[G.wTurn]; }
+function wScoreText(){ return G.teamOn ? `Blue ${G.wTeam[0]} · Pink ${G.wTeam[1]}` : `Group score: ${G.wScore}`; }
 function wStep(){ return `Turn ${G.wTurn + 1} of ${G.wTotal}`; }
 function wPass(){
   $("wpStep").textContent = wStep();
   $("wpName").textContent = name(wGiver());
-  $("wpScore").textContent = `Group score: ${G.wScore}`;
+  $("wpScore").textContent = G.teamOn ? `${TEAMS[teamOfPlayer(wGiver())]} gives the clue · ${wScoreText()}` : wScoreText();
   show("wpass");
 }
 $("wpGo").onclick = () => { $("wClue").value = ""; wPsy(); };
 function wPsy(){
   setEnds(); G.spun = false; G.spinning = false; G.spinId = (G.spinId || 0) + 1;
   $("wsStep").textContent = wStep();
+  $("wsDone").textContent = G.teamOn ? "Hide target, pass to your team" : "Hide target, pass to the group";
   $("wsDial").innerHTML = dialSVG({});
   $("wsSpinHint").hidden = false; $("wsAfter").hidden = true;
   show("wpsy");
@@ -2029,7 +2097,7 @@ $("wsDone").onclick = () => {
   G.clue = $("wClue").value.trim(); $("wClue").blur();
   G.needle = 50; setEnds();
   $("wgStep").textContent = wStep();
-  $("wgScore").textContent = `Score: ${G.wScore}`;
+  $("wgScore").textContent = G.teamOn ? wScoreText() : `Score: ${G.wScore}`;
   $("wgWho").textContent = G.clue ? `${name(wGiver())}’s clue` : `Listen to ${name(wGiver())}’s clue`;
   $("wgClue").textContent = G.clue; $("wgClue").hidden = !G.clue;
   drawGuess(); show("wguess");
@@ -2055,21 +2123,29 @@ $("wgDone").onclick = () => {
   const pts = d <= 4 ? 4 : d <= 10 ? 3 : d <= 16 ? 2 : 0;
   G.wScore += pts;
   if (pts >= 2) { const g = wGiver(); G.wInd = G.wInd.map((v, i) => v + (i === g ? 2 : 1)); }
+  if (G.teamOn) G.wTeam[teamOfPlayer(wGiver())] += pts;
   G.wLog.push({ giver:wGiver(), ends:G.current, clue:G.clue, pts });
   $("wrStep").textContent = wStep();
   $("wrPts").textContent = pts ? `+${pts}` : "0 points";
   $("wrMsg").textContent = { 4:"Bullseye!", 3:"So close!", 2:"Not bad!", 0:"Missed it this time." }[pts];
   $("wrDial").innerHTML = dialSVG({ target:G.target, show:true, needle:G.needle });
-  $("wrScore").textContent = `Group score: ${G.wScore}`;
-  $("wrNext").textContent = G.wTurn + 1 >= G.wTotal ? "See final score" : `Pass to ${name((G.wTurn + 1) % S.players.length)}`;
+  $("wrScore").textContent = wScoreText();
+  $("wrNext").textContent = G.wTurn + 1 >= G.wTotal ? "See final score" : `Pass to ${name(G.wOrder[G.wTurn + 1])}`;
   if (pts >= 3) ding(); else if (pts) tone(660,.15); else tone(220,.3,"triangle",.12);
   show("wreveal");
 };
 $("wrNext").onclick = () => { G.wTurn++; if (G.wTurn >= G.wTotal) return wFinal(); wNewCard(); wPass(); };
 function wFinal(){
   const max = G.wTotal * 4, r = G.wScore / max;
-  $("wfScore").textContent = `${G.wScore} of ${max}`;
-  $("wfMsg").textContent = r >= .75 ? "Total mind readers!" : r >= .5 ? "Great teamwork!" : r >= .25 ? "Not bad. Keep tuning in!" : "Room to grow. Play again!";
+  $("wfLabel").textContent = G.teamOn ? "Final score" : "Group score";
+  if (G.teamOn) {
+    const [a, b] = G.wTeam;
+    $("wfScore").textContent = a === b ? "It’s a tie" : `${TEAMS[a > b ? 0 : 1]} wins`;
+    $("wfMsg").textContent = `Team Blue ${a} · Team Pink ${b}`;
+  } else {
+    $("wfScore").textContent = `${G.wScore} of ${max}`;
+    $("wfMsg").textContent = r >= .75 ? "Total mind readers!" : r >= .5 ? "Great teamwork!" : r >= .25 ? "Not bad. Keep tuning in!" : "Room to grow. Play again!";
+  }
   const list = $("wfList"); list.innerHTML = "";
   G.wLog.forEach(l => {
     const li = document.createElement("li");
@@ -2077,7 +2153,8 @@ function wFinal(){
     li.querySelector(".w").textContent = `${name(l.giver)}: ${l.clue ? "“" + l.clue + "”" : "a spoken clue"} (${l.ends[0]} to ${l.ends[1]})`;
     list.appendChild(li);
   });
-  nightRecord("wfAgain", placeAwards(G.wInd), "Cluegiver 2, guessers 1 when the guess scores.");
+  if (G.teamOn) { const [a, b] = G.wTeam; nightRecord("wfAgain", a === b ? S.players.map((_, i) => ({ i, pts:1 })) : G.teams[a > b ? 0 : 1].map(i => ({ i, pts:2 }))); }
+  else nightRecord("wfAgain", placeAwards(G.wInd), "Cluegiver 2, guessers 1 when the guess scores.");
   tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("wfinal");
 }
@@ -2085,26 +2162,37 @@ $("wfAgain").onclick = waveStart;
 
 /* ---------- Summary + final ---------- */
 const KIND_LABEL = { skip:"Skipped", buzz:"Buzzed", time:"Time ran out" };
-function isLastTurn(){ return G.round === S.rounds && G.turn === S.players.length - 1; }
+function isLastTurn(){ return G.round === S.rounds && G.turn === G.seq.length - 1; }
 function toSummary(){
   $("sumRound").textContent = `Round ${G.round} of ${S.rounds}`;
-  $("sumTitle").textContent = `${name(G.turn)} ${signed(turnPts())}`;
+  $("sumTitle").textContent = `${name(cur())} ${signed(turnPts())}`;
   const list = $("sumList"); list.innerHTML = "";
   G.turnLog.forEach(r => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="mark ${r.got ? "y" : "n"}">${r.got ? "✓" : "✕"}</span><span class="w"></span><span class="p">${r.got ? "+" + r.pts : KIND_LABEL[r.kind] + (r.pen ? " −1" : "")}</span>`;
     li.querySelector(".w").textContent = r.word; list.appendChild(li);
   });
-  const nextIdx = (G.turn + 1) % S.players.length;
+  const nextIdx = G.turn + 1 < G.seq.length ? G.seq[G.turn + 1] : turnSeq(G.round + 1, G.teams)[0];
   $("nextTurn").textContent = isLastTurn() ? "See final scores" : `Pass to ${name(nextIdx)}`;
   show("summary");
 }
 $("nextTurn").onclick = () => {
   if (isLastTurn()) return toFinal();
-  G.turn++; if (G.turn >= S.players.length) { G.turn = 0; G.round++; }
+  G.turn++; if (G.turn >= G.seq.length) { G.turn = 0; G.round++; G.seq = turnSeq(G.round, G.teams); }
   toPass();
 };
 function toFinal(){
+  if (G.teamOn) {
+    const [a, b] = teamTotals();
+    $("winner").textContent = a === b ? "It’s a tie" : `${TEAMS[a > b ? 0 : 1]} wins`;
+    renderScores($("finalScores"), "rank");
+    const rv = $("review"); rv.innerHTML = "";
+    [...new Set(G.missed)].forEach(w => { const s = document.createElement("span"); s.textContent = w; rv.appendChild(s); });
+    $("reviewWrap").hidden = !G.missed.length;
+    nightRecord("playAgain", a === b ? S.players.map((_, i) => ({ i, pts:1 })) : G.teams[a > b ? 0 : 1].map(i => ({ i, pts:2 })));
+    tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
+    return show("final");
+  }
   const top = Math.max(...G.scores);
   const winners = S.players.map((_,i) => i).filter(i => G.scores[i] === top);
   $("winner").textContent = winners.length > 1 ? "It’s a tie" : `${name(winners[0])} wins`;
