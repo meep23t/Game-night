@@ -942,6 +942,10 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Tapping a team dot opens the 36-color grid', (await p.locator('#teamList .tc-pal button').count()) === 36 && (await p.locator('#teamList .tc-pal input').count()) === 0);
     await p.click('button[aria-label="Team 1 color: Green"]');
     check('Picking a color closes the palette', (await p.locator('#teamList .tc-pal').count()) === 0);
+    await p.click('#teamList .tc-col.t0 .tc-dot');
+    check('The grid opens right under the tapped dot', await ev(p, () => { const d = document.querySelector('#teamList .tc-col.t0 .tc-dot').getBoundingClientRect(), g = document.querySelector('#teamList .tc-pal').getBoundingClientRect(); return g.top > d.bottom && g.top - d.bottom < 20 && g.left <= d.left; }));
+    await p.click('#teamsHint');
+    check('Tapping elsewhere closes the grid', (await p.locator('#teamList .tc-pal').count()) === 0);
     await p.click('#teamList .tc-col.t1 .tc-dot');
     check('Team 2 can’t pick team 1’s color', await p.locator('button[aria-label="Team 2 color: Green"]').isDisabled());
     check('Colors close to the other team are faded too, not just the same one', await p.locator('button[aria-label="Team 2 color: Light green"]').isDisabled() && await p.locator('button[aria-label="Team 2 color: Deep green"]').isDisabled());
