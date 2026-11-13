@@ -657,6 +657,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const e4 = await txt(p, '#estText');
     check('Estimate shows a range with the player count', /About \d+–\d+ min with 4 players/.test(e4), e4);
     await p.click('#addPlayer'); await p.click('#addPlayer');
+    await p.locator('#players input').nth(4).fill('E'); await p.locator('#players input').nth(5).fill('F');
     const e6 = await txt(p, '#estText');
     check('Estimate updates when players are added', /with 6 players/.test(e6) && e6 !== e4, e6);
     check('No "Make it shorter" suggestion', (await p.locator('#estShorter').count()) === 0);
@@ -763,6 +764,8 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await open(p, 'act');
     for (let i = 0; i < 10; i++) await p.click('#addPlayer');
     check('Can add up to 12 players, then Add disappears', (await p.locator('#players input').count()) === 12 && await p.locator('#addPlayer').isHidden());
+    check('Added players start blank with a "Player N" hint', (await p.locator('#players input').nth(11).inputValue()) === '' && (await p.locator('#players input').nth(11).getAttribute('placeholder')) === 'Player 12');
+    for (let i = 6; i < 12; i++) await p.locator('#players input').nth(i).fill('P' + (i + 1));
     await p.locator('#players input').nth(2).fill('');
     await p.click('#startGame');
     check('Blank name blocks the start', /name/i.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
