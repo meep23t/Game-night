@@ -390,6 +390,9 @@ input.tc-name:focus{background:#ffffffaa;outline:none}
 .tc-chip .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tc-col.t1 .tc-chip .nm{text-align:right}
 .tc-chip .mv{flex:none;opacity:.45;font-size:14px}
+div.tc-chip{cursor:default}
+.tc-chip.new{box-shadow:0 0 0 2px #1E1B3A}
+.note.short{color:var(--red);font-weight:700}
 .tc-empty{color:#1E1B3A;opacity:.6;font-size:13px;text-align:center;padding:10px 4px;margin:0}
 .tc-pal{position:relative;margin-top:12px;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 4px 0 var(--ink)}
 .tc-pal::before{content:"";position:absolute;top:-9px;left:var(--arrow,22px);width:14px;height:14px;background:var(--surface);border-left:2px solid var(--ink);border-top:2px solid var(--ink);transform:rotate(45deg)}
@@ -1244,8 +1247,9 @@ function renderEstimate(){
   $("estText").innerHTML = `⏱ ${fmtRange(est)[0].toUpperCase() + fmtRange(est).slice(1)} with ${n} players` +
     (G.mode === "imp" ? `<small>per round</small>` : G.mode === "spy" ? `<small>per board</small>` : "");
 }
+G.newIds = new Set();
 function openSetup(mode){
-  G.mode = mode;
+  G.mode = mode; G.newIds = new Set();
   { const [lo, hi] = PLAYER_RANGE[mode]; $("playerRange").textContent = `${lo}–${hi}`; $("playerRange").setAttribute("aria-label", `${lo} to ${hi} players`); }
   if (nightOn()) nightSyncPlayers();
   renderPlayers();
@@ -1305,6 +1309,7 @@ $("addPlayer").onclick = () => {
     const id = S.night.nextId++, nm = "Player " + (S.night.roster.length + 1);
     const sizes = [0, 1].map(k => S.night.roster.filter(r => (r.team || 0) === k).length);
     S.night.roster.push({ id, name:nm, team: teamsNight() ? (sizes[1] < sizes[0] ? 1 : 0) : undefined });   // newcomers join the smaller team
+    G.newIds.add(id);   // can still be moved to the other team during this setup
     S.players.push(nm); S.playerIds.push(id);
   } else { S.players.push("Player " + (S.players.length+1)); S.playerIds.push(null); }
   save(); renderPlayers();
@@ -1374,12 +1379,23 @@ function renderTeams(){
   renderTeamList();
 }
 function renderTeamList(){
-  $("teamsHint").textContent = "Each team needs at least 2 players. Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it.";
-  $("teamShuffle").hidden = teamsNight();   // tonight's teams are set on the game night screen
-  const t = makeTeams();
-  const count = () => { $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}`; };
+  const tn = teamsNight(), t = makeTeams();
+  const short = [0, 1].filter(k => t[k].length < 2);
+  // Teams night: tonight's teams are locked. Only someone added in this setup can be moved,
+  // unless sitting people out left a team short for this game.
+  const isNew = i => tn && G.newIds.has(S.playerIds[i]);
+  const locked = i => tn && !short.length && !isNew(i);
+  $("teamsHint").textContent = !tn ? "Each team needs at least 2 players. Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it."
+    : short.length ? "With people sitting out, a team is short for this game. Tap a player to move them over."
+    : S.players.some((_, i) => isNew(i)) ? "Tonight’s teams are set. Someone new joins the smaller team; tap them to switch."
+    : "Tonight’s teams are set for the night. Sit someone out with × above, or add someone new.";
+  $("teamShuffle").hidden = tn;   // tonight's teams are set on the game night screen
+  const count = () => {
+    $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}` + (short.length ? ` · ${TEAMS[short[0]]} needs at least 2` : "");
+    $("teamCount").classList.toggle("short", !!short.length);
+  };
   teamCards($("teamList"), curTeamStyle(), {
-    members: t,
+    members: t, locked, isNew,
     nameOf: i => S.players[i].trim() || `Player ${i + 1}`,
     onMove: (i, k) => {
       if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
@@ -2433,7 +2449,7 @@ function applyTeamStyle(st){
   });
 }
 // Two side-by-side team cards: name + color in each header, players as chips (tap to move to the other team).
-// opt: { members: [[i...],[i...]], nameOf(i), onMove(i, k), onChange(rebuild) }
+// opt: { members: [[i...],[i...]], locked(i)?, isNew(i)?, nameOf(i), onMove(i, k), onChange(rebuild) }
 function teamCards(box, st, opt){
   box.innerHTML = "";
   if (G.palFor != null && G.palBox !== box) G.palFor = null;
@@ -2457,12 +2473,13 @@ function teamCards(box, st, opt){
     const chips = document.createElement("div"); chips.className = "tc-chips";
     if (!opt.members[k].length) chips.innerHTML = `<p class="tc-empty">Tap a player to move them here</p>`;
     else opt.members[k].forEach(i => {
-      const b = document.createElement("button"); b.className = "tc-chip";
+      const locked = opt.locked && opt.locked(i);
+      const b = document.createElement(locked ? "div" : "button"); b.className = "tc-chip" + (opt.isNew && opt.isNew(i) ? " new" : "");
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = opt.nameOf(i);
       const mv = document.createElement("span"); mv.className = "mv"; mv.textContent = k ? "←" : "→"; mv.setAttribute("aria-hidden", "true");
-      if (k) b.append(mv, nm); else b.append(nm, mv);
-      b.dataset.nm = opt.nameOf(i); b.setAttribute("aria-label", `Move ${opt.nameOf(i)} to ${styleName(st, 1 - k)}`);
-      b.onclick = () => opt.onMove(i, 1 - k);
+      if (locked) b.append(nm); else if (k) b.append(mv, nm); else b.append(nm, mv);
+      b.dataset.nm = opt.nameOf(i);
+      if (!locked) { b.setAttribute("aria-label", `Move ${opt.nameOf(i)} to ${styleName(st, 1 - k)}`); b.onclick = () => opt.onMove(i, 1 - k); }
       chips.appendChild(b);
     });
     col.append(head, chips); cols.appendChild(col);
@@ -3108,7 +3125,7 @@ function renderNightStrip(){
 // Start screen: confirm who's playing.
 function openNightStart(){
   G.nightDraft = S.players.map(n => n.trim()).filter(Boolean);
-  while (G.nightDraft.length < 2) G.nightDraft.push("Player " + (G.nightDraft.length + 1));
+  while (G.nightDraft.length < 2) G.nightDraft.push("");
   G.nightDraftTeam = G.nightDraft.map((_, i) => i % 2);
   G.nightDraftStyle = defaultTeamStyle();   // names and colors reset for each new game night
   G.nightMode = G.nightMode || "ind";
@@ -3128,7 +3145,7 @@ function renderDraft(){
   G.nightDraft.forEach((nm, i) => {
     const row = document.createElement("div"); row.className = "player-row ns-row";
     const inp = document.createElement("input"); inp.type = "text"; inp.value = nm; inp.maxLength = 24;
-    inp.setAttribute("aria-label", "Player " + (i + 1) + " name");
+    inp.setAttribute("aria-label", "Player " + (i + 1) + " name"); inp.placeholder = "Player " + (i + 1);
     inp.addEventListener("input", () => { G.nightDraft[i] = inp.value; if (teams) renderDraftTeams(); });
     row.appendChild(inp);
     if (G.nightDraft.length > 2) {
@@ -3147,7 +3164,9 @@ function renderDraftTeams(){
   const st = G.nightDraftStyle;
   const count = () => {
     const a = G.nightDraftTeam.filter(t => t === 0).length, b = G.nightDraft.length - a;
-    $("nsTeamCount").textContent = `${TEAMS[0]}: ${a} · ${TEAMS[1]}: ${b}` + (a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
+    const short = [a, b].findIndex(n => n < 2);
+    $("nsTeamCount").textContent = `${TEAMS[0]}: ${a} · ${TEAMS[1]}: ${b}` + (short >= 0 ? ` · ${TEAMS[short]} needs at least 2` : a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
+    $("nsTeamCount").classList.toggle("short", short >= 0);
   };
   teamCards($("nsStyleBox"), st, {
     members: [0, 1].map(k => G.nightDraft.map((_, i) => i).filter(i => G.nightDraftTeam[i] === k)),
@@ -3159,7 +3178,7 @@ function renderDraftTeams(){
 }
 $("nsAdd").onclick = () => {
   const a = G.nightDraftTeam.filter(t => t === 0).length;
-  G.nightDraft.push("Player " + (G.nightDraft.length + 1)); G.nightDraftTeam.push(a > G.nightDraft.length - 1 - a ? 1 : 0); renderDraft();
+  G.nightDraft.push(""); G.nightDraftTeam.push(a > G.nightDraft.length - 1 - a ? 1 : 0); renderDraft();
 };
 $("nsBack").onclick = () => show("home");
 $("nsGo").onclick = () => {
