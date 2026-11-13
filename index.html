@@ -395,7 +395,7 @@ div.tc-chip{cursor:default}
 .tc-chip.new{box-shadow:0 0 0 2px #1E1B3A}
 .note.short{color:var(--red);font-weight:700}
 .tc-empty{color:#1E1B3A;opacity:.6;font-size:13px;text-align:center;padding:10px 4px;margin:0}
-.tc-pal{position:relative;margin-top:12px;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 4px 0 var(--ink)}
+.tc-pal{position:absolute;z-index:5;max-width:100%;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 4px 0 var(--ink)}
 .tc-pal::before{content:"";position:absolute;top:-9px;left:var(--arrow,22px);width:14px;height:14px;background:var(--surface);border-left:2px solid var(--ink);border-top:2px solid var(--ink);transform:rotate(45deg)}
 .tc-sw{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
 .tc-sw button{aspect-ratio:1;border-radius:10px;position:relative}
@@ -2472,13 +2472,15 @@ function applyTeamStyle(st){
 // Two side-by-side team cards: name + color in each header, players as chips (tap to move to the other team).
 // opt: { members: [[i...],[i...]], locked(i)?, isNew(i)?, nameOf(i), onMove(i, k), onChange(rebuild) }
 function teamCards(box, st, opt){
-  box.innerHTML = "";
+  box.innerHTML = ""; box.style.position = "relative";
+  if (G.palAway) { document.removeEventListener("pointerdown", G.palAway, true); G.palAway = null; }
+  const dots = [];
   if (G.palFor != null && G.palBox !== box) G.palFor = null;
   const cols = document.createElement("div"); cols.className = "tc-cols";
   st.forEach((s, k) => {
     const col = document.createElement("div"); col.className = "tc-col t" + k;
     const head = document.createElement("div"); head.className = "tc-head";
-    const dot = document.createElement("button"); dot.className = "tc-dot";
+    const dot = document.createElement("button"); dot.className = "tc-dot"; dots[k] = dot;
     dot.setAttribute("aria-label", `${styleName(st, k)} color`); dot.setAttribute("aria-expanded", G.palFor === k);
     dot.onclick = e => { e.preventDefault(); G.palFor = G.palFor === k ? null : k; G.palBox = box; opt.onChange(true); };
     const inp = document.createElement("input"); inp.className = "tc-name"; inp.type = "text"; inp.maxLength = 16;
@@ -2516,7 +2518,6 @@ function teamCards(box, st, opt){
   // Color grid for the chosen team; colors too close to the other team are faded and disabled.
   const k = G.palFor, s = st[k], other = st[1 - k].color;
   const pal = document.createElement("div"); pal.className = "tc-pal";
-  pal.style.setProperty("--arrow", k ? "calc(50% + 18px)" : "18px");
   pal.setAttribute("role", "group"); pal.setAttribute("aria-label", `${styleName(st, k)} color`);
   const sw = document.createElement("div"); sw.className = "tc-sw";
   const pick = hex => {
@@ -2535,6 +2536,20 @@ function teamCards(box, st, opt){
   note.textContent = `Faded colors are too close to ${poss(styleName(st, 1 - k))} color.`;
   pal.appendChild(note);
   box.appendChild(pal);
+  // Pop it out of the tapped dot: just below it, over the cards, lined up with that team's side.
+  const br = box.getBoundingClientRect(), dr = dots[k].getBoundingClientRect();
+  const w = Math.min(br.width, 300), left = k ? br.width - w : 0;
+  pal.style.width = w + "px"; pal.style.left = left + "px"; pal.style.top = (dr.bottom - br.top + 10) + "px";
+  pal.style.setProperty("--arrow", (dr.left - br.left + dr.width / 2 - left - 9) + "px");
+  // Tapping anywhere else closes it.
+  G.palAway = e => {
+    if (pal.contains(e.target) || dots.includes(e.target)) return;
+    document.removeEventListener("pointerdown", G.palAway, true); G.palAway = null;
+    G.palFor = null; opt.onChange(true);
+  };
+  document.addEventListener("pointerdown", G.palAway, true);
+  const pr = pal.getBoundingClientRect();
+  if (pr.bottom > innerHeight) scrollBy({ top: pr.bottom - innerHeight + 16, behavior: "smooth" });
 }
 INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
