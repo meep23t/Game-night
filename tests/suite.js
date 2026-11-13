@@ -867,6 +867,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
     await ev(p, () => show('home'));
     await p.click('#nightStrip button'); await p.click('#nsTeam');
+    check('Start screen explains points for each mode', /winning team gets the points/.test(await (async () => { await p.click('#nsInd'); const t = await txt(p, '#nsModeHint'); await p.click('#nsTeam'); return t; })()) && /points go to your team/.test(await txt(p, '#nsModeHint')));
     check('Start screen: teams split with count', /Team 1: 3 · Team 2: 2/.test(await txt(p, '#nsTeamCount')));
     await team(p, '#nsStyleBox', 'Ben', 0); await team(p, '#nsStyleBox', 'Dee', 0);
     await p.click('#nsGo');
