@@ -147,7 +147,6 @@ textarea{resize:vertical;font-size:15px}
 .pa-seg button{border:2px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-weight:800;font-size:17px}
 .pa-seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
 .pa-seg button small{display:block;font-weight:600;font-size:13px;opacity:.75;margin-top:2px}
-.ns-row .team-seg{flex:none}
 .tcards{margin:4px 0 6px}
 .tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
 .tcard.b{background:var(--t0-tint);border-color:var(--t0-edge)} .tcard.p{background:var(--t1-tint);border-color:var(--t1-edge)}
@@ -375,17 +374,33 @@ button:disabled{opacity:.4}
 .sm-row .pick button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--ink)}
 .sm-row .pick button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
 .sm-row.t0{border-left:8px solid var(--t0-edge)} .sm-row.t1{border-left:8px solid var(--t1-edge)}
-.team-seg button{border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;color:var(--muted)}
-.team-seg button[aria-pressed="true"].b{background:var(--t0-bg);border-color:var(--t0-edge);color:#1E1B3A}
-.team-seg button[aria-pressed="true"].p{background:var(--t1-bg);border-color:var(--t1-edge);color:#1E1B3A}
-.team-seg button{max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ts-row{display:flex;flex-direction:column;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
-.ts-row:last-child{border-bottom:0}
-.ts-row input{font-weight:700}
-.ts-swatches{display:flex;gap:8px;flex-wrap:wrap}
-.ts-swatches button{width:34px;height:34px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 2px var(--line)}
-.ts-swatches button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface)}
-.ts-swatches button:disabled{opacity:.25}
+.tc-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tc-col{border:2px solid;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.tc-col.t0{border-color:var(--t0-edge);background:var(--t0-tint)} .tc-col.t1{border-color:var(--t1-edge);background:var(--t1-tint)}
+.tc-head{display:flex;align-items:center;gap:6px;padding:7px 8px 7px 7px}
+.tc-col.t0 .tc-head{background:var(--t0-bg)} .tc-col.t1 .tc-head{background:var(--t1-bg)}
+.tc-dot{width:30px;height:30px;border-radius:50%;flex:none;border:3px solid #fff;box-shadow:0 0 0 1px #1E1B3A33}
+.tc-col.t0 .tc-dot{background:var(--t0-edge)} .tc-col.t1 .tc-dot{background:var(--t1-edge)}
+.tc-dot[aria-expanded="true"]{box-shadow:0 0 0 2px #1E1B3A}
+input.tc-name{flex:1;min-width:0;width:100%;background:transparent;border:0;border-radius:8px;padding:4px 2px;font:inherit;font-weight:800;font-size:16px;color:#1E1B3A}
+input.tc-name::placeholder{color:#1E1B3A;opacity:1}
+input.tc-name:focus{background:#ffffffaa;outline:none}
+.tc-pen{flex:none;font-size:13px;color:#1E1B3A;opacity:.55;pointer-events:none}
+.tc-chips{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tc-chip{background:#fff;color:#1E1B3A;text-align:left;border-radius:999px;padding:8px 12px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;min-width:0}
+.tc-chip .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-col.t1 .tc-chip .nm{text-align:right}
+.tc-chip .mv{flex:none;opacity:.45;font-size:14px}
+.tc-empty{color:#1E1B3A;opacity:.6;font-size:13px;text-align:center;padding:10px 4px;margin:0}
+.tc-pal{position:relative;margin-top:12px;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 4px 0 var(--ink)}
+.tc-pal::before{content:"";position:absolute;top:-9px;left:var(--arrow,22px);width:14px;height:14px;background:var(--surface);border-left:2px solid var(--ink);border-top:2px solid var(--ink);transform:rotate(45deg)}
+.tc-sw{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;justify-items:center}
+.tc-sw button,.tc-sw label{width:34px;height:34px;border-radius:50%;position:relative}
+.tc-sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ink)}
+.tc-sw button:disabled{opacity:.18}
+.tc-sw label{background:conic-gradient(#E2453C,#D9700A,#C99A06,#1A8F5F,#0E8C93,#2B44D6,#7A4FD6,#C2338A,#E2453C);cursor:pointer}
+.tc-sw label input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.tc-pal .note{margin:10px 0 0}
 .spy-tools{display:flex;gap:10px}
 .clue-box{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:10px}
 .clue-box.t0{border-color:var(--t0-edge)} .clue-box.t1{border-color:var(--t1-edge)}
@@ -503,8 +518,8 @@ h3.sub{font-size:20px;margin-top:26px}
     <h2>Players <small class="ppl-range" id="playerRange"></small></h2>
     <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
     <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
-    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
-    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams, Blue and Pink. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
+    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
+    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
     <div id="players"></div>
     <button id="addPlayer" class="ghost">Add player</button>
     <div id="sitOut" class="sit-out" hidden>
@@ -520,14 +535,9 @@ h3.sub{font-size:20px;margin-top:26px}
     <div class="setting" id="paRandomRow" hidden><span>Random teams<small>Shuffled into two even teams</small></span><button class="toggle" role="switch" id="paRandom" aria-label="Random teams"></button></div>
   </div>
 
-  <div class="block" id="teamStyleBlock" hidden>
-    <h2>Team names &amp; colors</h2>
-    <div id="teamStyleBox"></div>
-  </div>
-
   <div class="block" id="teamsBlock" hidden>
     <h2>Teams</h2>
-    <p class="hint" id="teamsHint" style="margin:-4px 0 12px">Each team needs at least 2 players. Tap to put each player on a team.</p>
+    <p class="hint" id="teamsHint" style="margin:-4px 0 12px"></p>
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
@@ -694,7 +704,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>Put the phone in the middle. The board shows 16 words (25 on the big board).</li>
-        <li><b>4 or more players:</b> two teams, Blue and Pink, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
+        <li><b>4 or more players:</b> two teams, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps <b>Reveal</b>. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap <b>End turn</b>.</li>
         <li>Watch out for the trap card! Reveal it and your team loses right away. The first team to find all its words wins.</li>
@@ -1063,18 +1073,19 @@ h3.sub{font-size:20px;margin-top:26px}
   </header>
   <div class="block">
     <h2>Play as</h2>
-    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players, Blue vs Pink all night</small></button></div>
+    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players</small></button></div>
   </div>
   <div class="block">
-    <h2 id="nsListTitle">Players</h2>
+    <h2>Players</h2>
     <div id="nsList"></div>
     <button id="nsAdd" class="ghost">Add player</button>
-    <button id="nsShuffle" class="ghost" style="margin-top:8px;border-style:solid;color:var(--ink)" hidden>Shuffle teams</button>
-    <p class="note" id="nsTeamCount" style="margin:10px 0 0" hidden></p>
   </div>
   <div class="block" id="nsStyleBlock" hidden>
-    <h2>Team names &amp; colors</h2>
+    <h2>Teams</h2>
+    <p class="hint" style="margin:-4px 0 12px">Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it.</p>
     <div id="nsStyleBox"></div>
+    <button id="nsShuffle" class="ghost" style="margin-top:10px;border-style:solid;color:var(--ink)">⇄ Shuffle teams</button>
+    <p class="note" id="nsTeamCount" style="margin:10px 0 0"></p>
   </div>
   <details class="block night-rules">
     <summary>How points work</summary>
@@ -1089,7 +1100,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <li><b>Pass the doodle:</b> with scoring on, 1st 3, 2nd 2, 3rd 1. With scoring off, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
-    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played Blue vs Pink, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
+    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played team against team, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
@@ -1342,7 +1353,7 @@ function renderPlayAs(){
   const tp = teamPlay(G.mode), tn = teamsNight();
   $("paInd").setAttribute("aria-pressed", !tp); $("paTeam").setAttribute("aria-pressed", tp);
   $("paInd").disabled = $("paTeam").disabled = tn;
-  $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played Blue vs Pink with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
+  $("playAsHint").textContent = tn ? (tp ? "Tonight is a teams game night, so this game is played with tonight’s teams." : "Tonight is a teams game night, but with fewer than 4 playing this one is everyone for themselves.")
     : !tp ? "Everyone plays for themselves."
     : G.mode === "taboo" ? "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz."
     : "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess.";
@@ -1357,35 +1368,29 @@ function renderTeams(){
   $("spyCoopNote").hidden = !(coop && G.mode === "spy");
   $("fbCoopNote").hidden = !(coop && G.mode === "fb");
   const teamsOn = ((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode);
-  $("teamStyleBlock").hidden = !teamsOn;
-  if (teamsOn) { applyTeamStyle(); teamStyleEditor($("teamStyleBox"), curTeamStyle(), full => { applyTeamStyle(); if (teamsNight()) save(); if (full) renderTeams(); else renderTeamList(); }); }
-  const on = teamsOn && (teamsNight() || !S.randomTeams);
-  blk.hidden = !on; if (!on) return;
+  blk.hidden = !teamsOn;
+  applyTeamStyle();
+  if (!teamsOn) return;
   renderTeamList();
 }
 function renderTeamList(){
-  const box = $("teamList"); box.innerHTML = "";
-  S.players.forEach((nm, i) => {
-    const row = document.createElement("div"); row.className = "team-row";
-    const n = document.createElement("span"); n.className = "nm"; n.textContent = nm.trim() || `Player ${i + 1}`;
-    const seg = document.createElement("span"); seg.className = "team-seg";
-    [[TSHORT[0], "b"], [TSHORT[1], "p"]].forEach(([lbl, cls], k) => {
-      const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
-      b.setAttribute("aria-pressed", teamOf(i) === k);
-      b.setAttribute("aria-label", `${n.textContent} on ${TEAMS[k]}`);
-      b.onclick = () => {
-        if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
-        else S.teamPick[nm.trim()] = k;
-        save(); renderTeams(); renderEstimate(); $("setupError").textContent = "";
-      };
-      seg.appendChild(b);
-    });
-    const ctrls = document.createElement("span"); ctrls.className = "team-ctrls"; ctrls.appendChild(seg);
-    row.append(n, ctrls);
-    box.appendChild(row);
-  });
+  const pick = teamsNight() || !S.randomTeams;
+  $("teamsHint").textContent = pick
+    ? "Each team needs at least 2 players. Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it."
+    : "Teams are shuffled when the game starts. Tap a team’s dot to change its color, or its name to rename it.";
   const t = makeTeams();
-  $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}`;
+  const count = () => { $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}`; };
+  teamCards($("teamList"), curTeamStyle(), {
+    members: pick ? t : null,
+    nameOf: i => S.players[i].trim() || `Player ${i + 1}`,
+    onMove: (i, k) => {
+      if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
+      else S.teamPick[S.players[i].trim()] = k;
+      save(); renderTeamList(); renderEstimate(); $("setupError").textContent = "";
+    },
+    onChange: rebuild => { applyTeamStyle(); if (teamsNight()) save(); if (rebuild) renderTeamList(); else count(); }
+  });
+  $("teamCount").hidden = !pick; count();
 }
 
 function renderPacks(){
@@ -2184,7 +2189,7 @@ function waveStart(){
 }
 function wNewCard(){ G.current = draw(); G.target = Math.random() * 100; }
 function wGiver(){ return G.wOrder[G.wTurn]; }
-function wScoreText(){ return G.teamOn ? `${TSHORT[0]} ${G.wTeam[0]} · ${TSHORT[1]} ${G.wTeam[1]}` : `Group score: ${G.wScore}`; }
+function wScoreText(){ return G.teamOn ? `${TSHORT[0]}: ${G.wTeam[0]} · ${TSHORT[1]}: ${G.wTeam[1]}` : `Group score: ${G.wScore}`; }
 function wStep(){ return `Turn ${G.wTurn + 1} of ${G.wTotal}`; }
 function wPass(){
   $("wpStep").textContent = wStep();
@@ -2373,52 +2378,128 @@ const FB_ROUNDS = [
   ["One word", "You can say only one word as your clue. Choose wisely!"],
   ["Act it out", "No talking at all. Act out the word for your team."]
 ];
-const TEAMS = ["Team Blue", "Team Pink"], TSHORT = ["Blue", "Pink"];
-// Preset team colors, checked for contrast in light and dark mode.
+const TEAMS = ["Team 1", "Team 2"], TSHORT = ["Team 1", "Team 2"];
+// Preset team colors (hand-tuned for contrast). Any other color is derived by teamPalette().
 const TEAM_COLORS = {
-  blue:   { label:"Blue",   bg:"#BFD4FF", tint:"#E3ECFF", edge:"#2B44D6", text:"#2B44D6", dtext:"#9FB2FF" },
-  pink:   { label:"Pink",   bg:"#FFC9C2", tint:"#FFE6E2", edge:"#E2453C", text:"#D63A31", dtext:"#FF9A8F" },
-  green:  { label:"Green",  bg:"#C6F0D8", tint:"#E4F8EC", edge:"#1A8F5F", text:"#16784F", dtext:"#6FE0A8" },
-  orange: { label:"Orange", bg:"#FFDDB0", tint:"#FFF0DB", edge:"#D9700A", text:"#A85505", dtext:"#FFB866" },
-  purple: { label:"Purple", bg:"#E2D4FF", tint:"#F0E9FF", edge:"#7A4FD6", text:"#6A3FC8", dtext:"#C3A8FF" },
-  teal:   { label:"Teal",   bg:"#BDEDF0", tint:"#E0F7F8", edge:"#0E8C93", text:"#0B7378", dtext:"#6FDDE3" }
+  "#2B44D6": { label:"Blue",    bg:"#BFD4FF", tint:"#E3ECFF", edge:"#2B44D6", text:"#2B44D6", dtext:"#9FB2FF" },
+  "#E2453C": { label:"Red",     bg:"#FFC9C2", tint:"#FFE6E2", edge:"#E2453C", text:"#D63A31", dtext:"#FF9A8F" },
+  "#1A8F5F": { label:"Green",   bg:"#C6F0D8", tint:"#E4F8EC", edge:"#1A8F5F", text:"#16784F", dtext:"#6FE0A8" },
+  "#D9700A": { label:"Orange",  bg:"#FFDDB0", tint:"#FFF0DB", edge:"#D9700A", text:"#A85505", dtext:"#FFB866" },
+  "#7A4FD6": { label:"Purple",  bg:"#E2D4FF", tint:"#F0E9FF", edge:"#7A4FD6", text:"#6A3FC8", dtext:"#C3A8FF" },
+  "#0E8C93": { label:"Teal",    bg:"#BDEDF0", tint:"#E0F7F8", edge:"#0E8C93", text:"#0B7378", dtext:"#6FDDE3" },
+  "#C2338A": { label:"Magenta" }, "#B58A00": { label:"Gold" }, "#1C86C8": { label:"Sky" },
+  "#5E9A12": { label:"Lime" }, "#8B5A2B": { label:"Brown" }, "#3B3A5C": { label:"Charcoal" }, "#D6406E": { label:"Rose" }
 };
-const defaultTeamStyle = () => [{ name:"", color:"blue" }, { name:"", color:"pink" }];
+const OLD_COLOR_KEYS = { blue:"#2B44D6", pink:"#E2453C", green:"#1A8F5F", orange:"#D9700A", purple:"#7A4FD6", teal:"#0E8C93" };
+const COOP_STYLE = [{ name:"Team Blue", color:"#2B44D6" }, { name:"Team Pink", color:"#E2453C" }];
+const defaultTeamStyle = () => [{ name:"", color:"#2B44D6" }, { name:"", color:"#E2453C" }];
 G.teamStyle = defaultTeamStyle();   // casual play: not saved, so it resets when the app reopens
 function curTeamStyle(){ return teamsNight() && S.night.teamStyle ? S.night.teamStyle : G.teamStyle; }
-// Grammar for custom team names: "Giraffes' turn", "Owls win"; "Team Blue's turn", "Team Blue wins".
+// Grammar for custom team names: "Giraffes' turn", "Owls win"; "Team 1's turn", "Team 1 wins".
 function poss(n){ return /s$/i.test(n) ? n + "’" : n + "’s"; }
 function plural(n){ return /s$/i.test(n) && !/^team /i.test(n); }
 function wins(n){ return `${n} ${plural(n) ? "win" : "wins"}`; }
-function styleName(st, k){ return st[k].name.trim() || `Team ${TEAM_COLORS[st[k].color].label}`; }
-function styleShort(st, k){ return st[k].name.trim() || TEAM_COLORS[st[k].color].label; }
+function styleName(st, k){ return st[k].name.trim() || `Team ${k + 1}`; }
+const styleShort = styleName;
+// Colors: stored as "#RRGGBB" (older saves used preset keys like "blue").
+function colorHex(c, k){ c = OLD_COLOR_KEYS[c] || c; return /^#[0-9a-f]{6}$/i.test(c || "") ? c.toUpperCase() : (k ? "#E2453C" : "#2B44D6"); }
+function hexRgb(h){ return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function rgbHex(c){ return "#" + c.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("").toUpperCase(); }
+function relLum(c){ const f = v => (v /= 255) <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); return .2126 * f(c[0]) + .7152 * f(c[1]) + .0722 * f(c[2]); }
+function contrastOf(a, b){ const x = relLum(a), y = relLum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); }
+function mixRgb(c, d, t){ return c.map((v, i) => v + (d[i] - v) * t); }
+// Turn any picked color into the five shades the app uses, keeping text readable in light and dark mode.
+function teamPalette(hex){
+  const p = TEAM_COLORS[hex]; if (p && p.bg) return p;
+  const W = [255, 255, 255], K = [0, 0, 0], DARK = [32, 29, 60], INK = [30, 27, 58];
+  let edge = hexRgb(hex); for (let i = 0; i < 40 && contrastOf(edge, W) < 3; i++) edge = mixRgb(edge, K, .07);
+  let bg = mixRgb(edge, W, .7); for (let i = 0; i < 20 && contrastOf(bg, INK) < 8; i++) bg = mixRgb(bg, W, .15);
+  const tint = mixRgb(edge, W, .86);
+  let text = edge; for (let i = 0; i < 40 && contrastOf(text, tint) < 4.5; i++) text = mixRgb(text, K, .06);
+  let dtext = mixRgb(edge, W, .35); for (let i = 0; i < 40 && contrastOf(dtext, DARK) < 4.5; i++) dtext = mixRgb(dtext, W, .1);
+  return { bg:rgbHex(bg), tint:rgbHex(tint), edge:rgbHex(edge), text:rgbHex(text), dtext:rgbHex(dtext) };
+}
+// Two team colors that look alike are refused (weighted RGB distance of the shown colors).
+function colorsClash(a, b){
+  const x = hexRgb(teamPalette(a).edge), y = hexRgb(teamPalette(b).edge), r = (x[0] + y[0]) / 2;
+  const d = Math.sqrt((2 + r / 256) * (x[0] - y[0]) ** 2 + 4 * (x[1] - y[1]) ** 2 + (2 + (255 - r) / 256) * (x[2] - y[2]) ** 2);
+  return d < 110;
+}
 function applyTeamStyle(st){
-  st = st || curTeamStyle();
+  if (!st) st = G.mode === "spy" && S.players.length < 4 ? COOP_STYLE : curTeamStyle();
   const r = document.documentElement.style;
   st.forEach((s, k) => {
-    const c = TEAM_COLORS[s.color] || TEAM_COLORS[k ? "pink" : "blue"];
+    s.color = colorHex(s.color, k);
+    const c = teamPalette(s.color);
     TEAMS[k] = styleName(st, k); TSHORT[k] = styleShort(st, k);
     for (const f of ["bg", "tint", "edge", "text", "dtext"]) r.setProperty(`--t${k}-${f}`, c[f]);
   });
 }
-// Name + color editor for both teams. onChange(full) — full=true when a color changed (rebuild), false for typing.
-function teamStyleEditor(box, st, onChange){
+// Two side-by-side team cards: name + color in each header, players as chips (tap to move to the other team).
+// opt: { members: [[i...],[i...]] or null (random teams), nameOf(i), onMove(i, k), onChange(rebuild) }
+function teamCards(box, st, opt){
   box.innerHTML = "";
+  if (G.palFor != null && G.palBox !== box) G.palFor = null;
+  const cols = document.createElement("div"); cols.className = "tc-cols";
   st.forEach((s, k) => {
-    const row = document.createElement("div"); row.className = "ts-row";
-    const inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 16; inp.value = s.name;
-    inp.placeholder = `Team ${TEAM_COLORS[s.color].label}`; inp.setAttribute("aria-label", `Team ${k + 1} name`);
-    inp.addEventListener("input", () => { s.name = inp.value; onChange(false); });
-    const sw = document.createElement("div"); sw.className = "ts-swatches";
-    Object.entries(TEAM_COLORS).forEach(([key, c]) => {
-      const b = document.createElement("button"); b.style.background = c.edge;
-      b.setAttribute("aria-label", `Team ${k + 1} color: ${c.label}`); b.setAttribute("aria-pressed", s.color === key);
-      b.disabled = st[1 - k].color === key;   // the two teams can't share a color
-      b.onclick = () => { s.color = key; onChange(true); };
-      sw.appendChild(b);
+    const col = document.createElement("div"); col.className = "tc-col t" + k;
+    const head = document.createElement("div"); head.className = "tc-head";
+    const dot = document.createElement("button"); dot.className = "tc-dot";
+    dot.setAttribute("aria-label", `${styleName(st, k)} color`); dot.setAttribute("aria-expanded", G.palFor === k);
+    dot.onclick = e => { e.preventDefault(); G.palFor = G.palFor === k ? null : k; G.palBox = box; G.palMsg = ""; opt.onChange(true); };
+    const inp = document.createElement("input"); inp.className = "tc-name"; inp.type = "text"; inp.maxLength = 16;
+    inp.value = s.name; inp.placeholder = `Team ${k + 1}`; inp.setAttribute("aria-label", `Team ${k + 1} name`);
+    inp.addEventListener("input", () => {   // update labels in place (no rebuild, so typing and the next tap aren't lost)
+      s.name = inp.value; dot.setAttribute("aria-label", `${styleName(st, k)} color`);
+      box.querySelectorAll(`.tc-col.t${1 - k} .tc-chip`).forEach(c => c.setAttribute("aria-label", `Move ${c.dataset.nm} to ${styleName(st, k)}`));
+      opt.onChange(false);
     });
-    row.append(inp, sw); box.appendChild(row);
+    const pen = document.createElement("span"); pen.className = "tc-pen"; pen.textContent = "✎"; pen.setAttribute("aria-hidden", "true");
+    head.append(dot, inp, pen);
+    head.onclick = e => { if (e.target === head) inp.focus(); };
+    const chips = document.createElement("div"); chips.className = "tc-chips";
+    if (!opt.members) chips.innerHTML = `<p class="tc-empty">Shuffled when the game starts</p>`;
+    else if (!opt.members[k].length) chips.innerHTML = `<p class="tc-empty">Tap a player to move them here</p>`;
+    else opt.members[k].forEach(i => {
+      const b = document.createElement("button"); b.className = "tc-chip";
+      const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = opt.nameOf(i);
+      const mv = document.createElement("span"); mv.className = "mv"; mv.textContent = k ? "←" : "→"; mv.setAttribute("aria-hidden", "true");
+      if (k) b.append(mv, nm); else b.append(nm, mv);
+      b.dataset.nm = opt.nameOf(i); b.setAttribute("aria-label", `Move ${opt.nameOf(i)} to ${styleName(st, 1 - k)}`);
+      b.onclick = () => opt.onMove(i, 1 - k);
+      chips.appendChild(b);
+    });
+    col.append(head, chips); cols.appendChild(col);
   });
+  box.appendChild(cols);
+  if (G.palFor == null) return;
+  // Color palette for the chosen team: presets plus a full custom picker.
+  const k = G.palFor, s = st[k], other = st[1 - k].color;
+  const pal = document.createElement("div"); pal.className = "tc-pal";
+  pal.style.setProperty("--arrow", k ? "calc(50% + 18px)" : "18px");
+  pal.setAttribute("role", "group"); pal.setAttribute("aria-label", `${styleName(st, k)} color`);
+  const sw = document.createElement("div"); sw.className = "tc-sw";
+  const pick = hex => {
+    if (colorsClash(hex, other)) { G.palMsg = `Too close to ${poss(styleName(st, 1 - k))} color. Pick something more different.`; opt.onChange(true); return; }
+    s.color = colorHex(hex, k); G.palFor = null; G.palMsg = ""; opt.onChange(true);
+  };
+  Object.entries(TEAM_COLORS).forEach(([hex, c]) => {
+    const b = document.createElement("button"); b.style.background = hex;
+    b.setAttribute("aria-label", `Team ${k + 1} color: ${c.label}`); b.setAttribute("aria-pressed", s.color === hex);
+    b.disabled = colorsClash(hex, other);
+    b.onclick = () => pick(hex);
+    sw.appendChild(b);
+  });
+  const custom = document.createElement("label"); custom.title = "Any color";
+  const ci = document.createElement("input"); ci.type = "color"; ci.value = s.color.toLowerCase(); ci.setAttribute("aria-label", `Team ${k + 1} color: any color`);
+  ci.addEventListener("change", () => pick(ci.value));
+  custom.appendChild(ci); sw.appendChild(custom);
+  pal.appendChild(sw);
+  const note = document.createElement("p"); note.className = "note";
+  note.textContent = G.palMsg || "Tap the rainbow for any color.";
+  if (G.palMsg) note.setAttribute("role", "alert");
+  pal.appendChild(note);
+  box.appendChild(pal);
 }
 INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
@@ -2757,7 +2838,7 @@ function spyLeft(k){ return G.board.filter(c => c.r === k && !c.open).length; }
 function renderSpy(){
   const t = G.spyTurn;
   $("sbTurn").textContent = G.coop ? "Co-op · your turn" : `${poss(TEAMS[t])} turn`; $("sbTurn").className = "turn-pill t" + t;
-  $("sbCount").textContent = G.coop ? `Left: Blue ${spyLeft(0)} · Clock ${spyLeft(1)}` : `Left: ${TSHORT[0]} ${spyLeft(0)} · ${TSHORT[1]} ${spyLeft(1)}`;
+  $("sbCount").textContent = G.coop ? `Left: Blue ${spyLeft(0)} · Clock ${spyLeft(1)}` : `${TSHORT[0]}: ${spyLeft(0)} · ${TSHORT[1]}: ${spyLeft(1)} left`;
   const grid = $("sbGrid"); grid.className = "spy-grid c" + (G.spyBig ? 5 : 4); grid.innerHTML = "";
   G.board.forEach((c, i) => {
     const b = document.createElement("button");
@@ -2781,8 +2862,8 @@ $("sbReveal").onclick = () => {
     if (!spyLeft(1)) return spyEndCoop(false, "That was the last pink word. The clock ran out!");
   }
   if (c.r === "trap") return spyEnd(1 - t, `${TEAMS[t]} found the trap card!`);
-  if (!spyLeft(0)) return spyEnd(0, "Team Blue found all its words!");
-  if (!spyLeft(1)) return spyEnd(1, "Team Pink found all its words!");
+  if (!spyLeft(0)) return spyEnd(0, `${TEAMS[0]} found all its words!`);
+  if (!spyLeft(1)) return spyEnd(1, `${TEAMS[1]} found all its words!`);
   if (c.r === t) {
     ding(); G.clue.left--;
     if (G.clue.left <= 0) return spyNextTurn(G.coop ? "Correct! That was your last guess." : `Correct! That was your last guess. ${poss(TEAMS[1 - t])} turn.`);
@@ -2994,9 +3075,10 @@ function nightStandings(){
 }
 function nightLeaderText(){
   if (S.night.mode === "teams") {
-    const { t } = teamNightTotals();
-    if (!S.night.log.length || (!t[0] && !t[1])) return "Blue vs Pink · no points yet";
-    return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${TEAMS[t[0] > t[1] ? 0 : 1]} ${plural(TEAMS[t[0] > t[1] ? 0 : 1]) ? "lead" : "leads"} ${Math.max(...t)}–${Math.min(...t)}`;
+    const { t } = teamNightTotals(), nm = k => S.night.teamStyle ? styleName(S.night.teamStyle, k) : `Team ${k + 1}`;
+    if (!S.night.log.length || (!t[0] && !t[1])) return `${nm(0)} vs ${nm(1)} · no points yet`;
+    const w = nm(t[0] > t[1] ? 0 : 1);
+    return t[0] === t[1] ? `Teams tied ${t[0]}–${t[1]}` : `${w} ${plural(w) ? "lead" : "leads"} ${Math.max(...t)}–${Math.min(...t)}`;
   }
   const st = nightStandings();
   if (!S.night.log.length || !st[0].pts) return "No points yet";
@@ -3044,31 +3126,17 @@ $("nsShuffle").onclick = () => {
   const order = shuffle(G.nightDraft.map((_, i) => i));
   order.forEach((i, k) => G.nightDraftTeam[i] = k % 2); renderDraft();
 };
-function renderDraft(full = true){
+function renderDraft(){
   const teams = G.nightMode === "teams";
   applyTeamStyle(G.nightDraftStyle);
-  $("nsStyleBlock").hidden = !teams;
-  if (teams && full) teamStyleEditor($("nsStyleBox"), G.nightDraftStyle, f => renderDraft(f));
   $("nsInd").setAttribute("aria-pressed", !teams); $("nsTeam").setAttribute("aria-pressed", teams);
-  $("nsListTitle").textContent = teams ? "Players & teams" : "Players";
   const box = $("nsList"); box.innerHTML = "";
   G.nightDraft.forEach((nm, i) => {
     const row = document.createElement("div"); row.className = "player-row ns-row";
     const inp = document.createElement("input"); inp.type = "text"; inp.value = nm; inp.maxLength = 24;
     inp.setAttribute("aria-label", "Player " + (i + 1) + " name");
-    inp.addEventListener("input", () => { G.nightDraft[i] = inp.value; });
+    inp.addEventListener("input", () => { G.nightDraft[i] = inp.value; if (teams) renderDraftTeams(); });
     row.appendChild(inp);
-    if (teams) {
-      const seg = document.createElement("span"); seg.className = "team-seg";
-      [[TSHORT[0], "b"], [TSHORT[1], "p"]].forEach(([lbl, cls], k) => {
-        const b = document.createElement("button"); b.className = cls; b.textContent = lbl;
-        b.setAttribute("aria-pressed", G.nightDraftTeam[i] === k);
-        b.setAttribute("aria-label", `${nm || "Player " + (i + 1)} on ${TEAMS[k]}`);
-        b.onclick = () => { G.nightDraftTeam[i] = k; renderDraft(); };
-        seg.appendChild(b);
-      });
-      row.appendChild(seg);
-    }
     if (G.nightDraft.length > 2) {
       const rm = document.createElement("button"); rm.className = "icon-btn"; rm.textContent = "×";
       rm.setAttribute("aria-label", "Remove " + (nm || "player"));
@@ -3078,11 +3146,22 @@ function renderDraft(full = true){
     box.appendChild(row);
   });
   $("nsAdd").hidden = G.nightDraft.length >= 12;
-  $("nsShuffle").hidden = !teams; $("nsTeamCount").hidden = !teams;
-  if (teams) {
+  $("nsStyleBlock").hidden = !teams;
+  if (teams) renderDraftTeams();
+}
+function renderDraftTeams(){
+  const st = G.nightDraftStyle;
+  const count = () => {
     const a = G.nightDraftTeam.filter(t => t === 0).length, b = G.nightDraft.length - a;
     $("nsTeamCount").textContent = `${TEAMS[0]}: ${a} · ${TEAMS[1]}: ${b}` + (a !== b ? ". Uneven teams are fine: scoring evens it out." : "");
-  }
+  };
+  teamCards($("nsStyleBox"), st, {
+    members: [0, 1].map(k => G.nightDraft.map((_, i) => i).filter(i => G.nightDraftTeam[i] === k)),
+    nameOf: i => G.nightDraft[i].trim() || `Player ${i + 1}`,
+    onMove: (i, k) => { G.nightDraftTeam[i] = k; renderDraftTeams(); },
+    onChange: rebuild => { applyTeamStyle(st); if (rebuild) renderDraftTeams(); else count(); }
+  });
+  count();
 }
 $("nsAdd").onclick = () => {
   const a = G.nightDraftTeam.filter(t => t === 0).length;

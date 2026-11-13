@@ -50,6 +50,11 @@ const ev = (p, f, a) => p.evaluate(f, a);
 const screen = p => ev(p, () => G.screen);
 const txt = (p, sel) => p.locator(sel).innerText();
 async function setPlayers(p, names) { await ev(p, n => { S.players = n.slice(); S.playerIds = n.map(() => null); save(); }, names); }
+// Put a player on team k (0/1) with the team cards: tap their chip if they're on the other team.
+async function team(p, scope, name, k) {
+  const chip = p.locator(`${scope} .tc-col.t${1 - k} button[aria-label^="Move ${name} to "]`);
+  if (await chip.count()) await chip.click();
+}
 async function open(p, mode) { await ev(p, () => show('home')); await p.click({ act:'#goAct', taboo:'#goTaboo', fb:'#goFb', tele:'#goTele', wave:'#goWave', imp:'#goImp', spy:'#goSpy' }[mode]); }
 async function noHScroll(p, label) {
   const o = await ev(p, () => ({ sw: document.documentElement.scrollWidth, w: innerWidth }));
@@ -564,26 +569,26 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve', 'Fay']);
     await open(p, 'fb');
     check('Teams section shows for Word bowl (Random teams off by default)', await p.locator('#teamsBlock').isVisible() && (await ev(p, () => S.randomTeams)) === false);
-    check('Default split alternates by seat', (await txt(p, '#teamCount')).includes('Blue: 3') && (await ev(p, () => JSON.stringify(makeTeams()))) === '[[0,2,4],[1,3,5]]');
+    check('Default split alternates by seat', (await txt(p, '#teamCount')).includes('Team 1: 3') && (await ev(p, () => JSON.stringify(makeTeams()))) === '[[0,2,4],[1,3,5]]');
     // move Ben, Dee to Blue → Blue 5, Pink 1 → error
-    await p.click('button[aria-label="Ben on Team Blue"]'); await p.click('button[aria-label="Dee on Team Blue"]');
-    check('Tapping Blue/Pink moves players', (await txt(p, '#teamCount')).includes('Blue: 5 · Team Pink: 1'), await txt(p, '#teamCount'));
+    await team(p, '#teamList', 'Ben', 0); await team(p, '#teamList', 'Dee', 0);
+    check('Tapping a player moves them to the other team', (await txt(p, '#teamCount')).includes('Team 1: 5 · Team 2: 1'), await txt(p, '#teamCount'));
     await p.click('#startGame');
-    check('A 1-player team blocks the start with a clear message', (await screen(p)) === 'setup' && /Team Pink needs at least 2/.test(await txt(p, '#setupError')), await txt(p, '#setupError'));
-    await p.click('button[aria-label="Ana on Team Pink"]');
+    check('A 1-player team blocks the start with a clear message', (await screen(p)) === 'setup' && /Team 2 needs at least 2/.test(await txt(p, '#setupError')), await txt(p, '#setupError'));
+    await team(p, '#teamList', 'Ana', 1);
     await p.click('#startGame');
     check('Picked teams are used in the game', (await ev(p, () => JSON.stringify(G.teams))) === '[[1,2,3,4],[0,5]]', await ev(p, () => JSON.stringify(G.teams)));
     await p.reload();
     check('Team picks are remembered after reload', (await ev(p, () => JSON.stringify(makeTeams()))) === '[[1,2,3,4],[0,5]]');
     // same picks apply in Word spies
     await open(p, 'spy');
-    check('Teams section shows for Word spies with the same picks', await p.locator('#teamsBlock').isVisible() && (await txt(p, '#teamCount')).includes('Blue: 4'));
+    check('Teams section shows for Word spies with the same picks', await p.locator('#teamsBlock').isVisible() && (await txt(p, '#teamCount')).includes('Team 1: 4'));
     // spymasters are chosen on the New board screen, not in setup
     check('Word spies setup has no spymaster buttons', (await p.locator('.role-btn').count()) === 0);
     await p.click('#startGame');
     const sm0 = await ev(p, () => G.spymasters.slice());
     check('New board shows both spymasters with Change', (await p.locator('#srSpies .sm-row').count()) === 2 && /Change/.test(await txt(p, '#srSpies')));
-    await p.click('button[aria-label="Change Team Blue spymaster"]');
+    await p.click('button[aria-label="Change Team 1 spymaster"]');
     const other = await ev(p, s => G.teams[0].find(i => i !== s[0]), sm0);
     const otherName = await ev(p, i => name(i), other);
     await p.locator('#srSpies .sm-row').nth(0).locator('.pick button', { hasText: otherName }).click();
@@ -598,7 +603,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     // random teams
     await open(p, 'fb');
     await p.locator('#settings .setting', { hasText: 'Random teams' }).locator('button').click();
-    check('Random teams on hides the picker', await p.locator('#teamsBlock').isHidden() && (await ev(p, () => S.randomTeams)) === true);
+    check('Random teams on: cards keep names & colors but no player picking', (await p.locator('#teamList .tc-chip').count()) === 0 && /Shuffled when the game starts/.test(await txt(p, '#teamList')) && await p.locator('#teamCount').isHidden() && (await ev(p, () => S.randomTeams)) === true);
     const splits = new Set(); let even = true;
     for (let k = 0; k < 15; k++) { const t = await ev(p, () => makeTeams()); splits.add(JSON.stringify(t)); if (t[0].length !== 3 || t[1].length !== 3) even = false; }
     check('Random teams are always even (3 v 3)', even);
@@ -718,8 +723,8 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Teams shows the team picker and random switch', await p.locator('#teamsBlock').isVisible() && await p.locator('#paRandomRow').isVisible());
     await p.click('#startGame');
     check('Turns alternate teams, smaller team takes the extra turn', (await ev(p, () => G.seq.map(name).join(','))) === 'Ana,Ben,Cy,Dee,Eve,Ben', await ev(p, () => G.seq.map(name).join(',')));
-    check('Pass screen names the team', /Team Blue: you’re acting for your team/.test(await txt(p, '#passNote')));
-    check('Scores show team totals', /Team Blue/.test(await txt(p, '#passScores')) && /Team Pink/.test(await txt(p, '#passScores')));
+    check('Pass screen names the team', /Team 1: you’re acting for your team/.test(await txt(p, '#passNote')));
+    check('Scores show team totals', /Team 1/.test(await txt(p, '#passScores')) && /Team 2/.test(await txt(p, '#passScores')));
     let turns = 0;
     while ((await screen(p)) === 'pass' && turns < 20) {
       turns++;
@@ -728,13 +733,13 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await p.click(team === 0 ? '#gotBtn' : '#skipBtn'); await p.clock.runFor(1500); await p.click('#nextTurn');
     }
     check('2 rounds × 6 turns = 12 turns', turns === 12, turns);
-    check('Final names the winning team', /Team Blue wins/.test(await txt(p, '#winner')) && /6/.test(await txt(p, '#finalScores')), await txt(p, '#winner'));
+    check('Final names the winning team', /Team 1 wins/.test(await txt(p, '#winner')) && /6/.test(await txt(p, '#finalScores')), await txt(p, '#winner'));
     // Describe it teams
     await open(p, 'taboo'); await p.click('#paTeam');
     check('Describe it hint: other team buzzes', /other team watches the screen and taps Buzz/.test(await txt(p, '#playAsHint')));
     await ev(p, () => { S.rounds = 1; S.turnSec = 30; save(); });
     await p.click('#startGame');
-    check('Describe it pass screen tells the other team to buzz', /Team Pink, watch the screen and tap Buzz/.test(await txt(p, '#passNote')), await txt(p, '#passNote'));
+    check('Describe it pass screen tells the other team to buzz', /Team 2, watch the screen and tap Buzz/.test(await txt(p, '#passNote')), await txt(p, '#passNote'));
     await p.click('#startTurn'); await p.click('#tGot'); await p.click('#tGot');
     check('Describe it points go to the describer’s team', (await ev(p, () => teamTotals().join(','))) === '2,0');
     await ev(p, () => stopTimer());
@@ -745,7 +750,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#wpGo'); await ev(p, () => wSpin()); await p.clock.runFor(2000);
     check('Cluegiver passes to their team', /pass to your team/.test(await txt(p, '#wsDone')));
     await p.click('#wsDone'); await ev(p, () => { G.needle = G.target; drawGuess(); }); await p.click('#wgDone');
-    check('In the range points go to the cluegiver’s team', (await ev(p, () => G.wTeam.join(','))) === '4,0' && /Blue 4 · Pink 0/.test(await txt(p, '#wrScore')), await txt(p, '#wrScore'));
+    check('In the range points go to the cluegiver’s team', (await ev(p, () => G.wTeam.join(','))) === '4,0' && /Team 1: 4 · Team 2: 0/.test(await txt(p, '#wrScore')), await txt(p, '#wrScore'));
     // under 4 players
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await open(p, 'act'); await p.click('#paTeam'); await p.click('#startGame');
@@ -868,18 +873,18 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
     await ev(p, () => show('home'));
     await p.click('#nightStrip button'); await p.click('#nsTeam');
-    check('Start screen: teams split with count', /Team Blue: 3 · Team Pink: 2/.test(await txt(p, '#nsTeamCount')));
-    await p.click('button[aria-label="Ben on Team Blue"]'); await p.click('button[aria-label="Dee on Team Blue"]');
+    check('Start screen: teams split with count', /Team 1: 3 · Team 2: 2/.test(await txt(p, '#nsTeamCount')));
+    await team(p, '#nsStyleBox', 'Ben', 0); await team(p, '#nsStyleBox', 'Dee', 0);
     await p.click('#nsGo');
     check('Teams night needs 2+ per team', /at least 2 players on each team/.test(await txt(p, '#nsError')));
-    await p.click('button[aria-label="Ben on Team Pink"]'); await p.click('button[aria-label="Dee on Team Pink"]');
+    await team(p, '#nsStyleBox', 'Ben', 1); await team(p, '#nsStyleBox', 'Dee', 1);
     await p.click('#nsShuffle');
     const sh = await ev(p, () => G.nightDraftTeam.filter(t => t === 0).length);
     check('Shuffle keeps teams even (3 v 2)', sh === 3 || sh === 2, sh);
     await ev(p, () => { G.nightDraftTeam = [0, 1, 0, 1, 0]; renderDraft(); });
     await p.click('#nsGo');
     check('Teams night starts with roster teams', (await ev(p, () => S.night.mode)) === 'teams' && (await ev(p, () => S.night.roster.map(r => r.team).join(''))) === '01010');
-    check('Strip shows Blue vs Pink', /Blue vs Pink/.test(await txt(p, '#nightStrip')));
+    check('Strip shows Team 1 vs Team 2', /Team 1 vs Team 2/.test(await txt(p, '#nightStrip')));
     // Act it out forced into teams
     await open(p, 'act');
     check('Act it out is locked to teams tonight', await p.locator('#paInd').isDisabled() && /teams game night/.test(await txt(p, '#playAsHint')));
@@ -895,25 +900,25 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await open(p, 'tele'); await ev(p, () => { S.teleBooks = 1; S.teleScoring = false; save(); }); await p.click('#startGame');
     await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
     check('Bigger team’s 3rd scorer doesn’t count (2 v 2)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2');
-    check('Results box shows team points only', /Team Blue \+2 · Team Pink \+2/.test(await txt(p, '#nightBox')) && !/Ana|didn’t count/.test(await txt(p, '#nightBox')), await txt(p, '#nightBox'));
+    check('Results box shows team points only', /Team 1 \+2 · Team 2 \+2/.test(await txt(p, '#nightBox')) && !/Ana|didn’t count/.test(await txt(p, '#nightBox')), await txt(p, '#nightBox'));
     // team picker edits tonight's teams; newcomer joins smaller team
     await open(p, 'wave');
-    await p.click('button[aria-label="Eve on Team Pink"]');
+    await team(p, '#teamList', 'Eve', 1);
     check('Changing a team in setup updates tonight’s teams', (await ev(p, () => rosterTeam(5))) === 1);
-    await p.click('button[aria-label="Eve on Team Blue"]');
+    await team(p, '#teamList', 'Eve', 0);
     await p.click('#addPlayer');
     check('Newcomer joins the smaller team', (await ev(p, () => rosterTeam(S.playerIds.at(-1)))) === 1);
     check('Rules hide the Random teams switch tonight', (await p.locator('#settings .setting', { hasText: 'Random teams' }).count()) === 0);
     // leaderboard
     await ev(p, () => show('home'));
-    check('Strip shows the leading team', /Team Blue leads 6–4/.test(await txt(p, '#nightStrip')), await txt(p, '#nightStrip'));
+    check('Strip shows the leading team', /Team 1 leads 6–4/.test(await txt(p, '#nightStrip')), await txt(p, '#nightStrip'));
     await p.click('#nightStrip button');
-    check('Leaderboard shows team cards with totals', (await p.locator('#nightTeams .tcard').count()) === 2 && /Team Blue[\s\S]*6/.test(await txt(p, '#nightTeams')) && await p.locator('#nightStand').isHidden());
+    check('Leaderboard shows team cards with totals', (await p.locator('#nightTeams .tcard').count()) === 2 && /Team 1[\s\S]*6/.test(await txt(p, '#nightTeams')) && await p.locator('#nightStand').isHidden());
     check('Team cards list player names without individual points', /Ana, Cy, Eve/.test(await txt(p, '#nightTeams')) && !/didn’t count/.test(await txt(p, '#nightTeams')), await txt(p, '#nightTeams'));
-    check('Game log shows team points', /Blue \+4/.test(await txt(p, '#nightLog')) && /Pink \+2/.test(await txt(p, '#nightLog')));
+    check('Game log shows team points', /Team 1 \+4/.test(await txt(p, '#nightLog')) && /Team 2 \+2/.test(await txt(p, '#nightLog')));
     await noHScroll(p, 'teams leaderboard');
     await p.click('#nightEnd'); await p.click('#nightEnd');
-    check('Ending crowns the winning team', /Team Blue wins game night/.test(await txt(p, '#nightSub')));
+    check('Ending crowns the winning team', /Team 1 wins game night/.test(await txt(p, '#nightSub')));
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teamsnight');
     await p.context().close();
@@ -926,30 +931,41 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
     await ev(p, () => { S.randomTeams = false; save(); });
     await open(p, 'spy');
-    check('Team games show the names & colors editor', await p.locator('#teamStyleBlock').isVisible());
-    await p.locator('#teamStyleBox input').nth(0).fill('Giraffes');
+    check('Team games show the team cards', (await p.locator('#teamList .tc-col').count()) === 2);
+    check('Palette is closed until a dot is tapped', (await p.locator('#teamList .tc-pal').count()) === 0);
+    await p.locator('#teamList .tc-name').nth(0).fill('Giraffes');
+    await p.click('#teamList .tc-col.t0 .tc-dot');
+    check('Tapping a team dot opens the palette with presets and a custom picker', (await p.locator('#teamList .tc-pal button').count()) >= 12 && (await p.locator('#teamList .tc-pal input[type=color]').count()) === 1);
     await p.click('button[aria-label="Team 1 color: Green"]');
+    check('Picking a color closes the palette', (await p.locator('#teamList .tc-pal').count()) === 0);
+    await p.click('#teamList .tc-col.t1 .tc-dot');
     check('Team 2 can’t pick team 1’s color', await p.locator('button[aria-label="Team 2 color: Green"]').isDisabled());
-    check('Names flow into the picker and count', /Giraffes: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')) && /Giraffes/.test(await txt(p, '#teamList')));
+    // any color: a custom pick derives readable shades; one too close to the other team is refused
+    await p.locator('#teamList .tc-pal input[type=color]').evaluate(el => { el.value = '#1b9a63'; el.dispatchEvent(new Event('change')); });
+    check('A custom color too close to the other team is refused', /Too close/.test(await txt(p, '#teamList .tc-pal')) && (await ev(p, () => G.teamStyle[1].color)) === '#E2453C');
+    await p.locator('#teamList .tc-pal input[type=color]').evaluate(el => { el.value = '#ffe14d'; el.dispatchEvent(new Event('change')); });
+    check('A custom color is saved for the team', (await ev(p, () => G.teamStyle[1].color)) === '#FFE14D');
+    check('Light custom colors are darkened enough to read', await ev(p, () => { const c = teamPalette('#FFE14D'); return contrastOf(hexRgb(c.text), hexRgb(c.tint)) >= 4.5 && contrastOf(hexRgb(c.edge), [255,255,255]) >= 3 && contrastOf(hexRgb(c.dtext), [32,29,60]) >= 4.5; }));
+    check('Names flow into the picker and count', /Giraffes: 2 · Team 2: 2/.test(await txt(p, '#teamCount')) && (await p.locator('#teamList button[aria-label$="to Giraffes"]').count()) === 2);
     await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => { G.spyTurn = 0; renderSpy(); });
-    check('Word spies uses the team name with correct grammar', /Giraffes’ turn/.test(await txt(p, '#sbTurn')) && /Left: Giraffes/.test(await txt(p, '#sbCount')), await txt(p, '#sbTurn'));
+    check('Word spies uses the team name with correct grammar', /Giraffes’ turn/.test(await txt(p, '#sbTurn')) && /Giraffes: \d+ ·/.test(await txt(p, '#sbCount')), await txt(p, '#sbTurn'));
     check('Team color applies to the board', (await ev(p, () => getComputedStyle($('sbTurn')).backgroundColor)) === 'rgb(198, 240, 216)');
     await ev(p, () => spyEnd(0, 'x'));
     check('Plural custom name: "Giraffes win!"', /Giraffes win!/.test(await txt(p, '#seWin')), await txt(p, '#seWin'));
     await open(p, 'act');
-    check('Not shown for individual play', await p.locator('#teamStyleBlock').isHidden());
+    check('Not shown for individual play', await p.locator('#teamsBlock').isHidden());
     await p.reload();
     await open(p, 'spy');
-    check('Casual names and colors reset when the app reopens', /Team Blue: 2 · Team Pink: 2/.test(await txt(p, '#teamCount')));
+    check('Casual names and colors reset when the app reopens', /Team 1: 2 · Team 2: 2/.test(await txt(p, '#teamCount')));
     // game night
     await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsTeam');
-    await p.locator('#nsStyleBox input').nth(1).fill('Owls'); await p.click('#nsStyleBox button[aria-label="Team 2 color: Orange"]');
+    await p.locator('#nsStyleBox .tc-name').nth(1).fill('Owls'); await p.click('#nsStyleBox .tc-col.t1 .tc-dot'); await p.click('#nsStyleBox button[aria-label="Team 2 color: Orange"]');
     await p.click('#nsGo');
-    check('Night keeps its team names', /Team Blue: 2 · Owls: 2/.test(await (async () => { await open(p, 'act'); return txt(p, '#teamCount'); })()));
+    check('Night keeps its team names', /Team 1: 2 · Owls: 2/.test(await (async () => { await open(p, 'act'); return txt(p, '#teamCount'); })()));
     await ev(p, () => show('home'));
     await p.click('#nightStrip button'); await p.click('#nightEnd'); await p.click('#nightEnd');
     await p.click('#nightEnd'); await p.click('#nsTeam');
-    check('A new game night starts with default names', /Team Blue: 2 · Team Pink: 2/.test(await txt(p, '#nsTeamCount')));
+    check('A new game night starts with default names', /Team 1: 2 · Team 2: 2/.test(await txt(p, '#nsTeamCount')));
     await noHScroll(p, 'night start with team editor');
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teamstyle');
