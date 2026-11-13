@@ -481,7 +481,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <div id="teamList"></div>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
-  <p class="block hint" id="fbCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on one team and takes turns describing while the others guess. Empty the bowl in all three rounds as fast as you can and try to beat par.</p>
+  <p class="block hint" id="fbCoopNote" hidden><b>2–3 players:</b> everyone plays for themselves. Take turns describing while the others guess, and score a point for every word you get them to guess. Most points after three rounds wins.</p>
   <p class="block hint" id="spyCoopNote" hidden><b>Co-op mode for 2–3 players:</b> everyone is on Team Blue. One spymaster gives clues and everyone else guesses. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out!</p>
 
   <div class="block" data-for="act">
@@ -622,7 +622,7 @@ h3.sub{font-size:20px;margin-top:26px}
         </li>
         <li>The same words come back every round, so pay attention! A round ends when the bowl is empty.</li>
         <li>Tap <b>Skip</b> to put a word back in the bowl. Each word guessed is 1 point, and the team with the most points after 3 rounds wins.</li>
-        <li><b>2–3 players?</b> It’s co-op: everyone is on one team and takes turns describing. Empty the bowl in all three rounds as fast as you can and try to beat par (about 12 seconds per word per round).</li>
+        <li><b>2–3 players?</b> Everyone plays for themselves: take turns describing, and score a point for every word you get the others to guess. Most points after three rounds wins.</li>
       </ul>
     </details>
   </div>
@@ -2163,10 +2163,10 @@ $("goFb").onclick = () => openSetup("fb");
 
 function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go"); }
 function fbStart(){
-  // 2–3 players: co-op. One team, beat the clock.
+  // 2–3 players: everyone for themselves. One shared turn order, a point per word you describe.
   G.fbCoop = S.players.length < 4;
   G.teams = G.fbCoop ? [S.players.map((_, i) => i), []] : makeTeams();
-  G.fbTime = 0;
+  G.fbInd = S.players.map(() => 0);
   if (!S.fbWrite) {
     G.fbWords = shuffle([...TABOO[1], ...TABOO[2]].map(c => c[0])).slice(0, S.players.length * S.fbPer);
     return fbRoundIntro(true);
@@ -2213,11 +2213,13 @@ $("fbStart").onclick = () => { G.fbWords = G.fbSubs.flat(); fbRoundIntro(true); 
 function fbScores(el){
   el.innerHTML = "";
   if (G.fbCoop) {
-    const li = document.createElement("li");
-    const n = document.createElement("span"); n.textContent = "Your team";
-    const sm = document.createElement("small"); sm.textContent = G.teams[0].map(name).join(", "); n.appendChild(sm);
-    const b = document.createElement("b"); b.textContent = `⏱ ${fmt(G.fbTime)}`;
-    li.append(n, b); el.appendChild(li); return;
+    S.players.map((_, i) => i).sort((a, b) => G.fbInd[b] - G.fbInd[a] || a - b).forEach(i => {
+      const li = document.createElement("li");
+      const n = document.createElement("span"); n.textContent = name(i);
+      const b = document.createElement("b"); b.textContent = G.fbInd[i];
+      li.append(n, b); el.appendChild(li);
+    });
+    return;
   }
   TEAMS.forEach((t, k) => {
     const li = document.createElement("li");
@@ -2265,6 +2267,7 @@ $("fpGo").onclick = () => {
 $("fbGot").onclick = () => {
   if (T.locked || T.paused) return;
   G.fbLog.push(G.bowl.shift()); G.teamScores[G.fbTeam]++;
+  if (G.fbCoop) G.fbInd[fbCurrent()]++;
   ding(); popFxEl($("fbPop"), "+1", "green");
   if (!G.bowl.length) return fbEndTurn(true);
   fbShowWord();
@@ -2284,7 +2287,6 @@ $("fbPause").onclick = () => {
   fbBtns(!off);
 };
 function fbEndTurn(empty){
-  G.fbTime += empty ? Math.max(0, T.total - Math.max(0, T.end - performance.now())) : T.total;
   stopTimer(); fbBtns(false); G.fbEmpty = empty;
   if (!empty) { buzzer(); popFxEl($("fbPop"), "Time’s up", "red", true); }
   else popFxEl($("fbPop"), "Bowl empty!", "green", true);
@@ -2304,30 +2306,18 @@ function fbTurnSummary(){
   fbScores($("ftScores"));
   if (!G.fbEmpty) { G.ftAction = "pass"; $("ftNext").textContent = `Pass to ${name(fbCurrent())}`; }
   else if (G.fbRound < 3) { G.ftAction = "round"; $("ftNext").textContent = `On to round ${G.fbRound + 1}`; }
-  else { G.ftAction = "final"; $("ftNext").textContent = G.fbCoop ? "See your time" : "See who won"; }
+  else { G.ftAction = "final"; $("ftNext").textContent = "See who won"; }
   show("fbturn");
 }
-const FB_PAR_PER_WORD = 12;   // seconds per word per round
 function fbFinalCoop(){
-  const words = G.fbWords.length, par = words * 3 * FB_PAR_PER_WORD * 1000, t = G.fbTime;
-  if (!S.fbBest || typeof S.fbBest !== "object") S.fbBest = {};
-  const prev = S.fbBest[words], best = prev ? Math.min(prev, t) : t;
-  S.fbBest[words] = best; save();
-  const beat = t <= par;
-  $("ftRound").textContent = "Final time";
-  $("ftTitle").textContent = `Cleared in ${fmt(t)}`;
-  const list = $("ftList"); list.innerHTML = "";
-  const line = (ok, text, side) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span class="mark ${ok ? "y" : "n"}">${ok ? "✓" : "✕"}</span><span class="w"></span><span class="p"></span>`;
-    li.querySelector(".w").textContent = text; li.querySelector(".p").textContent = side; list.appendChild(li);
-  };
-  line(beat, beat ? `Beat par by ${fmt(par - t)}!` : `Missed par by ${fmt(t - par)}`, `Par ${fmt(par)}`);
-  line(!prev || t <= prev, !prev ? "First time with this many words" : t < prev ? "New best time!" : `Best: ${fmt(prev)}`, `${words} words`);
+  const top = Math.max(...G.fbInd), win = S.players.map((_, i) => i).filter(i => G.fbInd[i] === top);
+  $("ftRound").textContent = "Final scores";
+  $("ftTitle").textContent = win.length > 1 ? "It’s a tie!" : `${name(win[0])} wins!`;
+  $("ftList").innerHTML = "";
   fbScores($("ftScores"));
   G.ftAction = "again"; $("ftNext").textContent = "Play again";
-  nightRecord("ftNext", beat ? S.players.map((_, i) => ({ i, pts:2 })) : []);
-  if (beat) { tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260); } else tone(330,.3,"triangle",.12);
+  nightRecord("ftNext", placeAwards(G.fbInd));
+  tone(660,.12); setTimeout(() => tone(880,.12), 130); setTimeout(() => tone(1100,.25), 260);
   show("fbturn");
 }
 function fbFinal(){

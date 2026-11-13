@@ -175,19 +175,25 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await open(p, 'fb');
     check('2 players: setup explains co-op and hides team picker', await p.locator('#fbCoopNote').isVisible() && await p.locator('#teamsBlock').isHidden());
     await p.click('#startGame');
-    check('2 players start a co-op game', (await screen(p)) === 'fbround' && (await ev(p, () => G.fbCoop)) === true && /Your team/.test(await txt(p, '#frScores')), await txt(p, '#frScores'));
+    check('2 players start an every-player-for-themselves game', (await screen(p)) === 'fbround' && (await ev(p, () => G.fbCoop)) === true && /Ana/.test(await txt(p, '#frScores')) && /Ben/.test(await txt(p, '#frScores')), await txt(p, '#frScores'));
     const describers = [];
-    for (let round = 1; round <= 3; round++) {
+    // round 1: Ana gets 4 then time runs out; Ben clears the last 2. rounds 2–3: one player clears all 6.
+    await p.click('#frGo'); describers.push(await txt(p, '#fpName'));
+    check('Pass screen says everyone else guesses', /Everyone else guesses/.test(await txt(p, '#fpTeam')));
+    await p.click('#fpGo'); for (let k = 0; k < 4; k++) await p.click('#fbGot');
+    await p.clock.runFor(46000); await p.clock.runFor(1500); await p.click('#ftNext');
+    describers.push(await txt(p, '#fpName')); await p.click('#fpGo');
+    for (let k = 0; k < 2; k++) await p.click('#fbGot'); await p.clock.runFor(1500); await p.click('#ftNext');
+    for (let round = 2; round <= 3; round++) {
       await p.click('#frGo'); describers.push(await txt(p, '#fpName'));
-      if (round === 1) check('Co-op pass screen says everyone else guesses', /Everyone else guesses/.test(await txt(p, '#fpTeam')));
-      await p.click('#fpGo'); await p.clock.runFor(10000);
-      for (let k = 0; k < 6; k++) await p.click('#fbGot');
+      await p.click('#fpGo'); for (let k = 0; k < 6; k++) await p.click('#fbGot');
       await p.clock.runFor(1500); await p.click('#ftNext');
     }
-    check('Co-op: describer rotates between players', new Set(describers).size === 2, describers.join(','));
-    check('Co-op final shows the time and par', (await screen(p)) === 'fbturn' && /Cleared in 0:3[01]/.test(await txt(p, '#ftTitle')) && /Par 3:36/.test(await txt(p, '#ftList')), (await txt(p, '#ftTitle')) + ' | ' + (await txt(p, '#ftList')));
-    check('Co-op: beat par and first-time note', /Beat par/.test(await txt(p, '#ftList')) && /First time/.test(await txt(p, '#ftList')));
-    check('Co-op: best time is remembered', Math.abs((await ev(p, () => S.fbBest[6])) - 30000) < 1500, await ev(p, () => JSON.stringify(S.fbBest)));
+    check('Describer keeps rotating across rounds', describers.join(',') === 'Ana,Ben,Ana,Ben', describers.join(','));
+    const ind = await ev(p, () => G.fbInd.join(','));
+    check('Each player scores the words they described (Ana 4+6=10, Ben 2+6=8)', ind === '10,8', ind);
+    check('Final names the winner and lists scores', /Ana wins/.test(await txt(p, '#ftTitle')) && /10/.test(await txt(p, '#ftScores')), await txt(p, '#ftTitle'));
+    check('No par or timer on the final screen', !/par|Cleared/i.test(await txt(p, '#fbturn')));
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await ev(p, () => { S.fbWrite = true; S.fbPer = 2; save(); });
     await open(p, 'fb'); await p.click('#startGame');
