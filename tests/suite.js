@@ -292,7 +292,30 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#trAll');
     const items = await p.locator('#trList .chain-item').count();
     check('Reveal shows all 4 pages (word, drawing, guess, drawing)', items === 4, items);
-    check('Last button offers Play again', (await txt(p, '#trNext')) === 'Play again');
+    // scoring (on by default): Ana started the book; Cy drew after her, Ben guessed
+    check('Scoring panel asks the starter for favorites', /Ana, pick your favorites/.test(await txt(p, '#trScore')));
+    check('Only other players’ drawings and guesses are offered', (await p.locator('#trScore button').allInnerTexts()).join(',') === 'Cy,Ben', (await p.locator('#trScore button').allInnerTexts()).join(','));
+    check('Next is locked until both favorites are picked', await p.locator('#trNext').isDisabled() && (await txt(p, '#trNext')) === 'See scores');
+    await p.click('button[aria-label="Favorite drawing: Cy"]');
+    check('Still locked with one pick', await p.locator('#trNext').isDisabled());
+    await p.click('button[aria-label="Favorite guess: Ben"]');
+    await p.click('#trNext');
+    check('Final scores screen', (await screen(p)) === 'teleEnd' && /tie/i.test(await txt(p, '#teWinner')), await txt(p, '#teWinner'));
+    check('Favorites score 1 each (Cy 1, Ben 1, Ana 0)', (await ev(p, () => G.teleScore.join(','))) === '0,1,1');
+    await p.click('#teleAgain');
+    check('Play again starts a new game with scores reset', (await screen(p)) === 'tpass' && (await ev(p, () => G.teleScore.join(','))) === '0,0,0');
+    // all the way around bonus
+    await ev(p, () => { G.books = [{ start: 1, word: 'cat', entries: [{ type: 'word', text: 'cat' }, { type: 'draw', by: 1, img: '' }, { type: 'guess', by: 2, text: 'Cat!' }] }]; G.rb = 0; renderBook(); $('trAll').click(); });
+    check('Made it all the way around: starter +1 shown', /all the way around! Ben \+1/.test(await txt(p, '#trScore')));
+    check('No drawings by others → only a guess to pick', (await p.locator('#trScore button').count()) === 1);
+    await p.click('button[aria-label="Favorite guess: Cy"]'); await p.click('#trNext');
+    check('Bonus and favorite counted (Ben 1, Cy 1)', (await ev(p, () => G.teleScore.join(','))) === '0,1,1');
+    // scoring off: old behaviour
+    await ev(p, () => { S.teleScoring = false; save(); });
+    await open(p, 'tele'); await p.click('#startGame');
+    await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }, { type: 'draw', by: 0, img: '' }] }]; G.rb = 0; renderBook(); $('trAll').click(); });
+    check('Scoring off: no panel and Play again', (await p.locator('#trScore').count()) === 0 && (await txt(p, '#trNext')) === 'Play again');
+    await ev(p, () => { S.teleScoring = true; save(); });
     // 2 books, timer on
     await ev(p, () => { S.teleBooks = 2; S.teleTimerOn = true; S.teleSec = 20; save(); });
     await open(p, 'tele'); await p.click('#startGame');
@@ -810,6 +833,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await open(p, 'spy'); await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => show('home'));
     check('Leaving a game early adds nothing', (await log()) === before);
     // don't count
+    await ev(p, () => { S.teleScoring = false; save(); });
     await open(p, 'tele'); await p.click('#startGame');
     await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
     const withTele = await log();
@@ -868,7 +892,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await ev(p, () => { G.imps = new Set([1]); G.votes = new Set([0]); $('revealBtn').onclick(); });
     check('Individual game: each team’s top 2 count (Ben +2 for Pink)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '0,2');
     // Pass the doodle: everyone +1, top 2 each
-    await open(p, 'tele'); await ev(p, () => { S.teleBooks = 1; save(); }); await p.click('#startGame');
+    await open(p, 'tele'); await ev(p, () => { S.teleBooks = 1; S.teleScoring = false; save(); }); await p.click('#startGame');
     await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
     check('Bigger team’s 3rd scorer doesn’t count (2 v 2)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2');
     check('Results box shows team points only', /Team Blue \+2 · Team Pink \+2/.test(await txt(p, '#nightBox')) && !/Ana|didn’t count/.test(await txt(p, '#nightBox')), await txt(p, '#nightBox'));
