@@ -1074,7 +1074,8 @@ h3.sub{font-size:20px;margin-top:26px}
   </header>
   <div class="block">
     <h2>Play as</h2>
-    <div class="pa-seg"><button id="nsInd">Individuals<small>Everyone for themselves</small></button><button id="nsTeam">Teams<small>4+ players</small></button></div>
+    <div class="pa-seg"><button id="nsInd">Individuals<small>Your own points</small></button><button id="nsTeam">Teams<small>4+ players</small></button></div>
+    <p class="hint" id="nsModeHint" style="margin-top:10px"></p>
   </div>
   <div class="block">
     <h2>Players</h2>
@@ -3161,6 +3162,9 @@ function renderDraft(){
   const teams = G.nightMode === "teams";
   applyTeamStyle(G.nightDraftStyle);
   $("nsInd").setAttribute("aria-pressed", !teams); $("nsTeam").setAttribute("aria-pressed", teams);
+  $("nsModeHint").textContent = teams
+    ? "Two teams all night. Every game’s points go to your team."
+    : "Everyone earns their own night points. You can still play a game in teams; then each player on the winning team gets the points.";
   const box = $("nsList"); box.innerHTML = "";
   G.nightDraft.forEach((nm, i) => {
     const row = document.createElement("div"); row.className = "player-row ns-row";
