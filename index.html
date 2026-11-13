@@ -162,7 +162,6 @@ textarea{resize:vertical;font-size:15px}
 :root[data-theme="dark"] .night-log .tl .b,:root[data-theme="dark"] .night-box .nb-team .b{color:var(--t0-dtext)}
 :root[data-theme="dark"] .night-log .tl .p,:root[data-theme="dark"] .night-box .nb-team .p{color:var(--t1-dtext)}
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .night-log .tl .b,:root:not([data-theme="light"]) .night-box .nb-team .b{color:var(--t0-dtext)} :root:not([data-theme="light"]) .night-log .tl .p,:root:not([data-theme="light"]) .night-box .nb-team .p{color:var(--t1-dtext)} }
-#paRandomRow{margin-top:12px}
 details.custom{margin-top:14px}
 summary{font-weight:600;cursor:pointer;padding:4px 0}
 .hint{font-size:14px;color:var(--muted);margin:6px 0 8px}
@@ -518,8 +517,8 @@ h3.sub{font-size:20px;margin-top:26px}
     <h2>Players <small class="ppl-range" id="playerRange"></small></h2>
     <p class="hint" data-for="imp" style="margin:-4px 0 12px">Add players in the order you’re sitting, going around the circle. Or, for a random speaking order, turn on “Random speaking order” under Rules below.</p>
     <p class="hint" data-for="tele" style="margin:-4px 0 12px">Add players in the order you’re sitting. The phone gets passed around the circle in this order.</p>
-    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Sitting so the teams alternate around the circle helps.</p>
-    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below, or turn on “Random teams” under Rules. Spymasters are picked before each board.</p>
+    <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below or tap Shuffle teams. Sitting so the teams alternate around the circle helps.</p>
+    <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below or tap Shuffle teams. Spymasters are picked before each board.</p>
     <div id="players"></div>
     <button id="addPlayer" class="ghost">Add player</button>
     <div id="sitOut" class="sit-out" hidden>
@@ -532,13 +531,13 @@ h3.sub{font-size:20px;margin-top:26px}
     <h2>Play as</h2>
     <div class="pa-seg"><button id="paInd">Individuals</button><button id="paTeam">Teams</button></div>
     <p class="hint" id="playAsHint" style="margin-top:10px"></p>
-    <div class="setting" id="paRandomRow" hidden><span>Random teams<small>Shuffled into two even teams</small></span><button class="toggle" role="switch" id="paRandom" aria-label="Random teams"></button></div>
   </div>
 
   <div class="block" id="teamsBlock" hidden>
     <h2>Teams</h2>
     <p class="hint" id="teamsHint" style="margin:-4px 0 12px"></p>
     <div id="teamList"></div>
+    <button id="teamShuffle" class="ghost" style="margin-top:10px;border-style:solid;color:var(--ink)">⇄ Shuffle teams</button>
     <p class="note" id="teamCount" style="margin:10px 0 0"></p>
   </div>
   <p class="block hint" id="fbCoopNote" hidden><b>2–3 players:</b> everyone plays for themselves. Take turns describing while the others guess, and score a point for every word you get them to guess. Most points after three rounds wins.</p>
@@ -1311,7 +1310,7 @@ $("addPlayer").onclick = () => {
   save(); renderPlayers();
 };
 /* ---------- Teams (Word bowl, Word spies) ---------- */
-if (S.randomTeams === undefined) S.randomTeams = false;
+delete S.randomTeams;   // replaced by the Shuffle teams button
 if (!S.teamPick || typeof S.teamPick !== "object") S.teamPick = {};
 // Manual picks are remembered by name; anyone without a pick defaults to alternating seats.
 function teamOf(i){
@@ -1320,13 +1319,11 @@ function teamOf(i){
 }
 function makeTeams(){
   const t = [[], []];
-  if (S.randomTeams && !teamsNight()) shuffle(S.players.map((_, i) => i)).forEach((i, k) => t[k % 2].push(i));
-  else S.players.forEach((_, i) => t[teamOf(i)].push(i));
+  S.players.forEach((_, i) => t[teamOf(i)].push(i));
   t.forEach(x => x.sort((a, b) => a - b));   // keep seating order within each team
   return t;
 }
 function teamCheck(){
-  if (S.randomTeams && !teamsNight()) return "";
   const t = makeTeams();
   for (const k of [0, 1]) if (t[k].length < 2) return `${TEAMS[k]} needs at least 2 players. Move someone over under Teams.`;
   return "";
@@ -1357,11 +1354,14 @@ function renderPlayAs(){
     : !tp ? "Everyone plays for themselves."
     : G.mode === "taboo" ? "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess while the other team watches the screen and taps Buzz."
     : "Needs at least 4 players. Teams take turns and points go to the team. Your teammates guess.";
-  $("paRandomRow").hidden = !tp || tn; $("paRandom").setAttribute("aria-checked", !!S.randomTeams);
 }
 $("paInd").onclick = () => { S.playAs[G.mode] = false; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
 $("paTeam").onclick = () => { S.playAs[G.mode] = true; save(); renderPlayAs(); renderTeams(); renderEstimate(); $("setupError").textContent = ""; };
-$("paRandom").onclick = () => { S.randomTeams = !S.randomTeams; save(); renderPlayAs(); renderTeams(); };
+// Shuffle teams: a random even split, saved as manual picks so you can still swap people after.
+$("teamShuffle").onclick = () => {
+  shuffle(S.players.map((_, i) => i)).forEach((i, k) => { S.teamPick[S.players[i].trim()] = k % 2; });
+  save(); renderTeamList(); renderEstimate(); $("setupError").textContent = "";
+};
 function renderTeams(){
   const blk = $("teamsBlock");
   const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
@@ -1374,14 +1374,12 @@ function renderTeams(){
   renderTeamList();
 }
 function renderTeamList(){
-  const pick = teamsNight() || !S.randomTeams;
-  $("teamsHint").textContent = pick
-    ? "Each team needs at least 2 players. Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it."
-    : "Teams are shuffled when the game starts. Tap a team’s dot to change its color, or its name to rename it.";
+  $("teamsHint").textContent = "Each team needs at least 2 players. Tap a player to move them to the other team. Tap a team’s dot to change its color, or its name to rename it.";
+  $("teamShuffle").hidden = teamsNight();   // tonight's teams are set on the game night screen
   const t = makeTeams();
   const count = () => { $("teamCount").textContent = `${TEAMS[0]}: ${t[0].length} · ${TEAMS[1]}: ${t[1].length}`; };
   teamCards($("teamList"), curTeamStyle(), {
-    members: pick ? t : null,
+    members: t,
     nameOf: i => S.players[i].trim() || `Player ${i + 1}`,
     onMove: (i, k) => {
       if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
@@ -1390,7 +1388,7 @@ function renderTeamList(){
     },
     onChange: rebuild => { applyTeamStyle(); if (teamsNight()) save(); if (rebuild) renderTeamList(); else count(); }
   });
-  $("teamCount").hidden = !pick; count();
+  count();
 }
 
 function renderPacks(){
@@ -1427,12 +1425,11 @@ const SETTINGS = {
 function renderSettings(){
   const box = $("settings"); box.innerHTML = "";
   SETTINGS[G.mode].forEach(s => {
-    if (s.key === "randomTeams" && teamsNight()) return;   // tonight's teams are fixed
     if (s.type === "toggle") {
       const row = document.createElement("div"); row.className = "setting";
       row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
       const t = row.querySelector("button"); t.setAttribute("aria-label", s.label); t.setAttribute("aria-checked", S[s.key]);
-      t.onclick = () => { S[s.key] = !S[s.key]; t.setAttribute("aria-checked", S[s.key]); save(); if (s.key === "randomTeams") renderTeams(); renderEstimate(); };
+      t.onclick = () => { S[s.key] = !S[s.key]; t.setAttribute("aria-checked", S[s.key]); save(); renderEstimate(); };
       box.appendChild(row); return;
     }
     const row = document.createElement("div"); row.className = "setting";
@@ -2436,7 +2433,7 @@ function applyTeamStyle(st){
   });
 }
 // Two side-by-side team cards: name + color in each header, players as chips (tap to move to the other team).
-// opt: { members: [[i...],[i...]] or null (random teams), nameOf(i), onMove(i, k), onChange(rebuild) }
+// opt: { members: [[i...],[i...]], nameOf(i), onMove(i, k), onChange(rebuild) }
 function teamCards(box, st, opt){
   box.innerHTML = "";
   if (G.palFor != null && G.palBox !== box) G.palFor = null;
@@ -2458,8 +2455,7 @@ function teamCards(box, st, opt){
     head.append(dot, inp, pen);
     head.onclick = e => { if (e.target === head) inp.focus(); };
     const chips = document.createElement("div"); chips.className = "tc-chips";
-    if (!opt.members) chips.innerHTML = `<p class="tc-empty">Shuffled when the game starts</p>`;
-    else if (!opt.members[k].length) chips.innerHTML = `<p class="tc-empty">Tap a player to move them here</p>`;
+    if (!opt.members[k].length) chips.innerHTML = `<p class="tc-empty">Tap a player to move them here</p>`;
     else opt.members[k].forEach(i => {
       const b = document.createElement("button"); b.className = "tc-chip";
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = opt.nameOf(i);
@@ -2506,8 +2502,7 @@ for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k
 SETTINGS.fb = [
   { type:"toggle", key:"fbWrite", label:"Players write the words", hint:"Off: the game fills the bowl for you" },
   { key:"fbPer", label:"Words per player", hint:"How many words or phrases each person adds", min:2, max:8, step:1 },
-  { key:"fbSec", label:"Turn timer", hint:"For each player’s turn", min:30, max:120, step:15, unit:"s" },
-  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams each game. Off: you pick the teams" }
+  { key:"fbSec", label:"Turn timer", hint:"For each player’s turn", min:30, max:120, step:15, unit:"s" }
 ];
 $("goFb").onclick = () => openSetup("fb");
 
@@ -2708,7 +2703,6 @@ for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spy
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
   { type:"toggle", key:"spyTrap", label:"Trap card", hint:"Reveal it and your team loses" },
-  { type:"toggle", key:"randomTeams", label:"Random teams", hint:"Shuffled into two even teams, with a random spymaster each. Off: you pick the teams" },
   { type:"toggle", key:"spyTimerOn", label:"Turn timer", hint:"When time runs out, the turn passes to the other team" },
   { key:"spySec", label:"Timer length", hint:"Used when the timer is on", min:60, max:300, step:30, unit:"s" }
 ];
@@ -2724,8 +2718,8 @@ function spyStart(){
   // 2–3 players: co-op. Everyone is Team Blue, pink words are the clock.
   G.coop = S.players.length < 4;
   G.teams = G.coop ? [S.players.map((_, i) => i), []] : makeTeams();
-  // Random teams: random spymaster per team. Otherwise the picked ones. Play again rotates from there.
-  G.spyBase = S.randomTeams && !teamsNight() ? G.teams.map(t => Math.floor(Math.random() * Math.max(1, t.length))) : [0, 0];
+  // Spymasters start with each team's first player (changeable on the New board screen); Play again rotates from there.
+  G.spyBase = [0, 0];
   G.spyGame = -1; spyDeal();
 }
 function spyDeal(){

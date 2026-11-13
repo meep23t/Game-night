@@ -568,7 +568,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const p = await fresh(b);
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve', 'Fay']);
     await open(p, 'fb');
-    check('Teams section shows for Word bowl (Random teams off by default)', await p.locator('#teamsBlock').isVisible() && (await ev(p, () => S.randomTeams)) === false);
+    check('Teams section shows for Word bowl', await p.locator('#teamsBlock').isVisible());
     check('Default split alternates by seat', (await txt(p, '#teamCount')).includes('Team 1: 3') && (await ev(p, () => JSON.stringify(makeTeams()))) === '[[0,2,4],[1,3,5]]');
     // move Ben, Dee to Blue → Blue 5, Pink 1 → error
     await team(p, '#teamList', 'Ben', 0); await team(p, '#teamList', 'Dee', 0);
@@ -600,25 +600,19 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Play again rotates on from the chosen spymaster', (await ev(p, () => G.spymasters[0])) === nextExp);
     await open(p, 'act');
     check('Teams section hidden for non-team games', await p.locator('#teamsBlock').isHidden());
-    // random teams
+    // Shuffle teams button
     await open(p, 'fb');
-    await p.locator('#settings .setting', { hasText: 'Random teams' }).locator('button').click();
-    check('Random teams on: cards keep names & colors but no player picking', (await p.locator('#teamList .tc-chip').count()) === 0 && /Shuffled when the game starts/.test(await txt(p, '#teamList')) && await p.locator('#teamCount').isHidden() && (await ev(p, () => S.randomTeams)) === true);
+    check('No Random teams switch in Rules', (await p.locator('#settings .setting', { hasText: 'Random teams' }).count()) === 0);
     const splits = new Set(); let even = true;
-    for (let k = 0; k < 15; k++) { const t = await ev(p, () => makeTeams()); splits.add(JSON.stringify(t)); if (t[0].length !== 3 || t[1].length !== 3) even = false; }
-    check('Random teams are always even (3 v 3)', even);
-    check('Random teams actually vary', splits.size > 3, `${splits.size} different splits in 15`);
+    for (let k = 0; k < 15; k++) { await p.click('#teamShuffle'); const t = await ev(p, () => makeTeams()); splits.add(JSON.stringify(t)); if (t[0].length !== 3 || t[1].length !== 3) even = false; }
+    check('Shuffle always makes even teams (3 v 3)', even);
+    check('Shuffle actually varies', splits.size > 3, `${splits.size} different splits in 15`);
+    const shown = await ev(p, () => JSON.stringify(makeTeams()));
     await ev(p, () => { S.fbWrite = false; save(); });
     await p.click('#startGame');
-    const g1 = await ev(p, () => JSON.stringify(G.teams));
-    check('Random Word bowl starts with even teams', JSON.parse(g1).every(t => t.length === 3), g1);
+    check('The game uses the shuffled teams you saw', (await ev(p, () => JSON.stringify(G.teams))) === shown);
     await setPlayers(p, ['A', 'B', 'C', 'D', 'E']);
-    await open(p, 'spy'); await p.click('#startGame');
-    await setPlayers(p, ['A', 'B', 'C', 'D', 'E']);
-    await ev(p, () => { S.randomTeams = true; save(); });
-    await open(p, 'spy'); await p.click('#startGame');
-    const sms = new Set(); for (let k = 0; k < 12; k++) { await ev(p, () => spyStart()); sms.add(await ev(p, () => G.spymasters.join(','))); }
-    check('Random teams: spymasters are picked at random', sms.size > 2, `${sms.size} different picks`);
+    await open(p, 'spy'); await p.click('#teamShuffle'); await p.click('#startGame');
     check('Random with 5 players → 3 v 2', (await ev(p, () => G.teams.map(t => t.length).sort().join('v'))) === '2v3');
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'teams');
@@ -716,11 +710,11 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   try {
     const p = await fresh(b);
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eve']);
-    await ev(p, () => { S.rounds = 2; S.perTurn = 1; S.randomTeams = false; S.teamPick = {}; save(); });
+    await ev(p, () => { S.rounds = 2; S.perTurn = 1; S.teamPick = {}; save(); });
     await open(p, 'act');
     check('Act it out shows Play as, Individuals by default', await p.locator('#playAsBlock').isVisible() && (await p.locator('#paInd').getAttribute('aria-pressed')) === 'true' && await p.locator('#teamsBlock').isHidden());
     await p.click('#paTeam');
-    check('Teams shows the team picker and random switch', await p.locator('#teamsBlock').isVisible() && await p.locator('#paRandomRow').isVisible());
+    check('Teams shows the team cards and Shuffle', await p.locator('#teamsBlock').isVisible() && await p.locator('#teamShuffle').isVisible());
     await p.click('#startGame');
     check('Turns alternate teams, smaller team takes the extra turn', (await ev(p, () => G.seq.map(name).join(','))) === 'Ana,Ben,Cy,Dee,Eve,Ben', await ev(p, () => G.seq.map(name).join(',')));
     check('Pass screen names the team', /Team 1: you’re acting for your team/.test(await txt(p, '#passNote')));
@@ -908,7 +902,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await team(p, '#teamList', 'Eve', 0);
     await p.click('#addPlayer');
     check('Newcomer joins the smaller team', (await ev(p, () => rosterTeam(S.playerIds.at(-1)))) === 1);
-    check('Rules hide the Random teams switch tonight', (await p.locator('#settings .setting', { hasText: 'Random teams' }).count()) === 0);
+    check('Shuffle is hidden tonight (teams are set for the night)', await p.locator('#teamShuffle').isHidden());
     // leaderboard
     await ev(p, () => show('home'));
     check('Strip shows the leading team', /Team 1 leads 6–4/.test(await txt(p, '#nightStrip')), await txt(p, '#nightStrip'));
@@ -929,7 +923,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   try {
     const p = await fresh(b);
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
-    await ev(p, () => { S.randomTeams = false; save(); });
+    await ev(p, () => { save(); });
     await open(p, 'spy');
     check('Team games show the team cards', (await p.locator('#teamList .tc-col').count()) === 2);
     check('Palette is closed until a dot is tapped', (await p.locator('#teamList .tc-pal').count()) === 0);
