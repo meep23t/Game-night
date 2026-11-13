@@ -381,6 +381,7 @@ button:disabled{opacity:.4}
 .tc-dot{width:30px;height:30px;border-radius:50%;flex:none;border:3px solid #fff;box-shadow:0 0 0 1px #1E1B3A33}
 .tc-col.t0 .tc-dot{background:var(--t0-edge)} .tc-col.t1 .tc-dot{background:var(--t1-edge)}
 .tc-dot[aria-expanded="true"]{box-shadow:0 0 0 2px #1E1B3A}
+span.tc-name{flex:1;min-width:0;padding:4px 2px;font-weight:800;font-size:16px;color:#1E1B3A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 input.tc-name{flex:1;min-width:0;width:100%;background:transparent;border:0;border-radius:8px;padding:4px 2px;font:inherit;font-weight:800;font-size:16px;color:#1E1B3A}
 input.tc-name::placeholder{color:#1E1B3A;opacity:1}
 input.tc-name:focus{background:#ffffffaa;outline:none}
@@ -1395,7 +1396,7 @@ function renderTeamList(){
     $("teamCount").classList.toggle("short", !!short.length);
   };
   teamCards($("teamList"), curTeamStyle(), {
-    members: t, locked, isNew,
+    members: t, locked, isNew, styleLocked: tn,
     nameOf: i => S.players[i].trim() || `Player ${i + 1}`,
     onMove: (i, k) => {
       if (teamsNight() && S.playerIds[i] != null) S.night.roster.find(r => r.id === S.playerIds[i]).team = k;
@@ -2468,8 +2469,14 @@ function teamCards(box, st, opt){
       opt.onChange(false);
     });
     const pen = document.createElement("span"); pen.className = "tc-pen"; pen.textContent = "✎"; pen.setAttribute("aria-hidden", "true");
-    head.append(dot, inp, pen);
-    head.onclick = e => { if (e.target === head) inp.focus(); };
+    if (opt.styleLocked) {   // tonight's names and colors are set on the game night screen
+      const d = document.createElement("span"); d.className = "tc-dot"; d.setAttribute("aria-hidden", "true");
+      const n = document.createElement("span"); n.className = "tc-name"; n.textContent = styleName(st, k);
+      head.append(d, n);
+    } else {
+      head.append(dot, inp, pen);
+      head.onclick = e => { if (e.target === head) inp.focus(); };
+    }
     const chips = document.createElement("div"); chips.className = "tc-chips";
     if (!opt.members[k].length) chips.innerHTML = `<p class="tc-empty">Tap a player to move them here</p>`;
     else opt.members[k].forEach(i => {
@@ -2485,7 +2492,7 @@ function teamCards(box, st, opt){
     col.append(head, chips); cols.appendChild(col);
   });
   box.appendChild(cols);
-  if (G.palFor == null) return;
+  if (G.palFor == null || opt.styleLocked) return;
   // Color palette for the chosen team: presets plus a full custom picker.
   const k = G.palFor, s = st[k], other = st[1 - k].color;
   const pal = document.createElement("div"); pal.className = "tc-pal";
@@ -2982,8 +2989,8 @@ function renderSitOut(){
   const out = S.night.roster.filter(p => !S.playerIds.includes(p.id));
   wrap.hidden = false; chips.innerHTML = "";
   $("sitOutNote").textContent = out.length
-    ? "Sitting out this game. They keep their night points. Tap to add back:"
-    : "Game night is on. Tap × to sit someone out of this game; they keep their night points.";
+    ? "Sitting out until you add them back. They keep their night points. Tap to add back:"
+    : "Game night is on. Tap × to sit someone out; they stay out until you add them back and keep their night points.";
   out.forEach(p => {
     const b = document.createElement("button"); b.className = "chip"; b.textContent = "+ " + rosterName(p.id);
     b.disabled = S.players.length >= MAX_PLAYERS;

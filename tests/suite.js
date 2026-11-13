@@ -962,6 +962,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.locator('#nsStyleBox .tc-name').nth(1).fill('Owls'); await p.click('#nsStyleBox .tc-col.t1 .tc-dot'); await p.click('#nsStyleBox button[aria-label="Team 2 color: Orange"]');
     await p.click('#nsGo');
     check('Night keeps its team names', /Team 1: 2 · Owls: 2/.test(await (async () => { await open(p, 'act'); return txt(p, '#teamCount'); })()));
+    check('Night names & colors are locked in game setup', (await p.locator('#teamList input.tc-name').count()) === 0 && (await p.locator('#teamList button.tc-dot').count()) === 0 && /Owls/.test(await txt(p, '#teamList')));
     await ev(p, () => show('home'));
     await p.click('#nightStrip button'); await p.click('#nightEnd'); await p.click('#nightEnd');
     await p.click('#nightEnd'); await p.click('#nsTeam');
