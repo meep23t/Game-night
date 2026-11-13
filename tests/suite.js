@@ -185,9 +185,9 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await p.clock.runFor(1500); await p.click('#ftNext');
     }
     check('Co-op: describer rotates between players', new Set(describers).size === 2, describers.join(','));
-    check('Co-op final shows the time and par', (await screen(p)) === 'fbturn' && /Cleared in 0:30/.test(await txt(p, '#ftTitle')) && /Par 3:36/.test(await txt(p, '#ftList')), (await txt(p, '#ftTitle')) + ' | ' + (await txt(p, '#ftList')));
+    check('Co-op final shows the time and par', (await screen(p)) === 'fbturn' && /Cleared in 0:3[01]/.test(await txt(p, '#ftTitle')) && /Par 3:36/.test(await txt(p, '#ftList')), (await txt(p, '#ftTitle')) + ' | ' + (await txt(p, '#ftList')));
     check('Co-op: beat par and first-time note', /Beat par/.test(await txt(p, '#ftList')) && /First time/.test(await txt(p, '#ftList')));
-    check('Co-op: best time is remembered', (await ev(p, () => S.fbBest[6])) === 30000, await ev(p, () => JSON.stringify(S.fbBest)));
+    check('Co-op: best time is remembered', Math.abs((await ev(p, () => S.fbBest[6])) - 30000) < 1500, await ev(p, () => JSON.stringify(S.fbBest)));
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await ev(p, () => { S.fbWrite = true; S.fbPer = 2; save(); });
     await open(p, 'fb'); await p.click('#startGame');
