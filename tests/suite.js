@@ -870,7 +870,8 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     // Pass the doodle: everyone +1, top 2 each
     await open(p, 'tele'); await ev(p, () => { S.teleBooks = 1; save(); }); await p.click('#startGame');
     await ev(p, () => { G.books = [{ start: 0, word: 'cat', entries: [{ type: 'word', text: 'cat' }] }]; G.rb = 0; renderBook(); });
-    check('Bigger team’s 3rd scorer doesn’t count', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2' && /didn’t count/.test(await txt(p, '#nightBox')));
+    check('Bigger team’s 3rd scorer doesn’t count (2 v 2)', (await ev(p, () => S.night.log.at(-1).team.join(','))) === '2,2');
+    check('Results box shows team points only', /Team Blue \+2 · Team Pink \+2/.test(await txt(p, '#nightBox')) && !/Ana|didn’t count/.test(await txt(p, '#nightBox')), await txt(p, '#nightBox'));
     // team picker edits tonight's teams; newcomer joins smaller team
     await open(p, 'wave');
     await p.click('button[aria-label="Eve on Team Pink"]');
@@ -884,7 +885,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Strip shows the leading team', /Team Blue leads 6–4/.test(await txt(p, '#nightStrip')), await txt(p, '#nightStrip'));
     await p.click('#nightStrip button');
     check('Leaderboard shows team cards with totals', (await p.locator('#nightTeams .tcard').count()) === 2 && /Team Blue[\s\S]*6/.test(await txt(p, '#nightTeams')) && await p.locator('#nightStand').isHidden());
-    check('Player lines show counted points and misses', /Eve\s*didn’t count in 1 game/.test(await txt(p, '#nightTeams')), await txt(p, '#nightTeams'));
+    check('Team cards list player names without individual points', /Ana, Cy, Eve/.test(await txt(p, '#nightTeams')) && !/didn’t count/.test(await txt(p, '#nightTeams')), await txt(p, '#nightTeams'));
     check('Game log shows team points', /Blue \+4/.test(await txt(p, '#nightLog')) && /Pink \+2/.test(await txt(p, '#nightLog')));
     await noHScroll(p, 'teams leaderboard');
     await p.click('#nightEnd'); await p.click('#nightEnd');
