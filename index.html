@@ -584,7 +584,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <summary style="font-size:20px;font-weight:700">How to play</summary>
       <ul class="rules">
         <li>Take turns acting while everyone else guesses. No talking!</li>
-        <li>Every card has an easy word worth 1 point and a hard word worth 2. Pick one and act it out before that card’s timer runs out.</li>
+        <li>Each turn has a few cards (set by “Cards per turn” under Rules). Every card has an easy word worth 1 point and a hard word worth 2. Pick one and act it out before that card’s timer runs out.</li>
         <li>Tap <b>Got it</b> when someone guesses the word. Tap <b>Skip</b> to pass; a skipped word is gone for this turn.</li>
         <li>Skip a card or run out of time and that card scores nothing.</li>
         <li><b>Teams (needs at least 4 players):</b> teams take turns acting, only your teammates guess, and points go to your team.</li>
@@ -623,7 +623,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Pass the phone around. Each player taps their name to see their word, then taps <b>Hide &amp; pass the phone</b> before handing it on.</li>
         <li>Once everyone has seen their word, put the phone down. Going around once in the order shown, each person says one word or a short clue about the secret word. Don’t make it too obvious, or the imposter will figure it out!</li>
         <li>Talk it over (there’s an optional discussion timer), then vote: on the count of three everyone points at a suspect, and one person taps <b>+</b> for each vote. A tie? The group picks who to go with.</li>
-        <li>Caught imposters get one guess at the secret word, out loud. If they guess it, they still win.</li>
+        <li>Any imposter who gets away wins the round. If every imposter is caught, they get one guess at the secret word, out loud. Guess it and they still win; miss and the group wins.</li>
       </ul>
     </details>
   </div>
@@ -647,7 +647,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>The next player sees only that guess and draws it. Keep switching between drawing and guessing until everyone has had a turn.</li>
         <li>At the end, flip through the sketchbook page by page and see how the word changed along the way.</li>
         <li>With more than one sketchbook, each one starts with a different player, and the screen always says who’s next.</li>
-        <li><b>Scoring</b> (on by default, under Rules): after each sketchbook, the player who started it picks a favorite drawing and a favorite guess, worth 1 point each. If the last guess matches the word, the starter gets 1 point too. Most points wins.</li>
+        <li><b>Scoring</b> (“Score the sketchbooks” under Rules, on by default): after each sketchbook, the player who started it picks a favorite drawing and a favorite guess, worth 1 point each. If the last guess matches the word, the starter gets 1 point too. Most points wins.</li>
       </ul>
     </details>
   </div>
@@ -713,7 +713,8 @@ h3.sub{font-size:20px;margin-top:26px}
         <li><b>4 or more players:</b> two teams, each with a spymaster. Pick the spymasters on the New board screen. Spymasters, sit next to each other so you can look at the key together; only they may look at the secret key.</li>
         <li>On your team’s turn, your spymaster types a one-word clue and a number into the phone, like “ocean, 2,” to link that many of your team’s words. The clue can’t be a word on the board, and the number can’t be more than the words your team has left.</li>
         <li>Your team talks it over, taps a word, then taps <b>Reveal</b>. Guess right and you can keep guessing, up to the number plus one. Hit a word that isn’t yours and your turn ends. You can also tap <b>End turn</b>.</li>
-        <li>Watch out for the trap card! Reveal it and your team loses right away. The first team to find all its words wins.</li>
+        <li>Watch out for the trap card! Reveal it and your team loses right away (you can turn it off under Rules). The first team to find all its words wins.</li>
+        <li><b>Turn timer</b> (optional, under Rules): when time runs out, the turn passes to the other team.</li>
         <li><b>2–3 players:</b> it’s co-op. Everyone is on Team Blue with one spymaster. After each turn the clock takes a pink word. Find all your blue words before the pink ones run out.</li>
       </ul>
     </details>
@@ -1107,7 +1108,7 @@ h3.sub{font-size:20px;margin-top:26px}
       <li><b>Pass the doodle:</b> with scoring on, 1st 3, 2nd 2, 3rd 1. With scoring off, everyone gets 1.</li>
     </ul>
     <p class="nr-step"><b>3. Night points add up</b> on the leaderboard. Ties share the place. Games you leave early, or mark “Don’t count”, add nothing.</p>
-    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played team against team, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair.</p>
+    <p class="nr-step"><b>Teams night (needs at least 2 players per team):</b> only team scores are shown. Act it out, Describe it, In the range, Word bowl and Word spies are played team against team, and the winning team gets 2 points for each player on the smaller team (a tie splits it). In Imposter, Pass the doodle and small-group games, each team’s top scorers count, as many as the smaller team has, so uneven teams stay fair. Teams, team names and colors stay set all night. You can still sit someone out of a game, and someone new joins the smaller team.</p>
   </details>
   <button id="nsGo" class="primary">Start game night</button>
   <p id="nsError" class="error" role="alert"></p>
