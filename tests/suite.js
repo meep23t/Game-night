@@ -935,17 +935,15 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Palette is closed until a dot is tapped', (await p.locator('#teamList .tc-pal').count()) === 0);
     await p.locator('#teamList .tc-name').nth(0).fill('Giraffes');
     await p.click('#teamList .tc-col.t0 .tc-dot');
-    check('Tapping a team dot opens the palette with presets and a custom picker', (await p.locator('#teamList .tc-pal button').count()) >= 12 && (await p.locator('#teamList .tc-pal input[type=color]').count()) === 1);
+    check('Tapping a team dot opens the 36-color grid', (await p.locator('#teamList .tc-pal button').count()) === 36 && (await p.locator('#teamList .tc-pal input').count()) === 0);
     await p.click('button[aria-label="Team 1 color: Green"]');
     check('Picking a color closes the palette', (await p.locator('#teamList .tc-pal').count()) === 0);
     await p.click('#teamList .tc-col.t1 .tc-dot');
     check('Team 2 can’t pick team 1’s color', await p.locator('button[aria-label="Team 2 color: Green"]').isDisabled());
-    // any color: a custom pick derives readable shades; one too close to the other team is refused
-    await p.locator('#teamList .tc-pal input[type=color]').evaluate(el => { el.value = '#1b9a63'; el.dispatchEvent(new Event('change')); });
-    check('A custom color too close to the other team is refused', /Too close/.test(await txt(p, '#teamList .tc-pal')) && (await ev(p, () => G.teamStyle[1].color)) === '#E2453C');
-    await p.locator('#teamList .tc-pal input[type=color]').evaluate(el => { el.value = '#ffe14d'; el.dispatchEvent(new Event('change')); });
-    check('A custom color is saved for the team', (await ev(p, () => G.teamStyle[1].color)) === '#FFE14D');
-    check('Light custom colors are darkened enough to read', await ev(p, () => { const c = teamPalette('#FFE14D'); return contrastOf(hexRgb(c.text), hexRgb(c.tint)) >= 4.5 && contrastOf(hexRgb(c.edge), [255,255,255]) >= 3 && contrastOf(hexRgb(c.dtext), [32,29,60]) >= 4.5; }));
+    check('Colors close to the other team are faded too, not just the same one', await p.locator('button[aria-label="Team 2 color: Light green"]').isDisabled() && await p.locator('button[aria-label="Team 2 color: Deep green"]').isDisabled());
+    await p.click('button[aria-label="Team 2 color: Light gold"]');
+    check('A grid color is saved for the team', (await ev(p, () => G.teamStyle[1].color)) === '#E0BE3A');
+    check('Light colors get shades dark enough to read', await ev(p, () => COLOR_GRID.every(([h]) => { const c = teamPalette(h); return contrastOf(hexRgb(c.text), hexRgb(c.tint)) >= 4.5 && contrastOf(hexRgb(c.edge), [255,255,255]) >= 3 && contrastOf(hexRgb(c.dtext), [32,29,60]) >= 4.5; })));
     check('Names flow into the picker and count', /Giraffes: 2 · Team 2: 2/.test(await txt(p, '#teamCount')) && (await p.locator('#teamList button[aria-label$="to Giraffes"]').count()) === 2);
     await p.click('#startGame'); await p.click('#srGo'); await ev(p, () => { G.spyTurn = 0; renderSpy(); });
     check('Word spies uses the team name with correct grammar', /Giraffes’ turn/.test(await txt(p, '#sbTurn')) && /Giraffes: \d+ ·/.test(await txt(p, '#sbCount')), await txt(p, '#sbTurn'));

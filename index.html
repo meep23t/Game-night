@@ -397,12 +397,10 @@ div.tc-chip{cursor:default}
 .tc-empty{color:#1E1B3A;opacity:.6;font-size:13px;text-align:center;padding:10px 4px;margin:0}
 .tc-pal{position:relative;margin-top:12px;background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 4px 0 var(--ink)}
 .tc-pal::before{content:"";position:absolute;top:-9px;left:var(--arrow,22px);width:14px;height:14px;background:var(--surface);border-left:2px solid var(--ink);border-top:2px solid var(--ink);transform:rotate(45deg)}
-.tc-sw{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;justify-items:center}
-.tc-sw button,.tc-sw label{width:34px;height:34px;border-radius:50%;position:relative}
-.tc-sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ink)}
+.tc-sw{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.tc-sw button{aspect-ratio:1;border-radius:10px;position:relative}
+.tc-sw button[aria-pressed="true"]{border-radius:50%;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ink)}
 .tc-sw button:disabled{opacity:.18}
-.tc-sw label{background:conic-gradient(#E2453C,#D9700A,#C99A06,#1A8F5F,#0E8C93,#2B44D6,#7A4FD6,#C2338A,#E2453C);cursor:pointer}
-.tc-sw label input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 .tc-pal .note{margin:10px 0 0}
 .spy-tools{display:flex;gap:10px}
 .clue-box{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 10px;margin-bottom:10px}
@@ -2396,14 +2394,22 @@ const TEAMS = ["Team 1", "Team 2"], TSHORT = ["Team 1", "Team 2"];
 // Preset team colors (hand-tuned for contrast). Any other color is derived by teamPalette().
 const TEAM_COLORS = {
   "#2B44D6": { label:"Blue",    bg:"#BFD4FF", tint:"#E3ECFF", edge:"#2B44D6", text:"#2B44D6", dtext:"#9FB2FF" },
-  "#E2453C": { label:"Red",     bg:"#FFC9C2", tint:"#FFE6E2", edge:"#E2453C", text:"#D63A31", dtext:"#FF9A8F" },
+  "#E2453C": { label:"Red",     bg:"#FFC9C2", tint:"#FFE6E2", edge:"#E2453C", text:"#C4332B", dtext:"#FF9A8F" },
   "#1A8F5F": { label:"Green",   bg:"#C6F0D8", tint:"#E4F8EC", edge:"#1A8F5F", text:"#16784F", dtext:"#6FE0A8" },
   "#D9700A": { label:"Orange",  bg:"#FFDDB0", tint:"#FFF0DB", edge:"#D9700A", text:"#A85505", dtext:"#FFB866" },
   "#7A4FD6": { label:"Purple",  bg:"#E2D4FF", tint:"#F0E9FF", edge:"#7A4FD6", text:"#6A3FC8", dtext:"#C3A8FF" },
   "#0E8C93": { label:"Teal",    bg:"#BDEDF0", tint:"#E0F7F8", edge:"#0E8C93", text:"#0B7378", dtext:"#6FDDE3" },
-  "#C2338A": { label:"Magenta" }, "#B58A00": { label:"Gold" }, "#1C86C8": { label:"Sky" },
-  "#5E9A12": { label:"Lime" }, "#8B5A2B": { label:"Brown" }, "#3B3A5C": { label:"Charcoal" }, "#D6406E": { label:"Rose" }
 };
+// The color grid: 6 × 6, light / medium / deep of 12 colors. Tuned presets above keep their shades;
+// the rest get theirs from teamPalette().
+const COLOR_GRID = [
+  ["#F07A73","Light red"],["#F0A050","Light orange"],["#E0BE3A","Light gold"],["#8CC452","Light lime"],["#4CC08C","Light green"],["#40BCC2","Light teal"],
+  ["#E2453C","Red"],["#D9700A","Orange"],["#B58A00","Gold"],["#5E9A12","Lime"],["#1A8F5F","Green"],["#0E8C93","Teal"],
+  ["#9E2A23","Deep red"],["#9A4E06","Deep orange"],["#7D5F00","Deep gold"],["#3F680C","Deep lime"],["#0F5E3E","Deep green"],["#095E63","Deep teal"],
+  ["#5C9DE8","Light sky"],["#7B8CF0","Light blue"],["#A585EA","Light purple"],["#DE6CB2","Light pink"],["#B8865A","Light brown"],["#8A89A8","Light gray"],
+  ["#1C86C8","Sky"],["#2B44D6","Blue"],["#7A4FD6","Purple"],["#C2338A","Pink"],["#8B5A2B","Brown"],["#3B3A5C","Gray"],
+  ["#125A88","Deep sky"],["#1C2C90","Deep blue"],["#4F3090","Deep purple"],["#82205C","Deep pink"],["#5A3A1C","Deep brown"],["#1E1B3A","Black"]
+];
 const OLD_COLOR_KEYS = { blue:"#2B44D6", pink:"#E2453C", green:"#1A8F5F", orange:"#D9700A", purple:"#7A4FD6", teal:"#0E8C93" };
 const COOP_STYLE = [{ name:"Team Blue", color:"#2B44D6" }, { name:"Team Pink", color:"#E2453C" }];
 const defaultTeamStyle = () => [{ name:"", color:"#2B44D6" }, { name:"", color:"#E2453C" }];
@@ -2433,11 +2439,23 @@ function teamPalette(hex){
   let dtext = mixRgb(edge, W, .35); for (let i = 0; i < 40 && contrastOf(dtext, DARK) < 4.5; i++) dtext = mixRgb(dtext, W, .1);
   return { bg:rgbHex(bg), tint:rgbHex(tint), edge:rgbHex(edge), text:rgbHex(text), dtext:rgbHex(dtext) };
 }
-// Two team colors that look alike are refused (weighted RGB distance of the shown colors).
+// Hue (0–360) and saturation (0–1) of a color.
+function hueSat(h){
+  const [r, g, b] = hexRgb(h).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  if (!d) return [0, 0];
+  let H = 60 * (mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4); if (H < 0) H += 360;
+  return [H, d / (1 - Math.abs(mx + mn - 1))];
+}
+// Two team colors that look alike are refused: same color family (a light, medium and deep green all
+// tint the cards alike), two grays, or simply close colors.
 function colorsClash(a, b){
   const x = hexRgb(teamPalette(a).edge), y = hexRgb(teamPalette(b).edge), r = (x[0] + y[0]) / 2;
   const d = Math.sqrt((2 + r / 256) * (x[0] - y[0]) ** 2 + 4 * (x[1] - y[1]) ** 2 + (2 + (255 - r) / 256) * (x[2] - y[2]) ** 2);
-  return d < 110;
+  if (d < 110) return true;
+  const [ha, sa] = hueSat(a), [hb, sb] = hueSat(b);
+  if (sa < .3 && sb < .3) return true;
+  if (sa < .3 || sb < .3) return false;
+  const dh = Math.abs(ha - hb); return Math.min(dh, 360 - dh) < 28;
 }
 function applyTeamStyle(st){
   if (!st) st = G.mode === "spy" && S.players.length < 4 ? COOP_STYLE : curTeamStyle();
@@ -2460,7 +2478,7 @@ function teamCards(box, st, opt){
     const head = document.createElement("div"); head.className = "tc-head";
     const dot = document.createElement("button"); dot.className = "tc-dot";
     dot.setAttribute("aria-label", `${styleName(st, k)} color`); dot.setAttribute("aria-expanded", G.palFor === k);
-    dot.onclick = e => { e.preventDefault(); G.palFor = G.palFor === k ? null : k; G.palBox = box; G.palMsg = ""; opt.onChange(true); };
+    dot.onclick = e => { e.preventDefault(); G.palFor = G.palFor === k ? null : k; G.palBox = box; opt.onChange(true); };
     const inp = document.createElement("input"); inp.className = "tc-name"; inp.type = "text"; inp.maxLength = 16;
     inp.value = s.name; inp.placeholder = `Team ${k + 1}`; inp.setAttribute("aria-label", `Team ${k + 1} name`);
     inp.addEventListener("input", () => {   // update labels in place (no rebuild, so typing and the next tap aren't lost)
@@ -2493,31 +2511,26 @@ function teamCards(box, st, opt){
   });
   box.appendChild(cols);
   if (G.palFor == null || opt.styleLocked) return;
-  // Color palette for the chosen team: presets plus a full custom picker.
+  // Color grid for the chosen team; colors too close to the other team are faded and disabled.
   const k = G.palFor, s = st[k], other = st[1 - k].color;
   const pal = document.createElement("div"); pal.className = "tc-pal";
   pal.style.setProperty("--arrow", k ? "calc(50% + 18px)" : "18px");
   pal.setAttribute("role", "group"); pal.setAttribute("aria-label", `${styleName(st, k)} color`);
   const sw = document.createElement("div"); sw.className = "tc-sw";
   const pick = hex => {
-    if (colorsClash(hex, other)) { G.palMsg = `Too close to ${poss(styleName(st, 1 - k))} color. Pick something more different.`; opt.onChange(true); return; }
-    s.color = colorHex(hex, k); G.palFor = null; G.palMsg = ""; opt.onChange(true);
+    if (colorsClash(hex, other)) return;
+    s.color = colorHex(hex, k); G.palFor = null; opt.onChange(true);
   };
-  Object.entries(TEAM_COLORS).forEach(([hex, c]) => {
+  COLOR_GRID.forEach(([hex, label]) => {
     const b = document.createElement("button"); b.style.background = hex;
-    b.setAttribute("aria-label", `Team ${k + 1} color: ${c.label}`); b.setAttribute("aria-pressed", s.color === hex);
+    b.setAttribute("aria-label", `Team ${k + 1} color: ${label}`); b.setAttribute("aria-pressed", s.color === hex);
     b.disabled = colorsClash(hex, other);
     b.onclick = () => pick(hex);
     sw.appendChild(b);
   });
-  const custom = document.createElement("label"); custom.title = "Any color";
-  const ci = document.createElement("input"); ci.type = "color"; ci.value = s.color.toLowerCase(); ci.setAttribute("aria-label", `Team ${k + 1} color: any color`);
-  ci.addEventListener("change", () => pick(ci.value));
-  custom.appendChild(ci); sw.appendChild(custom);
   pal.appendChild(sw);
   const note = document.createElement("p"); note.className = "note";
-  note.textContent = G.palMsg || "Tap the rainbow for any color.";
-  if (G.palMsg) note.setAttribute("role", "alert");
+  note.textContent = `Faded colors are too close to ${poss(styleName(st, 1 - k))}.`;
   pal.appendChild(note);
   box.appendChild(pal);
 }
