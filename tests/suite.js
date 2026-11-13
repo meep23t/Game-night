@@ -574,7 +574,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Teams section hidden for non-team games', await p.locator('#teamsBlock').isHidden());
     // random teams
     await open(p, 'fb');
-    await p.locator('.setting', { hasText: 'Random teams' }).locator('button').click();
+    await p.locator('#settings .setting', { hasText: 'Random teams' }).locator('button').click();
     check('Random teams on hides the picker', await p.locator('#teamsBlock').isHidden() && (await ev(p, () => S.randomTeams)) === true);
     const splits = new Set(); let even = true;
     for (let k = 0; k < 15; k++) { const t = await ev(p, () => makeTeams()); splits.add(JSON.stringify(t)); if (t[0].length !== 3 || t[1].length !== 3) even = false; }
