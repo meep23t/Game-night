@@ -979,6 +979,63 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
+  /* ================= SAVE A GAME IN PROGRESS ================= */
+  AREA = 'Save & resume';
+  try {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    // Act it out: reload between turns, continue
+    await open(p, 'act'); await ev(p, () => { S.rounds = 2; S.perTurn = 1; save(); }); await p.click('#startGame');
+    await p.click('#startTurn'); await p.click('#pickEasy'); await p.click('#gotBtn'); await p.clock.runFor(1500);
+    const before = await ev(p, () => JSON.stringify([G.scores, G.turn, G.round, G.deck.length]));
+    await p.reload();
+    check('Reopening shows the game to continue', await p.locator('#resumeBox').isVisible() && /Act it out in progress/.test(await txt(p, '#resumeBox')), await txt(p, '#resumeBox'));
+    await p.click('#resumeGo');
+    check('Continue picks up after the finished turn', (await screen(p)) === 'pass' && (await ev(p, () => G.turn)) === 1 && /Ben/.test(await txt(p, '#passName')), await txt(p, '#passName'));
+    check('Scores and deck come back intact', (await ev(p, () => JSON.stringify([G.scores, G.round, G.deck.length]))) === JSON.stringify([JSON.parse(before)[0], 1, JSON.parse(before)[3]]));
+    // a turn cut off mid-way starts over
+    await p.click('#startTurn'); await p.click('#pickEasy'); await p.click('#gotBtn');
+    await p.reload(); await p.click('#resumeGo');
+    check('A turn cut off mid-way starts over', (await screen(p)) === 'pass' && /Ben/.test(await txt(p, '#passName')) && (await ev(p, () => G.scores[1])) === 0);
+    // Start over clears it
+    await p.click('#startOver'); await p.click('#startOver');
+    await p.reload();
+    check('Ending the game clears the save', await p.locator('#resumeBox').isHidden());
+    // Discard
+    await open(p, 'act'); await p.click('#startGame'); await p.reload();
+    await p.click('#resumeX');
+    check('Discard removes the offer', await p.locator('#resumeBox').isHidden() && (await ev(p, () => localStorage.getItem(GAME_KEY))) === null);
+    // Word spies: board progress saved when the phone locks
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await open(p, 'spy'); await p.click('#startGame'); await p.click('#srGo');
+    await ev(p, () => { G.spyTurn = 0; renderSpy(); });
+    await giveClue(p, 2);
+    const mine = await ev(p, () => G.board.findIndex(c => c.r === 0 && !c.open));
+    await p.locator('#sbGrid button').nth(mine).click(); await p.click('#sbReveal');
+    await ev(p, () => { Object.defineProperty(document, 'hidden', { value: true, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
+    const board = await ev(p, () => JSON.stringify(G.board));
+    await p.reload(); await p.click('#resumeGo');
+    check('Word spies: same board, opened cards and clue after reopening', (await screen(p)) === 'spyboard' && (await ev(p, () => JSON.stringify(G.board))) === board && /ZEBRAFISH/.test(await txt(p, '#sbClueOn')), await txt(p, '#sbClueOn'));
+    // Imposter: vote tally kept
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await open(p, 'imp'); await p.click('#startGame');
+    await ev(p, () => { for (let i = 0; i < 4; i++) G.seen.add(i); showReveal(); }); await p.click('#toCluesBtn'); await p.click('#toVote');
+    await ev(p, () => { G.tally[2] = 3; renderVote(); gameSnap(); });
+    await p.reload(); await p.click('#resumeGo');
+    check('Imposter: votes come back', (await screen(p)) === 'vote' && (await ev(p, () => G.tally[2])) === 3 && (await ev(p, () => G.seen instanceof Set && G.seen.size)) === 4);
+    // game night: once points are recorded the game can't be resumed (no double counting)
+    await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsGo');
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => { S.playerIds = [1, 2, 3]; save(); });
+    await open(p, 'act'); await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); }); await p.click('#startGame');
+    await ev(p, () => { G.scores = [3, 1, 0]; toFinal(); });
+    await p.reload();
+    check('A finished, counted game is not offered again', await p.locator('#resumeBox').isHidden() && (await ev(p, () => S.night.log.length)) === 1);
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'resume');
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
+
   /* ================= LAYOUT: small phone, dark mode ================= */
   AREA = 'Layout';
   for (const dark of [false, true]) {
