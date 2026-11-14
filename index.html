@@ -204,7 +204,6 @@ textarea{resize:vertical;font-size:15px}
 .fn-spot .fn-tro{font-size:56px;line-height:1}
 .fn-spot .fn-lbl{font-weight:800;letter-spacing:.12em;font-size:13px;text-transform:uppercase;margin-top:6px}
 .fn-spot .fn-who{font-weight:800;font-size:40px;letter-spacing:-.02em;line-height:1.05;overflow-wrap:anywhere}
-.fn-spot .fn-pts{font-weight:700;font-size:16px;margin-top:6px}
 .fn-spot .fn-team{font-size:14px;margin-top:4px;opacity:.85}
 .fn-logbtn{display:block;width:100%;margin:18px 0 0;padding:10px;border:2px solid var(--line);border-radius:12px;font-weight:700;color:var(--muted)}
 .tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
@@ -3435,10 +3434,9 @@ function renderNight(){
       const tie = t[0] === t[1], k = t[0] > t[1] ? 0 : 1;
       const card = document.createElement("div"); card.className = "fn-spot";
       card.style.background = tie ? "#FFC83D" : `var(--t${k}-bg)`;
-      card.innerHTML = `<div class="fn-tro">🏆</div><div class="fn-lbl"></div><div class="fn-who"></div><div class="fn-pts"></div><div class="fn-team"></div>`;
+      card.innerHTML = `<div class="fn-tro">🏆</div><div class="fn-lbl"></div><div class="fn-who"></div><div class="fn-team"></div>`;
       card.querySelector(".fn-lbl").textContent = tie ? "It’s a tie!" : "Game night champions";
       card.querySelector(".fn-who").textContent = tie ? `${TEAMS[0]} & ${TEAMS[1]}` : TEAMS[k];
-      card.querySelector(".fn-pts").textContent = tie ? `${t[0]} points each` : `${t[k]} points · ${t[1 - k]} for ${TEAMS[1 - k]}`;
       if (!tie) card.querySelector(".fn-team").textContent = n.roster.filter(r => (r.team || 0) === k).map(r => rosterName(r.id)).join(", ");
       fin.appendChild(card); fin.hidden = false;
     }
@@ -3448,7 +3446,7 @@ function renderNight(){
     const box = $("nightTeams"); box.innerHTML = "";
     [0, 1].sort((a, b) => t[b] - t[a] || a - b).forEach(k => {
       const card = document.createElement("div"); card.className = "tcard " + (k ? "p" : "b");
-      card.innerHTML = `<div class="hd"><b>${esc(TEAMS[k])}${played && t[k] > t[1 - k] ? '<span class="lead">' + (done ? "Winner" : "Leading") + "</span>" : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
+      card.innerHTML = `<div class="hd"><b>${esc(TEAMS[k])}${played && !done && t[k] > t[1 - k] ? '<span class="lead">Leading</span>' : ""}</b><span class="pts">${t[k]}</span></div><ul></ul>`;
       const ul = card.querySelector("ul"); ul.className = "tnames";
       ul.textContent = n.roster.filter(r => (r.team || 0) === k).map(r => rosterName(r.id)).join(", ");
       box.appendChild(card);
