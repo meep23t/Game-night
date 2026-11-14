@@ -1,2 +1,5 @@
 tests/
 docs/
+words/source/
+words/build.py
+words/README.md
