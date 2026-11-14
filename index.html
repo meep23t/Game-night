@@ -1564,7 +1564,32 @@ function parseCustom(){
   }).filter(c => c[0]);
 }
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function draw(){ if (!G.deck.length) G.deck = shuffle(G.pool); return G.deck.pop(); }
+/* ---------- Word history: fewer repeats across game nights ----------
+   Each game remembers (on this phone) when each word was last shown. New decks put never-played words
+   first (shuffled), then played ones oldest first, so a word repeats only after the rest of its pack has
+   come up. History is kept per game and forgets entries older than a year. */
+const SEEN_KEY = "gamenight-seen-v1", SEEN_MAX_AGE = 365 * 864e5;
+let SEEN = null;
+function seenAll(){
+  if (!SEEN) { try { SEEN = JSON.parse(localStorage.getItem(SEEN_KEY) || "{}") || {}; } catch (e) { SEEN = {}; } }
+  return SEEN;
+}
+function wordKey(item){ return (Array.isArray(item) ? (G.mode === "wave" ? item.join(" | ") : item[0]) : String(item)).toLowerCase(); }
+function markSeen(items, game = G.mode){
+  const all = seenAll(), h = all[game] = all[game] || {}, now = Date.now();
+  items.forEach(it => { h[wordKey(it)] = now; });
+  for (const g in all) for (const k in all[g]) if (now - all[g][k] > SEEN_MAX_AGE) delete all[g][k];
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(all)); } catch (e) {}
+}
+// Order a list best-first: never played (random order), then played, oldest first.
+function freshOrder(pool, game = G.mode){
+  const h = seenAll()[game] || {}, fresh = [], played = [];
+  shuffle(pool).forEach(it => (h[wordKey(it)] ? played : fresh).push(it));
+  played.sort((a, b) => h[wordKey(a)] - h[wordKey(b)]);
+  return fresh.concat(played);
+}
+function freshDeck(pool, game){ return freshOrder(pool, game).reverse(); }   // draw() takes from the end
+function draw(){ if (!G.deck.length) G.deck = freshDeck(G.pool); const it = G.deck.pop(); if (it) markSeen([it]); return it; }
 
 $("startGame").onclick = () => {
   if (S.players.some(n => !n.trim())) { $("setupError").textContent = "Give every player a name."; return; }
@@ -1600,7 +1625,7 @@ $("startGame").onclick = () => {
 /* ---------- Shared game flow ---------- */
 function newGame(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
-  G.scores = S.players.map(() => 0); G.deck = shuffle(G.pool);
+  G.scores = S.players.map(() => 0); G.deck = freshDeck(G.pool);
   G.teamOn = teamPlay(G.mode); G.teams = G.teamOn ? makeTeams() : null;
   G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
 }
@@ -1805,7 +1830,7 @@ function impCheck(){
 }
 function impStart(){
   G.pool = S.impPacks.flatMap(c => IMP_WORDS[c].map(w => [w, c]));
-  G.deck = shuffle(G.pool);
+  G.deck = freshDeck(G.pool);
   impRound();
 }
 function impRound(){
@@ -2065,7 +2090,7 @@ function teleCheck(){
   if (S.teleBooks > n) return `With ${n} players you can have at most ${n} sketchbooks.`;
   return "";
 }
-function teleStart(){ G.pool = TELE_WORDS[S.teleLevel].map(w => [w]); G.deck = shuffle(G.pool); teleRound(); }
+function teleStart(){ G.pool = TELE_WORDS[S.teleLevel].map(w => [w]); G.deck = freshDeck(G.pool); teleRound(); }
 function teleRound(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   stopTimer();
@@ -2277,7 +2302,7 @@ function setEnds(){
 }
 function waveStart(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
-  G.pool = WAVE[S.wLevel]; G.deck = shuffle(G.pool);
+  G.pool = WAVE[S.wLevel]; G.deck = freshDeck(G.pool);
   G.teamOn = teamPlay("wave"); G.teams = G.teamOn ? makeTeams() : null;
   G.wOrder = []; for (let r = 1; r <= S.wRounds; r++) G.wOrder.push(...turnSeq(r, G.teams));
   G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = G.wOrder.length; G.wTeam = [0, 0];
@@ -2651,7 +2676,8 @@ function fbStart(){
   G.teams = G.fbCoop ? [S.players.map((_, i) => i), []] : makeTeams();
   G.fbInd = S.players.map(() => 0);
   if (!S.fbWrite) {
-    G.fbWords = shuffle([...TABOO[1], ...TABOO[2]].map(c => c[0])).slice(0, S.players.length * S.fbPer);
+    G.fbWords = shuffle(freshOrder([...TABOO[1], ...TABOO[2]].map(c => c[0]), "fb").slice(0, S.players.length * S.fbPer));
+    markSeen(G.fbWords, "fb");
     return fbRoundIntro(true);
   }
   G.fbSubs = S.players.map(() => null);
@@ -2864,7 +2890,8 @@ function spyDeal(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.spyGame++;
   const big = S.spyBig, n = big ? 25 : 16;
-  const words = shuffle(spyPool(S.spyLevel)).slice(0, n);
+  const words = shuffle(freshOrder(spyPool(S.spyLevel), "spy").slice(0, n));   // favor words not on recent boards
+  markSeen(words, "spy");
   const first = G.coop ? 0 : Math.random() < .5 ? 0 : 1;
   const [a, b, by] = big ? [9, 8, 7] : [6, 5, 4];
   const trap = S.spyTrap ? 1 : 0, roles = [];

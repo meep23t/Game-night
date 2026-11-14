@@ -1036,6 +1036,40 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
+  /* ================= WORD HISTORY (fewer repeats) ================= */
+  AREA = 'Word history';
+  try {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    // Describe it: the words shown in one game don't come first in the next one, even after reopening the app
+    await open(p, 'taboo'); await p.click('#startGame'); await p.click('#startTurn');
+    for (let i = 0; i < 4; i++) await p.click('#tGot');
+    const shown = await ev(p, () => Object.keys(seenAll().taboo || {}));
+    check('Words shown on screen are remembered', shown.length >= 5, shown.length + ' remembered');
+    await p.reload();
+    await open(p, 'taboo'); await p.click('#startGame');
+    const next = await ev(p, () => G.deck.slice(-40).map(wordKey));
+    check('After reopening, a new game starts with words not played yet', next.every(w => !shown.includes(w)), next.filter(w => shown.includes(w)).join(','));
+    // a small list cycles back oldest-first instead of running out
+    const order = await ev(p, () => {
+      G.mode = 'test'; const pool = ['a','b','c','d'].map(w => [w]);
+      markSeen([['c']]); const t = Date.now(); SEEN.test.c = t - 3000; SEEN.test.a = t - 2000; SEEN.test.d = t - 1000;   // b never played
+      return freshOrder(pool).map(x => x[0]).join('');
+    });
+    check('Unplayed words first, then the oldest played', order === 'bcad', order);
+    check('Each game keeps its own history', await ev(p, () => !(seenAll().act) && !!seenAll().taboo));
+    check('History older than a year is forgotten', await ev(p, () => { SEEN.test.old = Date.now() - 400 * 864e5; markSeen([['x']], 'test'); return !('old' in SEEN.test); }));
+    // Word spies: the next board avoids the last board's words
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await open(p, 'spy'); await p.click('#startGame');
+    const b1 = await ev(p, () => G.board.map(c => c.w));
+    await ev(p, () => spyDeal());
+    const b2 = await ev(p, () => G.board.map(c => c.w));
+    check('Word spies: a new board uses fresh words', b2.every(w => !b1.includes(w)), b2.filter(w => b1.includes(w)).join(','));
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
+
   /* ================= WORD FILES ================= */
   AREA = 'Word files';
   try {
