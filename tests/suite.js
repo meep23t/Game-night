@@ -924,6 +924,35 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
   });
 
+  /* ================= UNDO THE LAST GAME'S POINTS ================= */
+  section('Remove last game', async AREA => {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsGo');
+    // two finished games: Ana wins the first, Ben the second
+    await open(p, 'act'); await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); }); await p.click('#startGame');
+    await ev(p, () => { G.scores = [3, 1, 0]; toFinal(); });
+    await open(p, 'act'); await p.click('#startGame');
+    await ev(p, () => { G.scores = [0, 5, 1]; toFinal(); });
+    await ev(p, () => openNight());
+    const pts = () => ev(p, () => Object.fromEntries(nightStandings().map(r => [r.name, r.pts])));
+    const before = await pts();
+    check('Only the latest game has a Remove button', (await p.locator('#nightLog .nl-remove').count()) === 1 && (await p.locator('#nightLog li').first().locator('.nl-remove').count()) === 1);
+    await p.click('#nightLog .nl-remove');
+    check('First tap asks to confirm and removes nothing', /Tap again/.test(await txt(p, '#nightLog .nl-remove')) && (await ev(p, () => S.night.log.length)) === 2);
+    await p.click('#nightLog .nl-remove');
+    const after = await pts();
+    check('Second tap removes that game and its points', (await ev(p, () => S.night.log.length)) === 1 && after.Ana === 3 && after.Ben === 2 && after.Cy === 1 && before.Ben === 5, JSON.stringify([before, after]));   // only game 1 is left: Ana 3, Ben 2, Cy 1
+    check('The game before it can now be removed', (await p.locator('#nightLog .nl-remove').count()) === 1);
+    check('Removal is saved', await ev(p, () => JSON.parse(localStorage.getItem(KEY)).night.log.length === 1));
+    await p.click('#nightLog .nl-remove'); await p.clock.runFor(3500);
+    check('An unconfirmed tap resets after a few seconds', (await txt(p, '#nightLog .nl-remove')) === 'Remove' && (await ev(p, () => S.night.log.length)) === 1);
+    await p.click('#nightEnd'); await p.click('#nightEnd');
+    check('No Remove once the night has ended', (await p.locator('#nightLog .nl-remove').count()) === 0);
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= TEAMS GAME NIGHT ================= */
   section('Teams game night', async AREA => {
     try {
