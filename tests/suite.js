@@ -76,6 +76,25 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   if (srv) URL = `http://127.0.0.1:${srv.address().port}/`;
   const b = await chromium.launch();
 
+  /* ================= CODE CHECK (no browser) ================= */
+  section('Code check', async AREA => {
+    const { spawnSync } = require('child_process');
+    // offline helper version matches the files it saves
+    const swv = require(path.join(ROOT, 'tools', 'sw-version.js')), swSrc = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+    const want = swv.expected(swSrc).version, have = swv.current(swSrc);
+    check('Offline helper version matches its saved files', have === want, `sw.js has ${have}, should be ${want}: run node tools/sw-version.js`);
+    // no class name is both switched by code and used as a regular style
+    const cl = require(path.join(ROOT, 'tools', 'class-clash.js')).clashes(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
+    check('No CSS class name is used for two different jobs', !cl.length, cl.map(c => `"${c.name}" (${c.switched} / ${c.styled})`).join('; '));
+    // quick bug check: undefined names, typos, duplicate keys, dead code
+    const lint = spawnSync(process.execPath, [path.join(__dirname, 'node_modules', 'eslint', 'bin', 'eslint.js'), '-c', 'tests/eslint.config.js', 'index.html', 'sw.js', 'words'], { cwd: ROOT, encoding: 'utf8' });
+    check('ESLint finds no problems', lint.status === 0, (lint.stdout || lint.stderr || '').trim().split('\n').slice(0, 5).join(' | '));
+    // word files are up to date with the spreadsheets
+    const wb = spawnSync('python3', [path.join(ROOT, 'words', 'build.py'), '--check'], { encoding: 'utf8' });
+    if (wb.error) check('Word files match the spreadsheets (skipped: python3 not found)', true);
+    else check('Word files match the spreadsheets', wb.status === 0, (wb.stdout || wb.stderr).trim());
+  });
+
   /* ================= ACT IT OUT ================= */
   section('Act it out', async AREA => {
     try {

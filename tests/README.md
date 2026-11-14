@@ -10,6 +10,9 @@
 - saving a game in progress, word history (fewer repeats) and the word files
 - homepage and setup icon animations
 - layout: no sideways scrolling on small phones, in light and dark mode
+- code checks (no browser): ESLint (undefined names, typos, duplicate keys, dead code), CSS class names
+  used for two different jobs (`tools/class-clash.js`), the offline helper's version matching its saved
+  files (`tools/sw-version.js`), and the word files matching their spreadsheets (`words/build.py --check`)
 
 ## Run it
 
@@ -21,6 +24,9 @@ npm test
 ```
 
 It starts its own local server for the site, so nothing else needs to be running.
+
+If "Offline helper version" fails, run `node tools/sw-version.js` from the repo root (it updates sw.js).
+Playwright is pinned to the version whose browser is installed; if you upgrade it, run `npx playwright install chromium`.
 To test a deployed copy instead: `TEST_URL=https://ourgamenight.vercel.app/ npm test`
 
 The 20 sections run several at a time (one per CPU core, up to 6), so a full run takes about a minute.

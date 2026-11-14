@@ -282,8 +282,8 @@ button:disabled{opacity:.4}
 .t-card.paused .t-paused{display:flex}
 .pop{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,58px);font-weight:800;color:#fff;opacity:0;pointer-events:none}
 .pop.green{background:var(--mint)} .pop.red{background:var(--red)} .pop.gray{background:#7C76A3}
-.pop.go{animation:pop .6s ease-out}
-.pop.hold{opacity:1}
+.pop.pop-go{animation:pop .6s ease-out}
+.pop.pop-hold{opacity:1}
 @keyframes pop{0%,60%{opacity:1}100%{opacity:0}}
 .t-actions{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:10px;margin-top:22px}
 .t-actions button{padding:18px 8px;border-radius:16px;font-weight:800;font-size:19px}
@@ -1758,7 +1758,7 @@ function tabooDeal(){
 function setTButtons(on){ ["tGot","tSkip","tBuzz"].forEach(id => $(id).disabled = !on); }
 function popFx(text, color, hold){
   const p = $("tPop"); p.textContent = text;
-  p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go");
+  p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "pop-hold" : "pop-go");
 }
 function tabooMark(kind){
   if (T.locked || T.paused) return;
@@ -1880,7 +1880,6 @@ $("toCluesBtn").onclick = toClues;
 
 function fmt(ms){ const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
 function toClues(){
-  const n = S.players.length;
   const ol = $("order"); ol.innerHTML = "";
   G.order.forEach((i, k) => {
     const li = document.createElement("li"); li.textContent = name(i);
@@ -2668,7 +2667,7 @@ SETTINGS.fb = [
 ];
 $("goFb").onclick = () => openSetup("fb");
 
-function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "hold" : "go"); }
+function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "pop-hold" : "pop-go"); }
 function fbStart(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   // 2–3 players: everyone for themselves. One shared turn order, a point per word you describe.
