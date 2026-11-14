@@ -121,7 +121,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .game-tile{position:relative}
 .home-head h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
 .game-tile h2,.game-tile p{padding-right:78px}
-.tile-icon{position:absolute;top:16px;right:16px;width:68px;height:68px}
+.tile-icon{position:absolute;top:16px;right:16px;width:68px;height:68px;transform-origin:50% 60%}
+/* Home: each game's icon acts out its game when its card reaches the middle of the screen. */
+@keyframes ic-act{0%,100%{transform:translateY(0)}20%{transform:translateY(-14px) rotate(-6deg)}40%{transform:translateY(0)}60%{transform:translateY(-10px) rotate(6deg)}80%{transform:translateY(0)}}
+@keyframes ic-pop{0%,100%{transform:scale(1)}25%{transform:scale(1.22)}45%{transform:scale(.92)}65%{transform:scale(1.1)}}
+@keyframes ic-peek{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px) rotate(4deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+@keyframes ic-doodle{0%,100%{transform:rotate(0)}12%{transform:rotate(-8deg) translate(-3px,2px)}25%{transform:rotate(7deg) translate(3px,-2px)}37%{transform:rotate(-6deg) translate(-2px,-2px)}50%{transform:rotate(5deg) translate(2px,2px)}75%{transform:rotate(-2deg)}}
+@keyframes ic-dial{0%,100%{transform:rotate(0)}25%{transform:rotate(-24deg)}55%{transform:rotate(18deg)}80%{transform:rotate(-6deg)}}
+@keyframes ic-bowl{0%,100%{transform:translate(0,0)}10%,50%,90%{transform:translate(-4px,1px) rotate(-5deg)}30%,70%{transform:translate(4px,-1px) rotate(5deg)}}
+@keyframes ic-spy{0%,100%{transform:scale(1)}20%{transform:scale(1.1) rotate(-4deg)}40%{transform:scale(1)}55%{filter:brightness(1.25)}70%{transform:scale(1.08) rotate(3deg)}}
+@media (prefers-reduced-motion:no-preference){
+  .tile-icon.go[data-icon="act"]{animation:ic-act 1s ease-in-out}
+  .tile-icon.go[data-icon="taboo"]{animation:ic-pop .8s ease-out}
+  .tile-icon.go[data-icon="imp"]{animation:ic-peek 1s ease-in-out}
+  .tile-icon.go[data-icon="tele"]{animation:ic-doodle 1s ease-in-out}
+  .tile-icon.go[data-icon="wave"]{animation:ic-dial 1.1s ease-in-out;transform-origin:50% 70%}
+  .tile-icon.go[data-icon="fb"]{animation:ic-bowl .9s ease-in-out}
+  .tile-icon.go[data-icon="spy"]{animation:ic-spy 1s ease-in-out}
+}
 .setup-icon{display:block;width:76px;height:76px;margin-bottom:14px}
 .tile-icon svg,.setup-icon svg{display:block;width:100%;height:100%}
 
@@ -3065,6 +3082,19 @@ const ICON = {
 };
 const ICON_BG = { act:"#FFC83D", taboo:"#F0588F", imp:"#8FE3C0", tele:"#A9B8FF", wave:"#FFB347", fb:"#C9A7FF", spy:"#8CD3E6" };
 document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = ICON[el.dataset.icon]);
+// Home: when a game card reaches the middle of the screen, its icon acts out the game
+// (again each time it passes the middle, at most every 1.5 s). Skipped with "Reduce motion" (CSS).
+if ("IntersectionObserver" in window) {
+  const lastGo = new WeakMap();
+  const iconIO = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target.querySelector(".tile-icon"), now = Date.now();
+    if (!el || now - (lastGo.get(el) || 0) < 1500) return;
+    lastGo.set(el, now); el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
+  }), { rootMargin:"-42% 0px -42% 0px", threshold:0 });
+  document.querySelectorAll("#home .game-tile").forEach(t => iconIO.observe(t));
+  document.addEventListener("animationend", e => { if (e.target.classList.contains("tile-icon")) e.target.classList.remove("go"); });
+}
 
 /* ---------- Game night ---------- */
 // S.night = { started, last, ended, nextId, roster:[{id,name}], log:[{key, mode, label, players:[id], awards:[{id,pts,raw}], note}] }

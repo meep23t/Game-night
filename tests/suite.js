@@ -1036,6 +1036,25 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
+  /* ================= HOME ICON MOTION ================= */
+  AREA = 'Home icons';
+  try {
+    const p = await fresh(b);
+    const moving = () => ev(p, () => [...document.querySelectorAll('#home .tile-icon.go')].map(e => e.dataset.icon));
+    await ev(p, () => { const t = document.querySelector('#goSpy'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
+    await p.waitForTimeout(150);
+    const m = await moving();
+    check('The card in the middle of the screen animates its icon', m.includes('spy'), m.join(','));
+    check('Each game has its own move', await ev(p, () => { const el = document.querySelector('#home .tile-icon.go[data-icon="spy"]'); return getComputedStyle(el).animationName === 'ic-spy'; }));
+    check('Cards near the top or bottom don’t', !m.includes('act'), m.join(','));
+    const r = await fresh(b, {}); await r.emulateMedia({ reducedMotion: 'reduce' });
+    await ev(r, () => { const t = document.querySelector('#goAct'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
+    await r.waitForTimeout(150);
+    check('No animation with Reduce motion on', await ev(r, () => [...document.querySelectorAll('#home .tile-icon')].every(e => getComputedStyle(e).animationName === 'none')));
+    check('No page errors', p.errs.length === 0 && r.errs.length === 0, [...p.errs, ...r.errs].join(' | '));
+    await p.context().close(); await r.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+
   /* ================= LAYOUT: small phone, dark mode ================= */
   AREA = 'Layout';
   for (const dark of [false, true]) {
