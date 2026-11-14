@@ -1054,6 +1054,11 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Opening a game plays its icon once at the top of the setup screen', await ev(p, () => document.getElementById('setupIcon').classList.contains('ic-go') && getComputedStyle(document.querySelector('#setupIcon .p-needle')).animationName === 'ic-swipe'));
     await p.clock.runFor(1600);
     check('…and then it stops', await ev(p, () => !document.getElementById('setupIcon').classList.contains('ic-go')));
+    await ev(p, () => show('home'));
+    await ev(p, () => scrollTo(0, 800)); await p.waitForTimeout(80);
+    check('Trophy is still while scrolled down', await ev(p, () => !document.querySelector('#nightStrip .trophy').classList.contains('tr-go')));
+    await ev(p, () => scrollTo(0, 0)); await p.waitForTimeout(80);
+    check('Back at the very top, the game night trophy shines and pops', await ev(p, () => { const t = document.querySelector('#nightStrip .trophy'); return t.classList.contains('tr-go') && getComputedStyle(t).animationName.includes('tr-pop'); }));
     const tall = await (await b.newContext({ viewport: { width: 412, height: 915 } })).newPage();
     await tall.goto(URL); await tall.waitForTimeout(300);
     await tall.evaluate(() => scrollTo(0, document.body.scrollHeight)); await tall.waitForTimeout(200);
