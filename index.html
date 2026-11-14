@@ -106,6 +106,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-log li{align-items:flex-start}
 .night-log .w b{display:block}
 .night-log .w small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.nl-remove{margin-left:auto;flex:none;align-self:center;border:2px solid var(--line);border-radius:10px;padding:5px 10px;font-weight:700;font-size:13px;color:var(--muted);background:var(--surface)}
+.nl-remove.nl-armed{color:var(--red);border-color:var(--red)}
 .night-box{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:18px 0}
 .night-box .nb-head{font-weight:800;margin-bottom:8px}
 .night-box .nb-team{margin:0 0 8px;font-size:17px}
@@ -3393,7 +3395,7 @@ $("nsGo").onclick = () => {
 
 // Leaderboard screen.
 let nightEndArm = 0;
-function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; renderNight(); show("night"); }
+function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; clearTimeout(removeArm); removeArm = 0; renderNight(); show("night"); }
 function renderNight(){
   const n = S.night, st = nightStandings(), done = n.ended;
   const played = n.log.length;
@@ -3432,7 +3434,7 @@ function renderNight(){
   });
   }
   const log = $("nightLog"); log.innerHTML = "";
-  n.log.slice().reverse().forEach(e => {
+  n.log.slice().reverse().forEach((e, i) => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="w"><b></b><small></small></span>`;
     li.querySelector("b").textContent = e.label;
@@ -3441,17 +3443,36 @@ function renderNight(){
       tl.innerHTML = `<span class="b">${esc(TSHORT[0])} +${e.team[0]}</span><span class="p">${esc(TSHORT[1])} +${e.team[1]}</span>`;
       li.querySelector(".w").insertBefore(tl, li.querySelector("small"));
       li.querySelector("small").remove();
-      log.appendChild(li); return;
+    } else {
+      li.querySelector("small").textContent = e.awards.length
+        ? e.awards.slice().sort((a, b) => b.pts - a.pts).map(a => `${rosterName(a.id)} +${a.pts}`).join(" · ")
+        : "No points";
     }
-    li.querySelector("small").textContent = e.awards.length
-      ? e.awards.slice().sort((a, b) => b.pts - a.pts).map(a => `${rosterName(a.id)} +${a.pts}`).join(" · ")
-      : "No points";
+    if (i === 0 && !done) li.appendChild(removeLastBtn(e));   // only the latest game, and only while the night is on
     log.appendChild(li);
   });
   $("nightEmpty").hidden = played > 0;
   const end = $("nightEnd");
   end.classList.remove("confirm-end");
   end.textContent = done ? "Start a new game night" : "End game night";
+}
+// Remove the latest game's points (a game counted by mistake, or the wrong winner tapped). Tap twice to confirm.
+let removeArm = 0;
+function removeLastBtn(e){
+  const b = document.createElement("button"); b.className = "nl-remove"; b.textContent = "Remove";
+  b.setAttribute("aria-label", `Remove ${e.label} and its points`);
+  b.onclick = () => {
+    if (!removeArm) {
+      b.textContent = "Tap again to remove"; b.classList.add("nl-armed");
+      removeArm = setTimeout(() => { removeArm = 0; b.textContent = "Remove"; b.classList.remove("nl-armed"); }, 3000);
+      return;
+    }
+    clearTimeout(removeArm); removeArm = 0;
+    S.night.log = S.night.log.filter(x => x.key !== e.key);
+    if (G.nightEntry && G.nightEntry.key === e.key) G.nightCounted = false;   // its results box now shows "Count it after all"
+    save(); renderNight();
+  };
+  return b;
 }
 $("nightBack").onclick = () => show("home");
 $("nightPlay").onclick = () => show("home");
