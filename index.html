@@ -184,6 +184,29 @@ textarea{resize:vertical;font-size:15px}
 .pa-seg button[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
 .pa-seg button small{display:block;font-weight:600;font-size:13px;opacity:.75;margin-top:2px}
 .tcards{margin:4px 0 6px}
+/* Final results: podium (individuals) and champion spotlight (teams) */
+#nightFinale{margin:6px 0 14px}
+.fn-stage{background:#1E1B3A;border-radius:22px;padding:22px 12px 0;color:#fff;position:relative;overflow:hidden}
+.fn-stage::before{content:"";position:absolute;inset:0;opacity:.7;pointer-events:none;background:
+  radial-gradient(circle,#FFC83D 2.5px,transparent 3px) 10px 20px/60px 50px,
+  radial-gradient(circle,#F0588F 2px,transparent 2.5px) 35px 5px/70px 60px,
+  radial-gradient(circle,#8FE3C0 2px,transparent 2.5px) 0 35px/55px 45px}
+.fn-pod{display:flex;align-items:flex-end;gap:8px;position:relative}
+.fn-pc{flex:1;min-width:0;text-align:center}
+.fn-pc .fn-nm{font-weight:800;font-size:17px;line-height:1.15;overflow-wrap:anywhere}
+.fn-pc .fn-ps{font-size:13px;opacity:.8;margin:2px 0 6px}
+.fn-blk{border-radius:12px 12px 0 0;display:grid;place-items:start center;padding-top:8px;font-weight:800;font-size:28px;color:#1E1B3A}
+.fn-p1 .fn-blk{height:120px;background:#FFC83D} .fn-p2 .fn-blk{height:86px;background:#D9D3F2} .fn-p3 .fn-blk{height:64px;background:#F3B48A}
+.fn-crown{font-size:30px;line-height:1;margin-bottom:2px}
+.fn-spot{border:3px solid #1E1B3A;border-radius:24px;box-shadow:7px 7px 0 var(--shadow);padding:22px 18px;text-align:center;position:relative;overflow:hidden;color:#1E1B3A}
+.fn-spot::before{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(#ffffff40 0 10deg,transparent 10deg 20deg);pointer-events:none}
+.fn-spot>*{position:relative}
+.fn-spot .fn-tro{font-size:56px;line-height:1}
+.fn-spot .fn-lbl{font-weight:800;letter-spacing:.12em;font-size:13px;text-transform:uppercase;margin-top:6px}
+.fn-spot .fn-who{font-weight:800;font-size:40px;letter-spacing:-.02em;line-height:1.05;overflow-wrap:anywhere}
+.fn-spot .fn-pts{font-weight:700;font-size:16px;margin-top:6px}
+.fn-spot .fn-team{font-size:14px;margin-top:4px;opacity:.85}
+.fn-logbtn{display:block;width:100%;margin:18px 0 0;padding:10px;border:2px solid var(--line);border-radius:12px;font-weight:700;color:var(--muted)}
 .tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
 .tcard.b{background:var(--t0-tint);border-color:var(--t0-edge)} .tcard.p{background:var(--t1-tint);border-color:var(--t1-edge)}
 .tcard .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -1155,9 +1178,11 @@ h3.sub{font-size:20px;margin-top:26px}
     <h1 id="nightTitle">Game night</h1>
     <p id="nightSub"></p>
   </header>
+  <div id="nightFinale" hidden></div>
   <div class="tcards" id="nightTeams" hidden></div>
   <ol class="standings" id="nightStand"></ol>
-  <h3 class="sub">Games tonight</h3>
+  <button id="nightLogToggle" class="fn-logbtn" hidden></button>
+  <h3 class="sub" id="nightLogHead">Games tonight</h3>
   <ul class="result-list night-log" id="nightLog"></ul>
   <p class="note" id="nightEmpty">No games yet. Finish a game and its points land here.</p>
   <button id="nightPlay" class="primary" style="margin-top:20px">Back to games</button>
@@ -3395,7 +3420,7 @@ $("nsGo").onclick = () => {
 
 // Leaderboard screen.
 let nightEndArm = 0;
-function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; clearTimeout(removeArm); removeArm = 0; renderNight(); show("night"); }
+function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; clearTimeout(removeArm); removeArm = 0; G.nightLogOpen = false; renderNight(); show("night"); }
 function renderNight(){
   const n = S.night, st = nightStandings(), done = n.ended;
   const played = n.log.length;
@@ -3403,8 +3428,20 @@ function renderNight(){
   const teamsMode = n.mode === "teams";
   if (teamsMode && n.teamStyle) applyTeamStyle(n.teamStyle);
   $("nightTeams").hidden = !teamsMode; $("nightStand").hidden = teamsMode;
+  const fin = $("nightFinale"); fin.innerHTML = ""; fin.hidden = true;
   if (teamsMode) {
     const { t } = teamNightTotals();
+    if (done && played) {   // champion spotlight in the winning team's color (gold for a tie)
+      const tie = t[0] === t[1], k = t[0] > t[1] ? 0 : 1;
+      const card = document.createElement("div"); card.className = "fn-spot";
+      card.style.background = tie ? "#FFC83D" : `var(--t${k}-bg)`;
+      card.innerHTML = `<div class="fn-tro">🏆</div><div class="fn-lbl"></div><div class="fn-who"></div><div class="fn-pts"></div><div class="fn-team"></div>`;
+      card.querySelector(".fn-lbl").textContent = tie ? "It’s a tie!" : "Game night champions";
+      card.querySelector(".fn-who").textContent = tie ? `${TEAMS[0]} & ${TEAMS[1]}` : TEAMS[k];
+      card.querySelector(".fn-pts").textContent = tie ? `${t[0]} points each` : `${t[k]} points · ${t[1 - k]} for ${TEAMS[1 - k]}`;
+      if (!tie) card.querySelector(".fn-team").textContent = n.roster.filter(r => (r.team || 0) === k).map(r => rosterName(r.id)).join(", ");
+      fin.appendChild(card); fin.hidden = false;
+    }
     $("nightSub").textContent = done
       ? (t[0] === t[1] ? (played ? "It’s a tie between the teams!" : "No games were counted.") : `${wins(TEAMS[t[0] > t[1] ? 0 : 1])} game night! 🏆`)
       : `Teams · ${played} game${played === 1 ? "" : "s"} played`;
@@ -3418,11 +3455,33 @@ function renderNight(){
     });
   } else {
   const top = st.filter(r => played && r.pts && r.pts === st[0].pts);
+  const games = `${played} game${played === 1 ? "" : "s"} played`;
   $("nightSub").textContent = done
-    ? (top.length === 1 ? `${top[0].name} wins game night! 🏆` : top.length ? `It’s a tie between ${top.map(r => r.name).join(" and ")}!` : "No games were counted.")
-    : `${played} game${played === 1 ? "" : "s"} played so far.`;
+    ? (top.length === 1 ? `${games} · ${top[0].name} wins game night!` : top.length ? `${games} · It’s a tie between ${top.map(r => r.name).join(" and ")}!` : "No games were counted.")
+    : `${games} so far.`;
+  // Podium for the top three places (tied players share a step); everyone else is listed below it.
+  let onPodium = new Set();
+  if (done && top.length) {
+    const groups = [];
+    st.forEach(r => { const g = groups.find(x => x.pts === r.pts); if (g) g.rs.push(r); else groups.push({ pts:r.pts, rs:[r] }); });
+    const steps = groups.slice(0, 3).filter(g => g.pts > 0);
+    steps.forEach(g => g.rs.forEach(r => onPodium.add(r.id)));
+    const stage = document.createElement("div"); stage.className = "fn-stage";
+    const pod = document.createElement("div"); pod.className = "fn-pod";
+    [1, 0, 2].forEach(i => {
+      const g = steps[i]; if (!g) return;
+      const rank = st.filter(x => x.pts > g.pts).length + 1;
+      const c = document.createElement("div"); c.className = "fn-pc fn-p" + (i + 1);
+      c.innerHTML = `${i === 0 ? '<div class="fn-crown">🏆</div>' : ""}<div class="fn-nm"></div><div class="fn-ps"></div><div class="fn-blk"></div>`;
+      c.querySelector(".fn-nm").textContent = g.rs.map(r => r.name).join(" & ");
+      c.querySelector(".fn-ps").textContent = `${g.pts} pt${g.pts === 1 ? "" : "s"}`;
+      c.querySelector(".fn-blk").textContent = rank;
+      pod.appendChild(c);
+    });
+    stage.appendChild(pod); fin.appendChild(stage); fin.hidden = false;
+  }
   const ol = $("nightStand"); ol.innerHTML = "";
-  st.forEach(r => {
+  st.filter(r => !onPodium.has(r.id)).forEach(r => {
     const rank = st.filter(x => x.pts > r.pts).length + 1;
     const li = document.createElement("li"); if (rank === 1 && r.pts) li.className = "first";
     li.innerHTML = `<span class="rk"></span><span class="nm"><span></span><small></small></span><span class="pt"></span>`;
@@ -3452,6 +3511,15 @@ function renderNight(){
     log.appendChild(li);
   });
   $("nightEmpty").hidden = played > 0;
+  $("nightStand").hidden = teamsMode || !$("nightStand").children.length;
+  // When the night is over the games list folds away, and "Start a new game night" becomes the main button.
+  const folded = done && played > 0 && !G.nightLogOpen;
+  $("nightLog").hidden = $("nightLogHead").hidden = folded;
+  $("nightLogToggle").hidden = !(done && played > 0);
+  $("nightLogToggle").textContent = folded ? `Show the ${played} game${played === 1 ? "" : "s"} played ▾` : "Hide games ▴";
+  $("nightEnd").className = done ? "primary" : "ghost"; $("nightPlay").className = done ? "ghost" : "primary";
+  if (done) $("nightPlay").before($("nightEnd")); else $("nightEnd").before($("nightPlay"));
+  $("nightEnd").style.marginTop = done ? "20px" : "12px"; $("nightPlay").style.marginTop = done ? "12px" : "20px";
   const end = $("nightEnd");
   end.classList.remove("confirm-end");
   end.textContent = done ? "Start a new game night" : "End game night";
@@ -3474,6 +3542,7 @@ function removeLastBtn(e){
   };
   return b;
 }
+$("nightLogToggle").onclick = () => { G.nightLogOpen = !G.nightLogOpen; renderNight(); };
 $("nightBack").onclick = () => show("home");
 $("nightPlay").onclick = () => show("home");
 $("nightEnd").onclick = () => {

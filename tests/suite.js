@@ -953,6 +953,45 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   });
 
+  /* ================= FINAL RESULTS (podium / team spotlight) ================= */
+  section('Final results', async AREA => {
+    const play = async (p, scores) => { for (const sc of scores) { await open(p, 'act'); await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); }); await p.click('#startGame'); await ev(p, sc => { G.scores = sc; toFinal(); }, sc); } };
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee', 'Eli']);
+    await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsGo');
+    await play(p, [[3, 1, 0, 2, 0], [0, 5, 1, 2, 4], [4, 2, 3, 0, 1]]);   // Ana 6, Ben 5, Dee 3, Cy 2, Eli 2
+    await ev(p, () => openNight());
+    check('While the night is on: no podium, normal leaderboard', await p.locator('#nightFinale').isHidden() && (await p.locator('#nightStand li').count()) === 5);
+    await p.click('#nightEnd'); await p.click('#nightEnd');
+    check('Ended individuals night shows a podium', await p.locator('#nightFinale .fn-stage').isVisible());
+    check('Podium order: 2nd, 1st, 3rd with the trophy on 1st', (await ev(p, () => [...document.querySelectorAll('.fn-pc')].map(c => c.querySelector('.fn-nm').textContent).join(','))) === 'Ben,Ana,Dee' && (await p.locator('.fn-p1 .fn-crown').count()) === 1);
+    check('Everyone else is listed below the podium', (await ev(p, () => [...document.querySelectorAll('#nightStand li .nm span')].map(x => x.textContent).join(','))) === 'Cy,Eli');
+    check('Games list folds away with a button to show it', await p.locator('#nightLog').isHidden() && /Show the 3 games/.test(await txt(p, '#nightLogToggle')));
+    await p.click('#nightLogToggle');
+    check('…and it opens on tap', await p.locator('#nightLog').isVisible());
+    check('"Start a new game night" is the main button', await ev(p, () => $('nightEnd').className === 'primary' && $('nightEnd').compareDocumentPosition($('nightPlay')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    await p.context().close();
+    // tie for first shares the top step
+    const q = await fresh(b);
+    await setPlayers(q, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await ev(q, () => show('home')); await q.click('#nightStrip button'); await q.click('#nsGo');
+    await play(q, [[3, 2, 0, 0], [2, 3, 0, 1]]);
+    await ev(q, () => openNight()); await q.click('#nightEnd'); await q.click('#nightEnd');
+    check('Tied winners share the top step', (await txt(q, '.fn-p1 .fn-nm')) === 'Ana & Ben');
+    await q.context().close();
+    // teams night: champion spotlight in the winning team's color
+    const t = await fresh(b);
+    await setPlayers(t, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await ev(t, () => show('home')); await t.click('#nightStrip button'); await t.click('#nsTeam');
+    await t.locator('#nsStyleBox .tc-name').nth(0).fill('Owls'); await t.click('#nsGo');
+    await play(t, [[3, 1, 2, 0], [5, 0, 1, 2]]);
+    await ev(t, () => openNight()); await t.click('#nightEnd'); await t.click('#nightEnd');
+    check('Ended teams night shows the champion spotlight', await t.locator('#nightFinale .fn-spot').isVisible() && /Owls/.test(await txt(t, '.fn-spot .fn-who')) && (await t.locator('.fn-stage').count()) === 0);
+    check('Spotlight uses the winning team’s color', (await ev(t, () => $('nightFinale').querySelector('.fn-spot').style.background)) === 'var(--t0-bg)');
+    check('No page errors', p.errs.length === 0 && q.errs.length === 0 && t.errs.length === 0, [...p.errs, ...q.errs, ...t.errs].join(' | '));
+    await t.context().close();
+  });
+
   /* ================= TEAMS GAME NIGHT ================= */
   section('Teams game night', async AREA => {
     try {
