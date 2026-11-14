@@ -1049,6 +1049,11 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Squares pop in a random order', await ev(p, () => new Set([...document.querySelectorAll('#home .tile-icon[data-icon="spy"] .p-sq')].map(q => q.style.getPropertyValue('--d'))).size > 3));
     check('Every icon has its moving part', await ev(p, () => ['act .p-fig','taboo .p-bubble','imp .p-eyes','tele .p-pencil','wave .p-needle','fb .p-cards','spy .p-sq'].every(x => { const [k, c] = x.split(' '); return document.querySelector(`#home .tile-icon[data-icon="${k}"] ${c}`); })));
     check('Cards near the top or bottom don’t', !m.includes('act'), m.join(','));
+    const tall = await (await b.newContext({ viewport: { width: 412, height: 915 } })).newPage();
+    await tall.goto(URL); await tall.waitForTimeout(300);
+    await tall.evaluate(() => scrollTo(0, document.body.scrollHeight)); await tall.waitForTimeout(200);
+    check('Scrolled to the bottom on a tall phone, Word spies reaches the middle and animates', await tall.evaluate(() => document.querySelector('#goSpy .tile-icon').classList.contains('go')));
+    await tall.context().close();
     const r = await fresh(b, {}); await r.emulateMedia({ reducedMotion: 'reduce' });
     await ev(r, () => { const t = document.querySelector('#goAct'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
     await r.waitForTimeout(150);
