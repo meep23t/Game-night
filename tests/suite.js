@@ -1045,12 +1045,14 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.waitForTimeout(150);
     const m = await moving();
     check('The card in the middle of the screen animates its icon', m.includes('spy'), m.join(','));
-    check('Each game has its own move', await ev(p, () => { const el = document.querySelector('#home .tile-icon.go[data-icon="spy"]'); return getComputedStyle(el).animationName === 'ic-spy'; }));
+    check('Only the drawing moves (Word spies squares pop), not the white tile', await ev(p, () => { const el = document.querySelector('#home .tile-icon.go[data-icon="spy"]'); return getComputedStyle(el).animationName === 'none' && [...el.querySelectorAll('.p-sq')].every(q => getComputedStyle(q).animationName === 'ic-sq'); }));
+    check('Squares pop in a random order', await ev(p, () => new Set([...document.querySelectorAll('#home .tile-icon[data-icon="spy"] .p-sq')].map(q => q.style.getPropertyValue('--d'))).size > 3));
+    check('Every icon has its moving part', await ev(p, () => ['act .p-fig','taboo .p-bubble','imp .p-eyes','tele .p-pencil','wave .p-needle','fb .p-cards','spy .p-sq'].every(x => { const [k, c] = x.split(' '); return document.querySelector(`#home .tile-icon[data-icon="${k}"] ${c}`); })));
     check('Cards near the top or bottom don’t', !m.includes('act'), m.join(','));
     const r = await fresh(b, {}); await r.emulateMedia({ reducedMotion: 'reduce' });
     await ev(r, () => { const t = document.querySelector('#goAct'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
     await r.waitForTimeout(150);
-    check('No animation with Reduce motion on', await ev(r, () => [...document.querySelectorAll('#home .tile-icon')].every(e => getComputedStyle(e).animationName === 'none')));
+    check('No animation with Reduce motion on', await ev(r, () => [...document.querySelectorAll('#home .tile-icon, #home .tile-icon *')].every(e => getComputedStyle(e).animationName === 'none')));
     check('No page errors', p.errs.length === 0 && r.errs.length === 0, [...p.errs, ...r.errs].join(' | '));
     await p.context().close(); await r.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
