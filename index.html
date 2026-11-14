@@ -1182,10 +1182,36 @@ const LEVEL_HINTS = {
   2: "Trickier words for older kids and mixed groups. 4 forbidden words per card.",
   3: "Closest to the real game. 5 forbidden words per card."
 };
-const INTROS = {
-  act: ["Act it out", "Charades against the clock. Every card has its own timer. When it runs out, the next card comes up whether you’re ready or not."],
-  taboo: ["Describe it", "Get your group to guess the word without saying it or any of the forbidden words. One timer covers your whole turn."]
+/* ---------- The games: one entry each ----------
+   name/intro: setup screen header · tile: homepage card id · color: icon background
+   players: [min, max] · teams: "choice" (Individuals or Teams), "auto" (teams with 4+, otherwise co-op/solo), "none"
+   saves: screens a game in progress is saved on (each needs a RESUME entry) · ends: screens where the game is over
+   (Word bowl's final scores reuse its turn screen, handled in show()). Each game also needs ICON[key] and SETTINGS[key];
+   the tests check every entry is complete. */
+const GAMES = {
+  act: { name:"Act it out", tile:"goAct", color:"#FFC83D", players:[2, 12], teams:"choice",
+    saves:["pass", "summary"], ends:["final"],
+    intro:"Charades against the clock. Every card has its own timer. When it runs out, the next card comes up whether you’re ready or not." },
+  taboo: { name:"Describe it", tile:"goTaboo", color:"#F0588F", players:[2, 12], teams:"choice",
+    saves:["pass", "summary"], ends:["final"],
+    intro:"Get your group to guess the word without saying it or any of the forbidden words. One timer covers your whole turn." },
+  fb: { name:"Word bowl", tile:"goFb", color:"#C9A7FF", players:[2, 12], teams:"auto",
+    saves:["fbsub", "fbround", "fbpass", "fbturn"], ends:[],
+    intro:"Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3." },
+  tele: { name:"Pass the doodle", tile:"goTele", color:"#A9B8FF", players:[3, 12], teams:"none",
+    saves:["tpass", "treveal"], ends:["teleEnd"],
+    intro:"Draw it, guess it, draw the guess. Pass the phone around and watch the word change along the way." },
+  wave: { name:"In the range", tile:"goWave", color:"#FFB347", players:[2, 12], teams:"choice",
+    saves:["wpass"], ends:["wfinal"],
+    intro:"One player knows where the hidden target is. They give a clue, and the others move the dial to find it, together or as teams." },
+  imp: { name:"Imposter", tile:"goImp", color:"#8FE3C0", players:[3, 12], teams:"none",
+    saves:["reveal", "clues", "vote"], ends:["impResult"],
+    intro:"Everyone gets the same secret word except the imposter. Give clues, find the faker, and don’t give the word away." },
+  spy: { name:"Word spies", tile:"goSpy", color:"#8CD3E6", players:[2, 12], teams:"auto",
+    saves:["spyround", "spyboard"], ends:["spyend"],
+    intro:"Spymasters give one-word clues to help their team find their words, and avoid the trap! Two teams with 4 or more players, co-op with 2–3." }
 };
+const INTROS = Object.fromEntries(Object.entries(GAMES).map(([k, g]) => [k, [g.name, g.intro]]));
 
 const KEY = "actitout-v1";
 const S = { players:["Player 1","Player 2"], packs:["Everyday actions","School life","Animals"], easy:20, hard:30, perTurn:4, rounds:3, sound:true, custom:"", level:1, turnSec:60 };
@@ -1221,8 +1247,8 @@ function stopTimer(){ T.locked = true; T.paused = false; cancelAnimationFrame(T.
 // The game is saved at safe points (between turns, boards, voting...) and whenever the phone locks or
 // switches apps. Reopening offers to continue from there; a turn that was cut off starts over.
 const GAME_KEY = "gamenight-inprogress-v1";
-const CHECKPOINT = new Set(["pass", "summary", "reveal", "clues", "vote", "tpass", "treveal", "wpass", "fbsub", "fbround", "fbpass", "fbturn", "spyround", "spyboard"]);
-const GAME_OVER = new Set(["final", "impResult", "teleEnd", "wfinal", "spyend"]);
+const CHECKPOINT = new Set(Object.values(GAMES).flatMap(g => g.saves));
+const GAME_OVER = new Set(Object.values(GAMES).flatMap(g => g.ends));
 const RESUME = {
   pass: () => toPass(),
   summary: () => $("nextTurn").onclick(),          // that turn's points are in; go on to the next turn
@@ -1288,8 +1314,9 @@ function show(id){
   resetRestart(); window.scrollTo(0,0);
 }
 const MAX_PLAYERS = 12;
-const PLAYER_RANGE = { act:[2, 12], taboo:[2, 12], fb:[2, 12], tele:[3, 12], wave:[2, 12], imp:[3, 12], spy:[2, 12] };
-const TILE_MODE = { goAct:"act", goTaboo:"taboo", goFb:"fb", goTele:"tele", goWave:"wave", goImp:"imp", goSpy:"spy" };
+const PLAYER_RANGE = Object.fromEntries(Object.entries(GAMES).map(([k, g]) => [k, g.players]));
+const TILE_MODE = Object.fromEntries(Object.entries(GAMES).map(([k, g]) => [g.tile, k]));
+Object.entries(TILE_MODE).forEach(([id, m]) => { $(id).onclick = () => openSetup(m); });
 Object.entries(TILE_MODE).forEach(([id, m]) => {
   const [lo, hi] = PLAYER_RANGE[m], c = document.createElement("span");
   c.className = "ppl"; c.textContent = `👥 ${lo}–${hi}`; c.setAttribute("aria-label", `${lo} to ${hi} players`);
@@ -1357,8 +1384,6 @@ function openSetup(mode){
   show("setup");
   requestAnimationFrame(() => playIcon($("setupIcon")));   // the game's icon does its move once as the screen opens
 }
-$("goAct").onclick = () => openSetup("act");
-$("goTaboo").onclick = () => openSetup("taboo");
 $("toHome").onclick = () => show("home");
 
 /* ---------- Setup ---------- */
@@ -1430,7 +1455,7 @@ function teamCheck(){
   return "";
 }
 // Play as Individuals or Teams (Act it out, Describe it, In the range).
-const TEAM_CAPABLE = ["act", "taboo", "wave"];
+const TEAM_CAPABLE = Object.keys(GAMES).filter(k => GAMES[k].teams === "choice");
 if (!S.playAs || typeof S.playAs !== "object") S.playAs = {};
 function teamPlay(mode){
   if (!TEAM_CAPABLE.includes(mode)) return false;
@@ -1465,10 +1490,10 @@ $("teamShuffle").onclick = () => {
 };
 function renderTeams(){
   const blk = $("teamsBlock");
-  const coop = (G.mode === "spy" || G.mode === "fb") && S.players.length < 4;
+  const coop = GAMES[G.mode].teams === "auto" && S.players.length < 4;
   $("spyCoopNote").hidden = !(coop && G.mode === "spy");
   $("fbCoopNote").hidden = !(coop && G.mode === "fb");
-  const teamsOn = ((G.mode === "fb" || G.mode === "spy") && !coop) || teamPlay(G.mode);
+  const teamsOn = (GAMES[G.mode].teams === "auto" && !coop) || teamPlay(G.mode);
   blk.hidden = !teamsOn;
   applyTeamStyle();
   if (!teamsOn) return;
@@ -1795,7 +1820,6 @@ function tabooEnd(){
 
 /* ---------- Imposter ---------- */
 const IMP_WORDS = GN_WORDS.imposter;   // words/imposter.js (built from words/source/, see words/README.md)
-INTROS.imp = ["Imposter", "Everyone gets the same secret word except the imposter. Give clues, find the faker, and don’t give the word away."];
 for (const [k,v] of Object.entries({ impPacks:["Food","Animals","Places"], imposters:1, impHint:true, impFirst:true, discSec:120, discOn:true, impRandOrder:false })) if (S[k] === undefined) S[k] = v;
 SETTINGS.imp = [
   { key:"imposters", label:"Imposters", hint:"Picked at random each game", min:1, max:3, step:1 },
@@ -1818,7 +1842,6 @@ function renderImpPacks(){
   });
 }
 renderImpPacks();
-$("goImp").onclick = () => openSetup("imp");
 
 function impCheck(){
   const n = S.players.length;
@@ -2018,7 +2041,6 @@ const TELE_HINTS = {
   2: "Scenes and trickier things to draw.",
   3: "Phrases and sayings. Tough to draw, funny to guess."
 };
-INTROS.tele = ["Pass the doodle", "Draw it, guess it, draw the guess. Pass the phone around and watch the word change along the way."];
 for (const [k,v] of Object.entries({ teleLevel:1, teleBooks:1, teleTimerOn:true, teleSec:60, teleScoring:true })) if (S[k] === undefined) S[k] = v;
 SETTINGS.tele = [
   { key:"teleBooks", label:"Sketchbooks", hint:"Each starts with a different player. More books, longer game", min:1, max:12, step:1 },
@@ -2032,7 +2054,6 @@ function renderTeleLevel(){
 }
 document.querySelectorAll("#teleLevels button").forEach(b => b.onclick = () => { S.teleLevel = +b.dataset.tlevel; save(); renderTeleLevel(); });
 renderTeleLevel();
-$("goTele").onclick = () => openSetup("tele");
 
 const pad = (() => {
   const c = $("pad"), x = c.getContext("2d");
@@ -2254,7 +2275,6 @@ const W_HINTS = {
   2: "Trickier scales like boring job to exciting job.",
   3: "Opinion scales like overrated to underrated. Expect debates!"
 };
-INTROS.wave = ["In the range", "One player knows where the hidden target is. They give a clue, and the others move the dial to find it, together or as teams."];
 for (const [k,v] of Object.entries({ wLevel:1, wRounds:2 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.wave = [
   { key:"wRounds", label:"Rounds", hint:"Everyone gives one clue per round", min:1, max:5, step:1 }
@@ -2265,7 +2285,6 @@ function renderWLevel(){
 }
 document.querySelectorAll("#wLevels button").forEach(b => b.onclick = () => { S.wLevel = +b.dataset.wlevel; save(); renderWLevel(); });
 renderWLevel();
-$("goWave").onclick = () => openSetup("wave");
 
 function dialSVG(o){
   const cx = 160, cy = 160, R = 150;
@@ -2658,14 +2677,12 @@ function teamCards(box, st, opt){
   const pr = pal.getBoundingClientRect();
   if (pr.bottom > innerHeight) scrollBy({ top: pr.bottom - innerHeight + 16, behavior: "smooth" });
 }
-INTROS.fb = ["Word bowl", "Everyone fills the bowl with words. Then race through the same words three times: describe them, use one word, then act them out. Teams with 4 or more players, everyone for themselves with 2–3."];
 for (const [k,v] of Object.entries({ fbWrite:true, fbPer:4, fbSec:45 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.fb = [
   { type:"toggle", key:"fbWrite", label:"Players write the words", hint:"Off: the game fills the bowl for you" },
   { key:"fbPer", label:"Words per player", hint:"How many words or phrases each person adds", min:2, max:8, step:1 },
   { key:"fbSec", label:"Turn timer", hint:"For each player’s turn", min:30, max:120, step:15, unit:"s" }
 ];
-$("goFb").onclick = () => openSetup("fb");
 
 function popFxEl(p, text, color, hold){ p.textContent = text; p.className = "pop " + color; void p.offsetWidth; p.classList.add(hold ? "pop-hold" : "pop-go"); }
 function fbStart(){
@@ -2861,7 +2878,6 @@ function spyPool(level){
     : SPY_L3;
   return [...new Set(src.filter(single).map(w => w.toLowerCase()))];
 }
-INTROS.spy = ["Word spies", "Spymasters give one-word clues to help their team find their words, and avoid the trap! Two teams with 4 or more players, co-op with 2–3."];
 for (const [k,v] of Object.entries({ spyLevel:1, spyBig:false, spyTrap:true, spyTimerOn:false, spySec:120 })) if (S[k] === undefined) S[k] = v;
 SETTINGS.spy = [
   { type:"toggle", key:"spyBig", label:"Big board", hint:"25 words instead of 16" },
@@ -2875,7 +2891,6 @@ function renderSpyLevel(){
 }
 document.querySelectorAll("#spyLevels button").forEach(b => b.onclick = () => { S.spyLevel = +b.dataset.slevel; save(); renderSpyLevel(); });
 renderSpyLevel();
-$("goSpy").onclick = () => openSetup("spy");
 
 function spyStart(){
   // 2–3 players: co-op. Everyone is Team Blue, pink words are the clock.
@@ -3102,7 +3117,7 @@ const ICON = {
   spy: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><g stroke="#1E1B3A" stroke-width="2.5"><rect class="p-sq" x="15" y="15" width="19" height="19" rx="4" fill="#BFD4FF"/><rect class="p-sq" x="38.5" y="15" width="19" height="19" rx="4" fill="#fff"/><rect class="p-sq" x="62" y="15" width="19" height="19" rx="4" fill="#FFC9C2"/><rect class="p-sq" x="15" y="38.5" width="19" height="19" rx="4" fill="#fff"/><rect class="p-sq" x="38.5" y="38.5" width="19" height="19" rx="4" fill="#1E1B3A"/><rect class="p-sq" x="62" y="38.5" width="19" height="19" rx="4" fill="#BFD4FF"/><rect class="p-sq" x="15" y="62" width="19" height="19" rx="4" fill="#FFC9C2"/><rect class="p-sq" x="38.5" y="62" width="19" height="19" rx="4" fill="#fff"/><rect class="p-sq" x="62" y="62" width="19" height="19" rx="4" fill="#BFD4FF"/></g>`),
   wave: ICON_WRAP(`<rect x="0" y="0" width="96" height="96" rx="22" fill="#FFFFFF" stroke="#1E1B3A" stroke-width="3"/><path d="M14 66 A34 34 0 0 1 82 66 Z" fill="#fff"/><path d="M48 66 L59.6 34 A34 34 0 0 1 69.9 40 Z" fill="#F0588F"/><path d="M14 66 A34 34 0 0 1 82 66 Z" fill="none" stroke="#1E1B3A" stroke-width="3"/><line class="p-needle" x1="48" y1="66" x2="40.7" y2="38.9" stroke="#1E1B3A" stroke-width="4"/><circle cx="48" cy="66" r="5" fill="#1E1B3A"/><rect x="14" y="76" width="24" height="10" rx="5" fill="#BFD4FF" stroke="#1E1B3A" stroke-width="2"/><rect x="58" y="76" width="24" height="10" rx="5" fill="#FFC9C2" stroke="#1E1B3A" stroke-width="2"/>`)
 };
-const ICON_BG = { act:"#FFC83D", taboo:"#F0588F", imp:"#8FE3C0", tele:"#A9B8FF", wave:"#FFB347", fb:"#C9A7FF", spy:"#8CD3E6" };
+const ICON_BG = Object.fromEntries(Object.entries(GAMES).map(([k, g]) => [k, g.color]));
 document.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = ICON[el.dataset.icon]);
 // Play an icon's little animation once (the moving part only; CSS skips it with Reduce motion).
 function playIcon(el){

@@ -95,6 +95,31 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     else check('Word files match the spreadsheets', wb.status === 0, (wb.stdout || wb.stderr).trim());
   });
 
+  /* ================= GAME LIST: every game's entry is complete ================= */
+  section('Game list', async AREA => {
+    const p = await fresh(b);
+    const gaps = await ev(p, () => {
+      const out = [];
+      for (const [k, g] of Object.entries(GAMES)) {
+        for (const f of ['name', 'intro', 'tile', 'color', 'players', 'teams', 'saves', 'ends']) if (g[f] == null) out.push(`${k}: no ${f}`);
+        if (!document.getElementById(g.tile)) out.push(`${k}: homepage card #${g.tile} missing`);
+        if (!ICON[k]) out.push(`${k}: no ICON`);
+        if (!SETTINGS[k]) out.push(`${k}: no SETTINGS`);
+        if (!['choice', 'auto', 'none'].includes(g.teams)) out.push(`${k}: teams must be choice, auto or none`);
+        if (!(g.players[0] >= 2 && g.players[1] <= 12 && g.players[0] <= g.players[1])) out.push(`${k}: odd player range`);
+        for (const sc of g.saves) { if (!RESUME[sc]) out.push(`${k}: save screen ${sc} has no RESUME`); if (!document.getElementById(sc)) out.push(`${k}: no screen #${sc}`); }
+        for (const sc of g.ends) if (!document.getElementById(sc)) out.push(`${k}: no screen #${sc}`);
+      }
+      for (const sc of Object.keys(RESUME)) if (!CHECKPOINT.has(sc)) out.push(`RESUME.${sc} isn't any game's save screen`);
+      return out;
+    });
+    check('Every game has a complete entry (card, icon, rules, screens, save points)', !gaps.length, gaps.join('; '));
+    check('Seven games on the homepage, in list order', (await ev(p, () => JSON.stringify([...document.querySelectorAll('#home .game-tile')].map(t => TILE_MODE[t.id])) === JSON.stringify(Object.keys(GAMES)))));
+    check('Lists built from the game entries match', await ev(p, () => TEAM_CAPABLE.join() === 'act,taboo,wave' && GAME_OVER.size === 5 && CHECKPOINT.size === 14 && PLAYER_RANGE.imp[0] === 3 && INTROS.spy[0] === 'Word spies'));
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= ACT IT OUT ================= */
   section('Act it out', async AREA => {
     try {
