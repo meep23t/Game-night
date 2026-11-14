@@ -64,16 +64,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-vi
 .night-start:active{transform:scale(.98)}
 .night-live:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--shadow)}
 .night-start .trophy,.night-live .trophy{font-size:28px;line-height:1;flex:none;display:inline-block;position:relative}
-/* Trophy shines and pops when you scroll back to the top of the homepage. */
-.trophy::before,.trophy::after{content:"✦";position:absolute;color:#FFE27A;font-size:13px;opacity:0;pointer-events:none;text-shadow:0 0 6px #FFD23F}
-.trophy::before{top:-8px;right:-8px} .trophy::after{bottom:-4px;left:-9px;font-size:10px}
-@keyframes tr-pop{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.4) rotate(-10deg)}50%{transform:scale(.92) rotate(6deg)}70%{transform:scale(1.12) rotate(-3deg)}}
-@keyframes tr-shine{0%,100%{filter:none}30%,55%{filter:brightness(1.35) drop-shadow(0 0 8px #FFD23F)}}
-@keyframes tr-spark{0%,100%{opacity:0;transform:scale(.3) rotate(0)}35%{opacity:1;transform:scale(1.3) rotate(90deg)}70%{opacity:0;transform:scale(.6) rotate(180deg)}}
+/* Trophy: a soft shine sweeps left → right → left across it while it pops (page open, and back at the top).
+   The shine is a copy of the same emoji drawn on top with transparent ink, painted only by a moving
+   highlight (background-clip:text), so it lines up with the trophy exactly. */
+.trophy::after{content:attr(data-e);position:absolute;inset:0;pointer-events:none;opacity:0;color:transparent;-webkit-text-fill-color:transparent;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.75) 50%,transparent 58%) 100% 0/300% 100% no-repeat;
+  -webkit-background-clip:text;background-clip:text}
+@keyframes tr-pop{0%,100%{transform:scale(1)}30%{transform:scale(1.22)}55%{transform:scale(.96)}75%{transform:scale(1.04)}}
+@keyframes tr-sweep{0%{background-position:100% 0;opacity:1}45%{background-position:0 0;opacity:1}90%{background-position:100% 0;opacity:1}100%{background-position:100% 0;opacity:0}}
 @media (prefers-reduced-motion:no-preference){
-  .trophy.tr-go{animation:tr-pop .9s ease-out,tr-shine 1.1s ease-in-out}
-  .trophy.tr-go::before{animation:tr-spark .9s ease-out .15s}
-  .trophy.tr-go::after{animation:tr-spark .9s ease-out .35s}
+  .trophy.tr-go{animation:tr-pop .8s ease-out}
+  .trophy.tr-go::after{animation:tr-sweep 1.4s ease-in-out}
 }
 .night-start b,.night-live b{display:block;font-size:19px;font-weight:800}
 .night-start small,.night-live small{display:block;font-size:15px;font-weight:500;opacity:.85}
@@ -3110,7 +3111,7 @@ function playTrophy(){
   const t = document.querySelector("#nightStrip .trophy"), now = Date.now();
   if (!t || G.screen !== "home" || now - (G.trophyAt || 0) < 1500) return;
   G.trophyAt = now; t.classList.remove("tr-go"); void t.offsetWidth; t.classList.add("tr-go");
-  clearTimeout(t._goT); t._goT = setTimeout(() => t.classList.remove("tr-go"), 1300);
+  clearTimeout(t._goT); t._goT = setTimeout(() => t.classList.remove("tr-go"), 1500);
 }
 { let away = false;
   addEventListener("scroll", () => {
@@ -3283,12 +3284,12 @@ function renderNightStrip(){
   }
   if (nightOn()) {
     const b = document.createElement("button"); b.className = "night-live";
-    b.innerHTML = `<span class="trophy" aria-hidden="true">🏆</span><span><b>Game night</b><small></small></span><span class="arrow">View →</span>`;
+    b.innerHTML = `<span class="trophy" data-e="🏆" aria-hidden="true">🏆</span><span><b>Game night</b><small></small></span><span class="arrow">View →</span>`;
     b.querySelector("small").textContent = nightLeaderText();
     b.onclick = openNight; el.appendChild(b); return;
   }
   const b = document.createElement("button"); b.className = "night-start";
-  b.innerHTML = `<span class="trophy" aria-hidden="true">🏆</span><span><b>Start game night</b><small>Keep score across every game you play tonight</small></span><span class="arrow">→</span>`;
+  b.innerHTML = `<span class="trophy" data-e="🏆" aria-hidden="true">🏆</span><span><b>Start game night</b><small>Keep score across every game you play tonight</small></span><span class="arrow">→</span>`;
   b.onclick = openNightStart; el.appendChild(b);
   if (S.night && S.night.ended && S.night.log.length) {
     const l = document.createElement("button"); l.className = "night-link"; l.textContent = "See last game night’s results";
@@ -3451,6 +3452,7 @@ G.nightStale = nightOn() && Date.now() - S.night.last > NIGHT_STALE_MS;
 
 /* ---------- Init ---------- */
 G.resume = gameLoad();
+setTimeout(playTrophy, 450);   // the trophy greets you when the app opens
 renderPlayers(); renderPacks(); renderLevel();
 $("custom").value = S.custom;
 $("soundToggle").setAttribute("aria-checked", S.sound);
