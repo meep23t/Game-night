@@ -154,7 +154,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       check('Final screen after the last turn', (await screen(p)) === 'final');
       check('Winner is Ben (2 vs 1)', (await txt(p, '#winner')).includes('Ben'), await txt(p, '#winner'));
       const missed = await p.locator('#review span').count();
-      check('Missed words listed to talk through (2)', missed === 2, missed);
+      check('Missed words listed (2)', missed === 2, missed);
       await noHScroll(p, 'Act it out results');
       await p.click('#playAgain');
       check('Play again resets scores and restarts', (await screen(p)) === 'pass' && (await ev(p, () => G.scores.join(','))) === '0,0');
