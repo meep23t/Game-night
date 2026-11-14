@@ -1054,6 +1054,10 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Opening a game plays its icon once at the top of the setup screen', await ev(p, () => document.getElementById('setupIcon').classList.contains('ic-go') && getComputedStyle(document.querySelector('#setupIcon .p-needle')).animationName === 'ic-swipe'));
     await p.clock.runFor(1600);
     check('…and then it stops', await ev(p, () => !document.getElementById('setupIcon').classList.contains('ic-go')));
+    const o = await fresh(b); await o.clock.runFor(600);
+    check('The trophy shines and pops when the app opens', await ev(o, () => { const t = document.querySelector('#nightStrip .trophy'); return t.classList.contains('tr-go') && getComputedStyle(t, '::after').animationName === 'tr-sweep'; }));
+    check('The shine uses the trophy’s own shape (no sparkles)', await ev(o, () => { const t = document.querySelector('#nightStrip .trophy'); return t.dataset.e === '🏆' && getComputedStyle(t, '::before').content === 'none'; }));
+    await o.context().close();
     await ev(p, () => show('home'));
     await ev(p, () => scrollTo(0, 800)); await p.waitForTimeout(80);
     check('Trophy is still while scrolled down', await ev(p, () => !document.querySelector('#nightStrip .trophy').classList.contains('tr-go')));
