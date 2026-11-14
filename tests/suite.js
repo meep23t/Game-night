@@ -987,6 +987,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await play(t, [[3, 1, 2, 0], [5, 0, 1, 2]]);
     await ev(t, () => openNight()); await t.click('#nightEnd'); await t.click('#nightEnd');
     check('Ended teams night shows the champion spotlight', await t.locator('#nightFinale .fn-spot').isVisible() && /Owls/.test(await txt(t, '.fn-spot .fn-who')) && (await t.locator('.fn-stage').count()) === 0);
+    check('No duplicate details: no Winner pill and no points on the spotlight', (await t.locator('#nightTeams .lead').count()) === 0 && !/point/i.test(await txt(t, '.fn-spot')));
     check('Spotlight uses the winning team’s color', (await ev(t, () => $('nightFinale').querySelector('.fn-spot').style.background)) === 'var(--t0-bg)');
     check('No page errors', p.errs.length === 0 && q.errs.length === 0 && t.errs.length === 0, [...p.errs, ...q.errs, ...t.errs].join(' | '));
     await t.context().close();
