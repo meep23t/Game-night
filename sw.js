@@ -1,7 +1,8 @@
 // Offline support for Game night. Bump VERSION when precached files change.
-const VERSION = "v4";
+const VERSION = "v5";
 const CACHE = `game-night-${VERSION}`;
-const PRECACHE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-180.png", "/icons/apple-touch-icon.png"];
+const WORDS = ["act", "describe", "doodle", "range", "imposter", "spies"].map(k => `/words/${k}.js`);
+const PRECACHE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-180.png", "/icons/apple-touch-icon.png", ...WORDS];
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
 self.addEventListener("install", e => {
@@ -47,6 +48,9 @@ self.addEventListener("fetch", e => {
 
   if (req.mode === "navigate" && url.origin === location.origin) {
     e.respondWith(networkFirst(req, "/"));
+  } else if (url.origin === location.origin && url.pathname.startsWith("/words/")) {
+    // Word lists: fresh when online (so new words arrive with the page), cached copy offline.
+    e.respondWith(networkFirst(req, url.pathname));
   } else if (url.origin === location.origin || FONT_HOSTS.includes(url.hostname)) {
     e.respondWith(staleWhileRevalidate(req));
   }

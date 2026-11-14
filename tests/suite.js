@@ -1036,6 +1036,20 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
 
+  /* ================= WORD FILES ================= */
+  AREA = 'Word files';
+  try {
+    const p = await fresh(b);
+    check('All six word files load', await ev(p, () => ['act','describe','doodle','range','imposter','spies'].every(k => window.GN_WORDS && GN_WORDS[k])));
+    check('Games read their words from the files', await ev(p, () => PACKS === GN_WORDS.act && TABOO === GN_WORDS.describe && IMP_WORDS === GN_WORDS.imposter && TELE_WORDS === GN_WORDS.doodle && WAVE === GN_WORDS.range && SPY_L3 === GN_WORDS.spies));
+    check('Word counts are intact', await ev(p, () => Object.values(PACKS).flat().length + Object.values(TABOO).flat().length + Object.values(TELE_WORDS).flat().length + Object.values(WAVE).flat().length + Object.values(IMP_WORDS).flat().length + SPY_L3.length) >= 1757);
+    check('Every pack and level has words', await ev(p, () => [...Object.values(PACKS), ...Object.values(TABOO), ...Object.values(TELE_WORDS), ...Object.values(WAVE), ...Object.values(IMP_WORDS)].every(a => a.length > 0)));
+    const sw = require('fs').readFileSync(require('path').join(ROOT, 'sw.js'), 'utf8');
+    check('The offline helper saves every word file', ['act','describe','doodle','range','imposter','spies'].every(k => sw.includes('"' + k + '"')) && /words/.test(sw));
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
+
   /* ================= HOME ICON MOTION ================= */
   AREA = 'Home icons';
   try {
