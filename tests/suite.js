@@ -1050,6 +1050,10 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Squares pop in a random order', await ev(p, () => new Set([...document.querySelectorAll('#home .tile-icon[data-icon="spy"] .p-sq')].map(q => q.style.getPropertyValue('--d'))).size > 3));
     check('Every icon has its moving part', await ev(p, () => ['act .p-fig','taboo .p-bubble','imp .p-eyes','tele .p-pencil','wave .p-needle','fb .p-cards','spy .p-sq'].every(x => { const [k, c] = x.split(' '); return document.querySelector(`#home .tile-icon[data-icon="${k}"] ${c}`); })));
     check('Cards near the top or bottom don’t', !m.includes('act'), m.join(','));
+    await p.click('#goWave'); await p.waitForTimeout(100);
+    check('Opening a game plays its icon once at the top of the setup screen', await ev(p, () => document.getElementById('setupIcon').classList.contains('ic-go') && getComputedStyle(document.querySelector('#setupIcon .p-needle')).animationName === 'ic-swipe'));
+    await p.clock.runFor(1600);
+    check('…and then it stops', await ev(p, () => !document.getElementById('setupIcon').classList.contains('ic-go')));
     const tall = await (await b.newContext({ viewport: { width: 412, height: 915 } })).newPage();
     await tall.goto(URL); await tall.waitForTimeout(300);
     await tall.evaluate(() => scrollTo(0, document.body.scrollHeight)); await tall.waitForTimeout(200);
