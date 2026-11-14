@@ -1040,19 +1040,20 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   AREA = 'Home icons';
   try {
     const p = await fresh(b);
-    const moving = () => ev(p, () => [...document.querySelectorAll('#home .tile-icon.go')].map(e => e.dataset.icon));
+    const moving = () => ev(p, () => [...document.querySelectorAll('#home .tile-icon.ic-go')].map(e => e.dataset.icon));
     await ev(p, () => { const t = document.querySelector('#goSpy'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
     await p.waitForTimeout(150);
     const m = await moving();
     check('The card in the middle of the screen animates its icon', m.includes('spy'), m.join(','));
-    check('Only the drawing moves (Word spies squares pop), not the white tile', await ev(p, () => { const el = document.querySelector('#home .tile-icon.go[data-icon="spy"]'); return getComputedStyle(el).animationName === 'none' && [...el.querySelectorAll('.p-sq')].every(q => getComputedStyle(q).animationName === 'ic-sq'); }));
+    check('Only the drawing moves (Word spies squares pop), not the white tile', await ev(p, () => { const el = document.querySelector('#home .tile-icon.ic-go[data-icon="spy"]'); return getComputedStyle(el).animationName === 'none' && [...el.querySelectorAll('.p-sq')].every(q => getComputedStyle(q).animationName === 'ic-sq'); }));
+    check('The white tile doesn’t shift while its drawing animates', await ev(p, () => { const i = document.querySelector('#goSpy .tile-icon'), t = document.getElementById('goSpy'); const d = i.getBoundingClientRect().top - t.getBoundingClientRect().top; i.classList.remove('ic-go'); const d0 = i.getBoundingClientRect().top - t.getBoundingClientRect().top; i.classList.add('ic-go'); return Math.abs(d - d0) < .5; }));
     check('Squares pop in a random order', await ev(p, () => new Set([...document.querySelectorAll('#home .tile-icon[data-icon="spy"] .p-sq')].map(q => q.style.getPropertyValue('--d'))).size > 3));
     check('Every icon has its moving part', await ev(p, () => ['act .p-fig','taboo .p-bubble','imp .p-eyes','tele .p-pencil','wave .p-needle','fb .p-cards','spy .p-sq'].every(x => { const [k, c] = x.split(' '); return document.querySelector(`#home .tile-icon[data-icon="${k}"] ${c}`); })));
     check('Cards near the top or bottom don’t', !m.includes('act'), m.join(','));
     const tall = await (await b.newContext({ viewport: { width: 412, height: 915 } })).newPage();
     await tall.goto(URL); await tall.waitForTimeout(300);
     await tall.evaluate(() => scrollTo(0, document.body.scrollHeight)); await tall.waitForTimeout(200);
-    check('Scrolled to the bottom on a tall phone, Word spies reaches the middle and animates', await tall.evaluate(() => document.querySelector('#goSpy .tile-icon').classList.contains('go')));
+    check('Scrolled to the bottom on a tall phone, Word spies reaches the middle and animates', await tall.evaluate(() => document.querySelector('#goSpy .tile-icon').classList.contains('ic-go')));
     await tall.context().close();
     const r = await fresh(b, {}); await r.emulateMedia({ reducedMotion: 'reduce' });
     await ev(r, () => { const t = document.querySelector('#goAct'); scrollTo(0, t.getBoundingClientRect().top + scrollY - innerHeight / 2 + 40); });
