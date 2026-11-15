@@ -513,6 +513,31 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
   });
 
+  /* ================= RANDOMNESS: Imposter picks, Word bowl order ================= */
+  section('Randomness', async AREA => {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => { S.imposters = 1; save(); });
+    await open(p, 'imp'); await p.click('#startGame');
+    const picks = await ev(p, () => { const out = []; for (let r = 0; r < 300; r++) { impRound(); out.push([...G.imps][0]); } return out; });
+    let worst = 1, run = 1; for (let i = 1; i < picks.length; i++) { run = picks[i] === picks[i - 1] ? run + 1 : 1; worst = Math.max(worst, run); }
+    check('Imposter: nobody is picked more than twice in a row (300 rounds)', worst <= 2, `longest streak ${worst}`);
+    check('Imposter: everyone gets picked', new Set(picks).size === 3, JSON.stringify([...new Set(picks)]));
+    check('Imposter: back-to-back repeats still happen (still random)', picks.some((x, i) => i && x === picks[i - 1]));
+    const two = await ev(p, () => { S.imposters = 2; S.players = ['Ana', 'Ben', 'Cy', 'Dee']; save(); G.impHist = []; const out = []; for (let r = 0; r < 200; r++) { impRound(); out.push([...G.imps].sort().join()); } return out; });
+    const streak = name => { let w = 0, c = 0; two.forEach(x => { c = x.split(',').includes(String(name)) ? c + 1 : 0; w = Math.max(w, c); }); return w; };
+    check('Imposter with 2 imposters: no one more than twice in a row', [0, 1, 2, 3].every(i => streak(i) <= 2), [0, 1, 2, 3].map(streak).join(','));
+    // Word bowl: the bowl is reshuffled at the start of each round
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    await ev(p, () => { S.fbWrite = false; S.fbPer = 4; save(); });
+    await open(p, 'fb'); await p.click('#startGame');
+    const orders = await ev(p, () => { const o = [G.bowl.join('|')]; for (let r = 2; r <= 3; r++) { G.fbRound = r; fbRoundIntro(false); o.push(G.bowl.join('|')); } return o; });
+    check('Word bowl: same words every round', orders.every(o => o.split('|').sort().join() === orders[0].split('|').sort().join()));
+    check('Word bowl: a new random order each round', new Set(orders).size === 3);
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= WORD SPIES ================= */
   section('Word spies', async AREA => {
     try {

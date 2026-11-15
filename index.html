@@ -1887,7 +1887,14 @@ function impRound(){
   stopTimer();
   G.current = draw();
   const all = [...Array(S.players.length).keys()];
-  G.imps = new Set(shuffle(all).slice(0, S.imposters));
+  // Random every round, but nobody is the imposter more than twice in a row: whoever was an imposter in
+  // both of the last two rounds sits this one out (unless there aren't enough other players).
+  const hist = G.impHist || [], nm = i => S.players[i].trim().toLowerCase();
+  const twice = i => hist.length >= 2 && hist.slice(-2).every(r => r.includes(nm(i)));
+  let pool = all.filter(i => !twice(i));
+  if (pool.length < S.imposters) pool = all;
+  G.imps = new Set(shuffle(pool).slice(0, S.imposters));
+  G.impHist = [...hist, [...G.imps].map(nm)].slice(-5);
   const starters = all.filter(i => S.impFirst || !G.imps.has(i));
   G.first = starters[Math.floor(Math.random() * starters.length)];
   if (S.impRandOrder) {
