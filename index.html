@@ -205,6 +205,8 @@ textarea{resize:vertical;font-size:15px}
 .fn-spot .fn-lbl{font-weight:800;letter-spacing:.12em;font-size:13px;text-transform:uppercase;margin-top:6px}
 .fn-spot .fn-who{font-weight:800;font-size:40px;letter-spacing:-.02em;line-height:1.05;overflow-wrap:anywhere}
 .fn-spot .fn-team{font-size:14px;margin-top:4px;opacity:.85}
+.fn-share{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:16px 0 0;padding:13px;border:3px solid #1E1B3A;border-radius:16px;background:var(--sun);color:#1E1B3A;font-weight:800;font-size:17px;box-shadow:4px 4px 0 var(--shadow)}
+#nightShareNote:empty{display:none}
 .fn-logbtn{display:block;width:100%;margin:18px 0 0;padding:10px;border:2px solid var(--line);border-radius:12px;font-weight:700;color:var(--muted)}
 .tcard{border-radius:18px;padding:14px 16px;margin-bottom:12px;color:#1E1B3A;border:3px solid}
 .tcard.b{background:var(--t0-tint);border-color:var(--t0-edge)} .tcard.p{background:var(--t1-tint);border-color:var(--t1-edge)}
@@ -1180,6 +1182,8 @@ h3.sub{font-size:20px;margin-top:26px}
   <div id="nightFinale" hidden></div>
   <div class="tcards" id="nightTeams" hidden></div>
   <ol class="standings" id="nightStand"></ol>
+  <button id="nightShare" class="fn-share" hidden><span aria-hidden="true">📣</span> Share the results</button>
+  <p class="note center" id="nightShareNote" role="status"></p>
   <button id="nightLogToggle" class="fn-logbtn" hidden></button>
   <h3 class="sub" id="nightLogHead">Games tonight</h3>
   <ul class="result-list night-log" id="nightLog"></ul>
@@ -3535,6 +3539,7 @@ function renderNight(){
   const folded = done && played > 0 && !G.nightLogOpen;
   $("nightLog").hidden = $("nightLogHead").hidden = folded;
   $("nightLogToggle").hidden = !(done && played > 0);
+  $("nightShare").hidden = !(done && played > 0); $("nightShareNote").textContent = "";
   $("nightLogToggle").textContent = folded ? `Show the ${played} game${played === 1 ? "" : "s"} played ▾` : "Hide games ▴";
   $("nightEnd").className = done ? "primary" : "ghost"; $("nightPlay").className = done ? "ghost" : "primary";
   if (done) $("nightPlay").before($("nightEnd")); else $("nightEnd").before($("nightPlay"));
@@ -3561,6 +3566,78 @@ function removeLastBtn(e){
   };
   return b;
 }
+/* ---------- Share the final results ----------
+   Builds a results image (1080×1350, the shape social apps like) and opens the phone's share sheet with it,
+   plus a short text and the site link. Falls back to sharing just the text, or (on computers) saving the
+   image and copying the text. */
+function nightSummary(){
+  const n = S.night, played = n.log.length, games = `${played} game${played === 1 ? "" : "s"}`;
+  if (n.mode === "teams") {
+    const { t } = teamNightTotals(), tie = t[0] === t[1], k = t[0] > t[1] ? 0 : 1;
+    return { teams:true, headline: tie ? "It’s a tie!" : `${wins(TEAMS[k])} game night!`, winner: tie ? `${TEAMS[0]} & ${TEAMS[1]}` : TEAMS[k],
+      rows: [0, 1].sort((a, b) => t[b] - t[a] || a - b).map(i => ({ name:TEAMS[i], pts:t[i], color:getComputedStyle(document.documentElement).getPropertyValue(`--t${i}-bg`).trim() })), games };
+  }
+  const st = nightStandings(), top = st.filter(r => r.pts && r.pts === st[0].pts);
+  return { teams:false, headline: top.length > 1 ? "It’s a tie!" : `${top[0] ? top[0].name : "Nobody"} wins game night!`,
+    winner: top.map(r => r.name).join(" & "), rows: st.map(r => ({ name:r.name, pts:r.pts, rank:st.filter(x => x.pts > r.pts).length + 1 })), games };
+}
+function shareText(sum){
+  const list = sum.rows.slice(0, 8).map(r => `${r.name} ${r.pts}`).join(" · ");
+  return `🏆 ${sum.headline}\n${list}\n(${sum.games})\nPlay free: ${location.origin}`;
+}
+async function nightImage(sum){
+  try { await document.fonts.ready; } catch (e) {}
+  const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), F = '"Bricolage Grotesque", system-ui, sans-serif';
+  x.fillStyle = "#1E1B3A"; x.fillRect(0, 0, W, H);
+  ["#FFC83D", "#F0588F", "#8FE3C0", "#A9B8FF"].forEach((col, j) => {   // confetti
+    x.fillStyle = col;
+    for (let i = 0; i < 40; i++) {
+      const px = (i * 397 + j * 131) % W, py = (i * 211 + j * 577) % 590 + 20;
+      if (px > 170 && px < W - 170 && py > 60) continue;   // keep the middle clear for the text
+      x.beginPath(); x.arc(px, py, 6, 0, 7); x.fill();
+    }
+  });
+  x.textAlign = "center"; x.fillStyle = "#FFC83D"; x.font = `800 38px ${F}`;
+  x.fillText("GAME NIGHT RESULTS", W / 2, 110);
+  x.fillStyle = "#A8A2CE"; x.font = `500 32px ${F}`;
+  x.fillText(`${new Date(S.night.started).toLocaleDateString(undefined, { month:"long", day:"numeric", year:"numeric" })} · ${sum.games}`, W / 2, 160);
+  x.font = `150px ${F}`; x.fillText("🏆", W / 2, 360);
+  x.fillStyle = "#FFFFFF"; x.font = `800 ${sum.winner.length > 16 ? 70 : 96}px ${F}`;
+  x.fillText(sum.winner, W / 2, 490, W - 120);
+  x.fillStyle = "#FFC83D"; x.font = `700 40px ${F}`;
+  x.fillText(sum.headline.includes("tie") ? "It’s a tie!" : sum.teams ? "Game night champions" : "Game night champion", W / 2, 550);
+  // standings card
+  const rows = sum.rows.slice(0, sum.teams ? 2 : 6), top = 620, rh = sum.teams ? 150 : 100;
+  x.fillStyle = "#F4F1FF"; roundRect(x, 80, top, W - 160, rows.length * rh + 40, 36); x.fill();
+  rows.forEach((r, i) => {
+    const y = top + 20 + i * rh + rh / 2;
+    if (sum.teams) { x.fillStyle = r.color || "#E6E1FA"; roundRect(x, 110, y - rh / 2 + 12, W - 220, rh - 24, 24); x.fill(); }
+    x.fillStyle = "#1E1B3A"; x.textAlign = "left";
+    if (!sum.teams) { x.font = `800 34px ${F}`; x.fillStyle = r.rank === 1 ? "#B58A00" : "#5E5882"; x.fillText(ordinal(r.rank), 130, y + 12); x.fillStyle = "#1E1B3A"; }
+    x.font = `800 ${sum.teams ? 54 : 46}px ${F}`; x.fillText(r.name, sum.teams ? 150 : 250, y + 16, W - 480);
+    x.textAlign = "right"; x.font = `800 ${sum.teams ? 60 : 48}px ${F}`; x.fillText(String(r.pts), W - 140, y + 18);
+    x.textAlign = "center";
+  });
+  if (!sum.teams && sum.rows.length > rows.length) { x.fillStyle = "#A8A2CE"; x.font = `500 30px ${F}`; x.fillText(`+ ${sum.rows.length - rows.length} more`, W / 2, top + rows.length * rh + 90); }
+  x.fillStyle = "#FFFFFF"; x.font = `700 36px ${F}`; x.fillText(location.host || "Game night", W / 2, H - 70);
+  return new Promise(res => c.toBlob(res, "image/png"));
+}
+function roundRect(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+$("nightShare").onclick = async () => {
+  const note = $("nightShareNote"), sum = nightSummary(), text = shareText(sum);
+  note.textContent = "";
+  const blob = await nightImage(sum);
+  const file = blob && new File([blob], "game-night-results.png", { type:"image/png" });
+  try {
+    if (file && navigator.canShare && navigator.canShare({ files:[file] })) { await navigator.share({ files:[file], title:"Game night results", text }); return; }
+    if (navigator.share) { await navigator.share({ title:"Game night results", text }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }   // they closed the share sheet
+  // No share sheet (most computers): save the image and copy the text.
+  if (blob) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "game-night-results.png"; document.body.appendChild(a); a.click(); a.remove(); }
+  let copied = false; try { await navigator.clipboard.writeText(text); copied = true; } catch (e) {}
+  note.textContent = copied ? "Image saved and results copied. Paste them anywhere!" : "Image saved. Post it anywhere!";
+};
 $("nightLogToggle").onclick = () => { G.nightLogOpen = !G.nightLogOpen; renderNight(); };
 $("nightBack").onclick = () => show("home");
 $("nightPlay").onclick = () => show("home");
