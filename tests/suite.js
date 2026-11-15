@@ -48,6 +48,7 @@ async function fresh(browser, opts = {}) {
   await p.goto(URL);
   await p.evaluate(() => { localStorage.clear(); });
   await p.reload();
+  await p.evaluate(() => { G.fixedStart = true; });   // tests that check exact turn orders start with player 1
   return p;
 }
 const ev = (p, f, a) => p.evaluate(f, a);
@@ -532,6 +533,21 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await ev(p, () => { S.fbWrite = false; S.fbPer = 4; save(); });
     await open(p, 'fb'); await p.click('#startGame');
     const orders = await ev(p, () => { const o = [G.bowl.join('|')]; for (let r = 2; r <= 3; r++) { G.fbRound = r; fbRoundIntro(false); o.push(G.bowl.join('|')); } return o; });
+    // who goes first is random each game, then turns follow seating order
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    const firsts = await ev(p, () => { G.fixedStart = false; G.mode = 'act'; G.pool = PACKS['Animals']; const f = []; for (let r = 0; r < 60; r++) { newGame(); f.push(G.seq.join('')); } return f; });
+    check('Act it out / Describe it: the first player is random each game', new Set(firsts.map(x => x[0])).size === 3, JSON.stringify([...new Set(firsts)]));
+    check('…and turns still go around the circle in seating order', firsts.every(x => ['012', '120', '201'].includes(x)), JSON.stringify([...new Set(firsts)]));
+    const waveF = await ev(p, () => { const f = new Set(); for (let r = 0; r < 60; r++) { waveStart(); f.add(G.wOrder[0]); } return f.size; });
+    check('In the range: the first clue giver is random each game', waveF === 3, waveF);
+    const teleF = await ev(p, () => { S.teleBooks = 1; const f = new Set(); for (let r = 0; r < 60; r++) { teleStart(); f.add(G.seq[0].p); } return f.size; });
+    check('Pass the doodle: the first drawer is random each game', teleF === 3, teleF);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
+    const teamF = await ev(p, () => { G.mode = 'act'; G.pool = PACKS['Animals']; S.playAs = { ...S.playAs, act:true }; const f = new Set(), t = new Set(); for (let r = 0; r < 80; r++) { newGame(); f.add(G.seq[0]); t.add(teamOfPlayer(G.seq[0])); } return [f.size, t.size]; });
+    check('Teams: the first team and first player are random', teamF[0] === 4 && teamF[1] === 2, JSON.stringify(teamF));
+    const fbF = await ev(p, () => { S.fbWrite = false; S.playAs = { ...S.playAs, act:false }; const f = new Set(); for (let r = 0; r < 80; r++) { fbStart(); f.add(fbCurrent()); } return f.size; });
+    check('Word bowl: the first describer is random each game', fbF === 4, fbF);
+    await ev(p, () => { G.fixedStart = true; });
     check('Word bowl: same words every round', orders.every(o => o.split('|').sort().join() === orders[0].split('|').sort().join()));
     check('Word bowl: a new random order each round', new Set(orders).size === 3);
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));

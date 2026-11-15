@@ -1488,12 +1488,21 @@ function teamPlay(mode){
   return teamsNight() ? S.players.length >= 4 : !!S.playAs[mode];   // teams night: always teams when there are enough players
 }
 function teamOfPlayer(i){ return G.teams && G.teams[1].includes(i) ? 1 : 0; }
-// One round of turns. Individuals: seat order. Teams: Blue, Pink, Blue, Pink… with equal turns per team;
-// the smaller team's players take extra turns, starting where they left off.
+// Who goes first is random for each new game; turns then go around in seating order from there.
+// Teams: the first team and each team's first player are random too. (G.fixedStart turns this off for tests.)
+const rnd = n => G.fixedStart || n < 2 ? 0 : Math.floor(Math.random() * n);
+function randomStart(teams){
+  G.startAt = rnd(S.players.length);
+  G.startTeam = teams ? rnd(2) : 0;
+  G.startOff = teams ? [rnd(teams[0].length), rnd(teams[1].length)] : [0, 0];
+}
+// One round of turns. Individuals: seat order from the random first player. Teams: alternating, with equal
+// turns per team; the smaller team's players take extra turns, starting where they left off.
 function turnSeq(round, teams){
-  if (!teams) return S.players.map((_, i) => i);
-  const m = Math.max(teams[0].length, teams[1].length), seq = [];
-  for (let j = 0; j < m; j++) for (const k of [0, 1]) { const t = teams[k]; seq.push(t[(j + (round - 1) * m) % t.length]); }
+  const n = S.players.length, at = G.startAt || 0;
+  if (!teams) return S.players.map((_, i) => (i + at) % n);
+  const m = Math.max(teams[0].length, teams[1].length), seq = [], first = G.startTeam || 0, off = G.startOff || [0, 0];
+  for (let j = 0; j < m; j++) for (const k of [first, 1 - first]) { const t = teams[k]; seq.push(t[(j + off[k] + (round - 1) * m) % t.length]); }
   return seq;
 }
 function renderPlayAs(){
@@ -1678,7 +1687,7 @@ function newGame(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.scores = S.players.map(() => 0); G.deck = freshDeck(G.pool);
   G.teamOn = teamPlay(G.mode); G.teams = G.teamOn ? makeTeams() : null;
-  G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
+  randomStart(G.teams); G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
 }
 function cur(){ return G.seq[G.turn]; }
 function teamTotals(){ return [0, 1].map(k => G.teams[k].reduce((s, i) => s + G.scores[i], 0)); }
@@ -2148,7 +2157,8 @@ function teleRound(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   stopTimer();
   const n = S.players.length, k = S.teleBooks;
-  G.books = [...Array(k).keys()].map(b => { const word = draw()[0]; return { start: Math.floor(b * n / k), word, entries:[{ type:"word", text:word }] }; });
+  const at = rnd(n);   // random first drawer; sketchbooks still start spread around the circle
+  G.books = [...Array(k).keys()].map(b => { const word = draw()[0]; return { start: (Math.floor(b * n / k) + at) % n, word, entries:[{ type:"word", text:word }] }; });
   G.seq = [];
   for (let s = 0; s < n; s++) for (let b = 0; b < k; b++) G.seq.push({ b, s, p:(G.books[b].start + s) % n });
   G.pos = 0; G.teleScore = S.players.map(() => 0); G.bookPicks = []; tPass();
@@ -2355,7 +2365,7 @@ function waveStart(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
   G.pool = WAVE[S.wLevel]; G.deck = freshDeck(G.pool);
   G.teamOn = teamPlay("wave"); G.teams = G.teamOn ? makeTeams() : null;
-  G.wOrder = []; for (let r = 1; r <= S.wRounds; r++) G.wOrder.push(...turnSeq(r, G.teams));
+  randomStart(G.teams); G.wOrder = []; for (let r = 1; r <= S.wRounds; r++) G.wOrder.push(...turnSeq(r, G.teams));
   G.wTurn = 0; G.wScore = 0; G.wLog = []; G.wTotal = G.wOrder.length; G.wTeam = [0, 0];
   G.wInd = S.players.map(() => 0);
   wNewCard(); wPass();
@@ -2788,7 +2798,10 @@ function fbScores(el){
   });
 }
 function fbRoundIntro(first){
-  if (first) { G.fbRound = 1; G.teamScores = [0, 0]; G.fbPtr = [0, 0]; G.fbTeam = 0; }
+  if (first) {   // random first team and first describer on each team
+    G.fbRound = 1; G.teamScores = [0, 0];
+    G.fbPtr = [rnd(G.teams[0].length), rnd(G.teams[1].length)]; G.fbTeam = G.fbCoop ? 0 : rnd(2);
+  }
   G.bowl = shuffle(G.fbWords);
   const [nm, rule] = FB_ROUNDS[G.fbRound - 1];
   $("frNo").textContent = `Round ${G.fbRound} of 3`;
