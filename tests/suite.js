@@ -1036,6 +1036,36 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await t.context().close();
   });
 
+  /* ================= SHARE THE RESULTS ================= */
+  section('Share results', async AREA => {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => show('home')); await p.click('#nightStrip button'); await p.click('#nsGo');
+    await open(p, 'act'); await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); }); await p.click('#startGame');
+    await ev(p, () => { G.scores = [3, 1, 0]; toFinal(); });
+    await ev(p, () => openNight());
+    check('No Share button while the night is on', await p.locator('#nightShare').isHidden());
+    await p.click('#nightEnd'); await p.click('#nightEnd');
+    check('Share button on the final results', await p.locator('#nightShare').isVisible());
+    // phone: share sheet with the image + text
+    await ev(p, () => { window.__shared = null; navigator.canShare = () => true; navigator.share = async d => { window.__shared = { text:d.text, files:(d.files || []).map(f => [f.name, f.type, f.size]) }; }; });
+    await p.click('#nightShare'); await p.waitForFunction(() => window.__shared);
+    const sh = await ev(p, () => window.__shared);
+    check('Phones get the share sheet with a results image', sh.files.length === 1 && sh.files[0][1] === 'image/png' && sh.files[0][2] > 10000, JSON.stringify(sh.files));
+    check('…plus a text summary with the winner, scores and the site link', /Ana wins game night/.test(sh.text) && /Ana 3 · Ben 2 · Cy 1/.test(sh.text) && sh.text.includes(await ev(p, () => location.origin)), sh.text);
+    const dims = await ev(p, async () => { const bl = await nightImage(nightSummary()); const im = await createImageBitmap(bl); return [im.width, im.height]; });
+    check('The image is 1080 × 1350 (fits social feeds)', dims.join('x') === '1080x1350', dims.join('x'));
+    // computer without a share sheet: save the image, copy the text
+    await ev(p, () => { delete navigator.share; navigator.share = undefined; navigator.canShare = undefined; });
+    await p.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+    const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#nightShare')]);
+    check('Without a share sheet, the image downloads', dl.suggestedFilename() === 'game-night-results.png', dl.suggestedFilename());
+    await p.waitForFunction(() => $('nightShareNote').textContent);
+    check('…and a note says what happened', /Image saved/.test(await txt(p, '#nightShareNote')), await txt(p, '#nightShareNote'));
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= TEAMS GAME NIGHT ================= */
   section('Teams game night', async AREA => {
     try {
