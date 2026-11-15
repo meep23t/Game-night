@@ -195,7 +195,7 @@ textarea{resize:vertical;font-size:15px}
 .fn-pc{flex:1;min-width:0;text-align:center}
 .fn-pc .fn-nm{font-weight:800;font-size:17px;line-height:1.15;overflow-wrap:anywhere}
 .fn-pc .fn-ps{font-size:13px;opacity:.8;margin:2px 0 6px}
-.fn-blk{border-radius:12px 12px 0 0;display:grid;place-items:start center;padding-top:8px;font-weight:800;font-size:28px;color:#1E1B3A}
+.fn-blk{border-radius:12px 12px 0 0;display:grid;place-items:start center;padding-top:10px;font-weight:800;font-size:24px;color:#1E1B3A}
 .fn-p1 .fn-blk{height:120px;background:#FFC83D} .fn-p2 .fn-blk{height:86px;background:#D9D3F2} .fn-p3 .fn-blk{height:64px;background:#F3B48A}
 .fn-crown{font-size:30px;line-height:1;margin-bottom:2px}
 .fn-spot{border:3px solid #1E1B3A;border-radius:24px;box-shadow:7px 7px 0 var(--shadow);padding:22px 18px;text-align:center;position:relative;overflow:hidden;color:#1E1B3A}
@@ -3440,6 +3440,7 @@ $("nsGo").onclick = () => {
 // Leaderboard screen.
 let nightEndArm = 0;
 function openNight(){ clearTimeout(nightEndArm); nightEndArm = 0; clearTimeout(removeArm); removeArm = 0; G.nightLogOpen = false; renderNight(); show("night"); }
+function ordinal(n){ const v = n % 100; return n + (v >= 11 && v <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th"); }
 function renderNight(){
   const n = S.night, st = nightStandings(), done = n.ended;
   const played = n.log.length;
@@ -3493,7 +3494,7 @@ function renderNight(){
       c.innerHTML = `${i === 0 ? '<div class="fn-crown">🏆</div>' : ""}<div class="fn-nm"></div><div class="fn-ps"></div><div class="fn-blk"></div>`;
       c.querySelector(".fn-nm").textContent = g.rs.map(r => r.name).join(" & ");
       c.querySelector(".fn-ps").textContent = `${g.pts} pt${g.pts === 1 ? "" : "s"}`;
-      c.querySelector(".fn-blk").textContent = rank;
+      c.querySelector(".fn-blk").textContent = ordinal(rank);   // "1st", not "1", so it doesn't read as points
       pod.appendChild(c);
     });
     stage.appendChild(pod); fin.appendChild(stage); fin.hidden = false;

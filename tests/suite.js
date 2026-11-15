@@ -1006,6 +1006,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.click('#nightEnd'); await p.click('#nightEnd');
     check('Ended individuals night shows a podium', await p.locator('#nightFinale .fn-stage').isVisible());
     check('Podium order: 2nd, 1st, 3rd with the trophy on 1st', (await ev(p, () => [...document.querySelectorAll('.fn-pc')].map(c => c.querySelector('.fn-nm').textContent).join(','))) === 'Ben,Ana,Dee' && (await p.locator('.fn-p1 .fn-crown').count()) === 1);
+    check('Podium steps say 1st / 2nd / 3rd, not bare numbers', (await ev(p, () => [...document.querySelectorAll('.fn-blk')].map(x => x.textContent).join(','))) === '2nd,1st,3rd');
     check('Everyone else is listed below the podium', (await ev(p, () => [...document.querySelectorAll('#nightStand li .nm span')].map(x => x.textContent).join(','))) === 'Cy,Eli');
     check('Games list folds away with a button to show it', await p.locator('#nightLog').isHidden() && /Show the 3 games/.test(await txt(p, '#nightLogToggle')));
     await p.click('#nightLogToggle');
@@ -1019,6 +1020,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await play(q, [[3, 2, 0, 0], [2, 3, 0, 1]]);
     await ev(q, () => openNight()); await q.click('#nightEnd'); await q.click('#nightEnd');
     check('Tied winners share the top step', (await txt(q, '.fn-p1 .fn-nm')) === 'Ana & Ben');
+    check('After a tie for 1st, the next step says 3rd', (await txt(q, '.fn-p2 .fn-blk')) === '3rd');
     await q.context().close();
     // teams night: champion spotlight in the winning team's color
     const t = await fresh(b);
