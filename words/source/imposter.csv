@@ -339,3 +339,481 @@ Bible,the Last Supper,approved,
 Bible,the empty tomb,approved,
 Bible,the lions’ den,approved,
 Bible,the Tower of Babel,approved,
+Food,apple pie,approved,batch 1
+Food,bacon,approved,batch 1
+Food,baked potato,approved,batch 1
+Food,barbecue ribs,approved,batch 1
+Food,biscuits,approved,batch 1
+Food,blueberry muffin,approved,batch 1
+Food,broccoli,approved,batch 1
+Food,brownies,approved,batch 1
+Food,burrito bowl,approved,batch 1
+Food,caesar salad,approved,batch 1
+Food,carrots,approved,batch 1
+Food,cheesecake,approved,batch 1
+Food,chicken nuggets,approved,batch 1
+Food,chicken soup,approved,batch 1
+Food,chili,approved,batch 1
+Food,chocolate chip cookies,approved,batch 1
+Food,cinnamon roll,approved,batch 1
+Food,clam chowder,approved,batch 1
+Food,coleslaw,approved,batch 1
+Food,cotton candy,approved,batch 1
+Food,croissant,approved,batch 1
+Food,cupcake,approved,batch 1
+Food,deviled eggs,approved,batch 1
+Food,egg rolls,approved,batch 1
+Food,enchiladas,approved,batch 1
+Food,fajitas,approved,batch 1
+Food,fish and chips,approved,batch 1
+Food,french toast,approved,batch 1
+Food,fried rice,approved,batch 1
+Food,fruit salad,approved,batch 1
+Food,garlic bread,approved,batch 1
+Food,gingerbread,approved,batch 1
+Food,granola,approved,batch 1
+Food,grilled chicken,approved,batch 1
+Food,guacamole,approved,batch 1
+Food,gumbo,approved,batch 1
+Food,ham sandwich,approved,batch 1
+Food,hot chocolate,approved,batch 1
+Food,hummus,approved,batch 1
+Food,ice pop,approved,batch 1
+Food,jelly beans,approved,batch 1
+Food,kebabs,approved,batch 1
+Food,lemonade,approved,batch 1
+Food,lobster,approved,batch 1
+Food,mashed potatoes,approved,batch 1
+Food,meatloaf,approved,batch 1
+Food,milkshake,approved,batch 1
+Food,omelet,approved,batch 1
+Food,onion rings,approved,batch 1
+Food,orange juice,approved,batch 1
+Food,pad thai,approved,batch 1
+Food,peanut butter,approved,batch 1
+Food,pickles,approved,batch 1
+Food,pizza rolls,approved,batch 1
+Food,pot roast,approved,batch 1
+Food,potato salad,approved,batch 1
+Food,pretzels,approved,batch 1
+Food,pumpkin pie,approved,batch 1
+Food,quesadilla,approved,batch 1
+Food,ramen,approved,batch 1
+Food,s'mores,approved,batch 1
+Food,salmon,approved,batch 1
+Food,shrimp,approved,batch 1
+Food,smoothie,approved,batch 1
+Food,steak,approved,batch 1
+Food,stuffing,approved,batch 1
+Food,sweet potato,approved,batch 1
+Food,tater tots,approved,batch 1
+Food,toast,approved,batch 1
+Food,tuna sandwich,approved,batch 1
+Food,turkey,approved,batch 1
+Food,yogurt,approved,batch 1
+Animals,alligator,approved,batch 1
+Animals,ant,approved,batch 1
+Animals,bat,approved,batch 1
+Animals,beaver,approved,batch 1
+Animals,buffalo,approved,batch 1
+Animals,cheetah,approved,batch 1
+Animals,chipmunk,approved,batch 1
+Animals,crab,approved,batch 1
+Animals,donkey,approved,batch 1
+Animals,elephant seal,approved,batch 1
+Animals,gazelle,approved,batch 1
+Animals,gorilla,approved,batch 1
+Animals,hedgehog,approved,batch 1
+Animals,hummingbird,approved,batch 1
+Animals,jaguar,approved,batch 1
+Animals,leopard,approved,batch 1
+Animals,llama,approved,batch 1
+Animals,lobster,approved,batch 1
+Animals,meerkat,approved,batch 1
+Animals,moose,approved,batch 1
+Animals,mouse,approved,batch 1
+Animals,ostrich,approved,batch 1
+Animals,otter,approved,batch 1
+Animals,peacock,approved,batch 1
+Animals,pelican,approved,batch 1
+Animals,polar bear,approved,batch 1
+Animals,porcupine,approved,batch 1
+Animals,puppy,approved,batch 1
+Animals,raccoon,approved,batch 1
+Animals,rhino,approved,batch 1
+Animals,salmon,approved,batch 1
+Animals,seahorse,approved,batch 1
+Animals,seal,approved,batch 1
+Animals,skunk,approved,batch 1
+Animals,snail,approved,batch 1
+Animals,starfish,approved,batch 1
+Animals,swan,approved,batch 1
+Animals,toucan,approved,batch 1
+Animals,walrus,approved,batch 1
+Animals,wolf,approved,batch 1
+Animals,woodpecker,approved,batch 1
+Animals,worm,approved,batch 1
+Animals,yak,approved,batch 1
+Places,amusement park,approved,batch 1
+Places,apartment,approved,batch 1
+Places,art studio,approved,batch 1
+Places,barbershop,approved,batch 1
+Places,baseball field,approved,batch 1
+Places,basketball court,approved,batch 1
+Places,candy store,approved,batch 1
+Places,circus,approved,batch 1
+Places,city hall,approved,batch 1
+Places,classroom,approved,batch 1
+Places,coffee shop,approved,batch 1
+Places,courthouse,approved,batch 1
+Places,dentist office,approved,batch 1
+Places,diner,approved,batch 1
+Places,doctor's office,approved,batch 1
+Places,farmers market,approved,batch 1
+Places,garden,approved,batch 1
+Places,grocery store,approved,batch 1
+Places,haunted house,approved,batch 1
+Places,movie set,approved,batch 1
+Places,national park,approved,batch 1
+Places,office,approved,batch 1
+Places,parking lot,approved,batch 1
+Places,pet store,approved,batch 1
+Places,pharmacy,approved,batch 1
+Places,pizza place,approved,batch 1
+Places,police station,approved,batch 1
+Places,prison,approved,batch 1
+Places,rainforest,approved,batch 1
+Places,ranch,approved,batch 1
+Places,river,approved,batch 1
+Places,roller rink,approved,batch 1
+Places,school bus,approved,batch 1
+Places,ski resort,approved,batch 1
+Places,space station,approved,batch 1
+Places,subway,approved,batch 1
+Places,summer camp,approved,batch 1
+Places,toy store,approved,batch 1
+Places,train,approved,batch 1
+Places,tree house,approved,batch 1
+Places,water park,approved,batch 1
+Places,wedding,approved,batch 1
+Things at home,bed sheets,approved,batch 1
+Things at home,calendar,approved,batch 1
+Things at home,candle,approved,batch 1
+Things at home,carpet,approved,batch 1
+Things at home,ceiling fan,approved,batch 1
+Things at home,clothes hanger,approved,batch 1
+Things at home,desk lamp,approved,batch 1
+Things at home,dining table,approved,batch 1
+Things at home,doormat,approved,batch 1
+Things at home,dryer,approved,batch 1
+Things at home,dustpan,approved,batch 1
+Things at home,extension cord,approved,batch 1
+Things at home,flashlight,approved,batch 1
+Things at home,garbage can,approved,batch 1
+Things at home,hair dryer,approved,batch 1
+Things at home,hairbrush,approved,batch 1
+Things at home,ironing board,approved,batch 1
+Things at home,junk drawer,approved,batch 1
+Things at home,kettle,approved,batch 1
+Things at home,key ring,approved,batch 1
+Things at home,light switch,approved,batch 1
+Things at home,lunchbox,approved,batch 1
+Things at home,mailbox,approved,batch 1
+Things at home,measuring cup,approved,batch 1
+Things at home,mop,approved,batch 1
+Things at home,oven mitt,approved,batch 1
+Things at home,paper towels,approved,batch 1
+Things at home,photo album,approved,batch 1
+Things at home,piggy bank,approved,batch 1
+Things at home,pillowcase,approved,batch 1
+Things at home,plunger,approved,batch 1
+Things at home,power outlet,approved,batch 1
+Things at home,recliner,approved,batch 1
+Things at home,rocking chair,approved,batch 1
+Things at home,salt shaker,approved,batch 1
+Things at home,shampoo,approved,batch 1
+Things at home,smoke detector,approved,batch 1
+Things at home,soap,approved,batch 1
+Things at home,spatula,approved,batch 1
+Things at home,stairs,approved,batch 1
+Things at home,sticky notes,approved,batch 1
+Things at home,stove,approved,batch 1
+Things at home,tape,approved,batch 1
+Things at home,thermostat,approved,batch 1
+Things at home,toolbox,approved,batch 1
+Things at home,toothpaste,approved,batch 1
+Things at home,trash bag,approved,batch 1
+Things at home,vacuum cleaner,approved,batch 1
+Things at home,wall clock,approved,batch 1
+Things at home,washcloth,approved,batch 1
+Things at home,water bottle,approved,batch 1
+Things at home,welcome mat,approved,batch 1
+Things at home,window blinds,approved,batch 1
+Jobs,accountant,approved,batch 1
+Jobs,actor,approved,batch 1
+Jobs,athlete,approved,batch 1
+Jobs,banker,approved,batch 1
+Jobs,barista,approved,batch 1
+Jobs,blacksmith,approved,batch 1
+Jobs,butcher,approved,batch 1
+Jobs,comedian,approved,batch 1
+Jobs,construction worker,approved,batch 1
+Jobs,crossing guard,approved,batch 1
+Jobs,dancer,approved,batch 1
+Jobs,delivery driver,approved,batch 1
+Jobs,detective,approved,batch 1
+Jobs,DJ,approved,batch 1
+Jobs,engineer,approved,batch 1
+Jobs,fashion designer,approved,batch 1
+Jobs,florist,approved,batch 1
+Jobs,garbage collector,approved,batch 1
+Jobs,hair stylist,approved,batch 1
+Jobs,journalist,approved,batch 1
+Jobs,lumberjack,approved,batch 1
+Jobs,mayor,approved,batch 1
+Jobs,meteorologist,approved,batch 1
+Jobs,musician,approved,batch 1
+Jobs,news anchor,approved,batch 1
+Jobs,paramedic,approved,batch 1
+Jobs,programmer,approved,batch 1
+Jobs,referee,approved,batch 1
+Jobs,sailor,approved,batch 1
+Jobs,secretary,approved,batch 1
+Jobs,security guard,approved,batch 1
+Jobs,soldier,approved,batch 1
+Jobs,surgeon,approved,batch 1
+Jobs,taxi driver,approved,batch 1
+Jobs,tour guide,approved,batch 1
+Jobs,youth pastor,approved,batch 1
+Sports & games,arm wrestling,approved,batch 1
+Sports & games,bumper cars,approved,batch 1
+Sports & games,charades,approved,batch 1
+Sports & games,cornhole,approved,batch 1
+Sports & games,cricket,approved,batch 1
+Sports & games,croquet,approved,batch 1
+Sports & games,darts,approved,batch 1
+Sports & games,dominoes,approved,batch 1
+Sports & games,fencing,approved,batch 1
+Sports & games,field hockey,approved,batch 1
+Sports & games,flag football,approved,batch 1
+Sports & games,go-karts,approved,batch 1
+Sports & games,horseback riding,approved,batch 1
+Sports & games,jigsaw puzzle,approved,batch 1
+Sports & games,laser tag,approved,batch 1
+Sports & games,limbo,approved,batch 1
+Sports & games,monkey bars,approved,batch 1
+Sports & games,paintball,approved,batch 1
+Sports & games,pickleball,approved,batch 1
+Sports & games,pool,approved,batch 1
+Sports & games,red rover,approved,batch 1
+Sports & games,relay race,approved,batch 1
+Sports & games,rugby,approved,batch 1
+Sports & games,sack race,approved,batch 1
+Sports & games,scavenger hunt,approved,batch 1
+Sports & games,sledding,approved,batch 1
+Sports & games,snowboarding,approved,batch 1
+Sports & games,sudoku,approved,batch 1
+Sports & games,trampoline,approved,batch 1
+Sports & games,tug of war,approved,batch 1
+Sports & games,ultimate frisbee,approved,batch 1
+Sports & games,water polo,approved,batch 1
+Sports & games,yoga,approved,batch 1
+Bible,Aaron,approved,batch 1
+Bible,Abel,approved,batch 1
+Bible,Bathsheba,approved,batch 1
+Bible,Cain,approved,batch 1
+Bible,Deborah,approved,batch 1
+Bible,Delilah,approved,batch 1
+Bible,Eden,approved,batch 1
+Bible,Esau,approved,batch 1
+Bible,Ezekiel,approved,batch 1
+Bible,Gabriel,approved,batch 1
+Bible,Galilee,approved,batch 1
+Bible,Hannah,approved,batch 1
+Bible,Isaiah,approved,batch 1
+Bible,Ishmael,approved,batch 1
+Bible,Jeremiah,approved,batch 1
+Bible,Job,approved,batch 1
+Bible,Jordan River,approved,batch 1
+Bible,Judas,approved,batch 1
+Bible,Leah,approved,batch 1
+Bible,Lot,approved,batch 1
+Bible,Matthew,approved,batch 1
+Bible,Methuselah,approved,batch 1
+Bible,Miriam,approved,batch 1
+Bible,Nebuchadnezzar,approved,batch 1
+Bible,Pharaoh,approved,batch 1
+Bible,Pontius Pilate,approved,batch 1
+Bible,Rachel,approved,batch 1
+Bible,Rahab,approved,batch 1
+Bible,Saul,approved,batch 1
+Bible,the Ark of the Covenant,approved,batch 1
+Bible,the good Samaritan,approved,batch 1
+Bible,the parting of the Red Sea,approved,batch 1
+Bible,the prodigal son,approved,batch 1
+Bible,the wise men,approved,batch 1
+Bible,Thomas,approved,batch 1
+Bible,Timothy,approved,batch 1
+Animals,ant eater,approved,batch 1
+Animals,armadillo,approved,batch 1
+Animals,bald eagle,approved,batch 1
+Animals,beetle,approved,batch 1
+Animals,black bear,approved,batch 1
+Animals,blue jay,approved,batch 1
+Animals,bulldog,approved,batch 1
+Animals,caterpillar,approved,batch 1
+Animals,chameleon,approved,batch 1
+Animals,cobra,approved,batch 1
+Animals,cougar,approved,batch 1
+Animals,coyote,approved,batch 1
+Animals,cricket,approved,batch 1
+Animals,crow,approved,batch 1
+Animals,dragonfly,approved,batch 1
+Animals,elk,approved,batch 1
+Animals,ferret,approved,batch 1
+Animals,firefly,approved,batch 1
+Animals,gecko,approved,batch 1
+Animals,goose,approved,batch 1
+Animals,grasshopper,approved,batch 1
+Animals,guinea pig,approved,batch 1
+Animals,iguana,approved,batch 1
+Animals,kitten,approved,batch 1
+Animals,lamb,approved,batch 1
+Animals,lemur,approved,batch 1
+Animals,lizard,approved,batch 1
+Animals,manatee,approved,batch 1
+Animals,mosquito,approved,batch 1
+Animals,narwhal,approved,batch 1
+Animals,orca,approved,batch 1
+Animals,parakeet,approved,batch 1
+Animals,pony,approved,batch 1
+Animals,praying mantis,approved,batch 1
+Animals,rattlesnake,approved,batch 1
+Animals,reindeer,approved,batch 1
+Animals,robin,approved,batch 1
+Animals,rooster,approved,batch 1
+Animals,scorpion,approved,batch 1
+Animals,stingray,approved,batch 1
+Animals,tarantula,approved,batch 1
+Animals,tortoise,approved,batch 1
+Animals,turkey,approved,batch 1
+Places,barn,approved,batch 1
+Places,bus station,approved,batch 1
+Places,carnival,approved,batch 1
+Places,construction site,approved,batch 1
+Places,cruise ship,approved,batch 1
+Places,dock,approved,batch 1
+Places,ice cream shop,approved,batch 1
+Places,marina,approved,batch 1
+Places,nail salon,approved,batch 1
+Places,ocean,approved,batch 1
+Places,orchard,approved,batch 1
+Places,skate park,approved,batch 1
+Places,swamp,approved,batch 1
+Places,theater,approved,batch 1
+Places,tunnel,approved,batch 1
+Places,university,approved,batch 1
+Places,vineyard,approved,batch 1
+Jobs,author,approved,batch 1
+Jobs,chemist,approved,batch 1
+Jobs,clown,approved,batch 1
+Jobs,editor,approved,batch 1
+Jobs,game designer,approved,batch 1
+Jobs,interpreter,approved,batch 1
+Jobs,jockey,approved,batch 1
+Jobs,landscaper,approved,batch 1
+Jobs,missionary,approved,batch 1
+Jobs,model,approved,batch 1
+Jobs,nanny,approved,batch 1
+Jobs,optometrist,approved,batch 1
+Jobs,physical therapist,approved,batch 1
+Jobs,potter,approved,batch 1
+Jobs,real estate agent,approved,batch 1
+Jobs,receptionist,approved,batch 1
+Jobs,reporter,approved,batch 1
+Jobs,sculptor,approved,batch 1
+Jobs,social worker,approved,batch 1
+Jobs,therapist,approved,batch 1
+Jobs,translator,approved,batch 1
+Jobs,travel agent,approved,batch 1
+Jobs,tutor,approved,batch 1
+Jobs,web designer,approved,batch 1
+Jobs,welder,approved,batch 1
+Jobs,window washer,approved,batch 1
+Jobs,writer,approved,batch 1
+Sports & games,bingo,approved,batch 1
+Sports & games,canoeing,approved,batch 1
+Sports & games,connect four,approved,batch 1
+Sports & games,diving,approved,batch 1
+Sports & games,fishing,approved,batch 1
+Sports & games,hiking,approved,batch 1
+Sports & games,kayaking,approved,batch 1
+Sports & games,lacrosse,approved,batch 1
+Sports & games,leapfrog,approved,batch 1
+Sports & games,tic-tac-toe,approved,batch 1
+Sports & games,mancala,approved,batch 1
+Sports & games,Pictionary,approved,batch 1
+Sports & games,rock paper scissors,approved,batch 1
+Sports & games,sailing,approved,batch 1
+Sports & games,spades,approved,batch 1
+Sports & games,tetherball,approved,batch 1
+Sports & games,track and field,approved,batch 1
+Sports & games,uno,approved,batch 1
+Sports & games,water skiing,approved,batch 1
+Sports & games,wheelbarrow race,approved,batch 1
+Sports & games,word search,approved,batch 1
+Sports & games,crossword,approved,batch 1
+Sports & games,Twister,approved,batch 1
+Sports & games,Jenga,approved,batch 1
+Sports & games,Go Fish,approved,batch 1
+Sports & games,Old Maid,approved,batch 1
+Sports & games,kick the can,approved,batch 1
+Sports & games,sardines,approved,batch 1
+Sports & games,spud,approved,batch 1
+Sports & games,four square,approved,batch 1
+Sports & games,egg and spoon race,approved,batch 1
+Sports & games,three-legged race,approved,batch 1
+Sports & games,bobbing for apples,approved,batch 1
+Sports & games,hot potato,approved,batch 1
+Sports & games,telephone,approved,batch 1
+Sports & games,I spy,approved,batch 1
+Sports & games,twenty questions,approved,batch 1
+Bible,Ananias,approved,batch 1
+Bible,Andrew,approved,batch 1
+Bible,Barnabas,approved,batch 1
+Bible,Boaz,approved,batch 1
+Bible,Caleb,approved,batch 1
+Bible,Elizabeth,approved,batch 1
+Bible,Ezra,approved,batch 1
+Bible,Galatians,approved,batch 1
+Bible,Garden of Gethsemane,approved,batch 1
+Bible,Golgotha,approved,batch 1
+Bible,Herod,approved,batch 1
+Bible,James,approved,batch 1
+Bible,Jethro,approved,batch 1
+Bible,Jezebel,approved,batch 1
+Bible,Joash,approved,batch 1
+Bible,Jochebed,approved,batch 1
+Bible,John,approved,batch 1
+Bible,Jonathan,approved,batch 1
+Bible,Josiah,approved,batch 1
+Bible,Lydia,approved,batch 1
+Bible,Mephibosheth,approved,batch 1
+Bible,Mordecai,approved,batch 1
+Bible,Naaman,approved,batch 1
+Bible,Naomi,approved,batch 1
+Bible,Nicodemus,approved,batch 1
+Bible,Onesimus,approved,batch 1
+Bible,Philip,approved,batch 1
+Bible,Priscilla,approved,batch 1
+Bible,Psalms,approved,batch 1
+Bible,Revelation,approved,batch 1
+Bible,Samaritan woman,approved,batch 1
+Bible,Shadrach,approved,batch 1
+Bible,Silas,approved,batch 1
+Bible,Simeon,approved,batch 1
+Bible,Stephen,approved,batch 1
+Bible,Tabitha,approved,batch 1
+Bible,the lost sheep,approved,batch 1
+Bible,the Sermon on the Mount,approved,batch 1
+Bible,Zechariah,approved,batch 1
