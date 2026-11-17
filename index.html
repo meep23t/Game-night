@@ -1333,6 +1333,29 @@ $("resumeX").onclick = () => { G.resume = null; gameClear(); renderResume(); };
 document.addEventListener("visibilitychange", () => { if (document.hidden) gameSnap(); });
 window.addEventListener("pagehide", gameSnap);
 
+/* ---------- Keep the screen awake during a game ----------
+   Phones dim and lock after ~30 s, which can cut off a card or a timer. While a game is on screen we hold a
+   screen wake lock (Chrome/Android, Safari/iOS 16.4+); on the homepage, setup and game night screens the phone
+   sleeps normally. The phone drops the lock when you switch apps, so it's taken again on return. */
+const SLEEP_OK = new Set(["home", "setup", "nightStart", "night"]);
+let wakeLock = null, wakeBusy = false;
+async function keepAwake(on){
+  if (!("wakeLock" in navigator) || wakeBusy) return;
+  wakeBusy = true;
+  let refused = false;
+  try {
+    if (on && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", () => { wakeLock = null; });
+    } else if (!on && wakeLock) { const w = wakeLock; wakeLock = null; await w.release(); }
+  } catch (e) { wakeLock = null; refused = true; }   // e.g. low battery mode: the phone just sleeps as usual
+  wakeBusy = false;
+  // If the screen changed while we were waiting, catch up once (never retry a refused request).
+  const want = !SLEEP_OK.has(G.screen) && !document.hidden;
+  if (!refused && want !== !!wakeLock) keepAwake(want);
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) keepAwake(!SLEEP_OK.has(G.screen)); });
+
 /* ---------- Navigation ---------- */
 function show(id){
   document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== id);
@@ -1342,6 +1365,7 @@ function show(id){
   $("startOver").hidden = ["home", "setup", "nightStart", "night"].includes(id);
   if (G.nightBoxFor !== id) { $("nightBox").hidden = true; G.nightBoxFor = null; }
   if (id === "home") { renderNightStrip(); renderResume(); }
+  keepAwake(!SLEEP_OK.has(id));
   if (id === "nightStart") applyTeamStyle(G.nightDraftStyle); else if (id !== "night") applyTeamStyle();
   resetRestart(); window.scrollTo(0,0);
 }
