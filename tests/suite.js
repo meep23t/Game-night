@@ -1066,6 +1066,25 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   });
 
+  /* ================= GAME NIGHT SEATING ORDER ================= */
+  section('Night seating order', async AREA => {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => show('home')); await p.click('#nightStrip button');
+    check('Start screen asks for seating order', /order you’re sitting/.test(await txt(p, '#nightStart')));
+    check('Every player but the first has an ↑ button', (await p.locator('#nsList button[aria-label^="Move"]').count()) === 2);
+    await p.click('#nsList button[aria-label="Move Cy up"]');
+    check('↑ moves a player up one seat', (await ev(p, () => G.nightDraft.join())) === 'Ana,Cy,Ben');
+    await p.click('#nsTeam');
+    const before = await ev(p, () => G.nightDraft.map((n, i) => n + G.nightDraftTeam[i]).join());
+    await p.click('#nsList button[aria-label="Move Ben up"]');
+    check('Players keep their team when moved', await ev(p, b => { const team = Object.fromEntries(b.split(',').map(x => [x.slice(0, -1), x.slice(-1)])); return G.nightDraft.every((n, i) => team[n] === String(G.nightDraftTeam[i])); }, before));
+    await p.click('#nsInd'); await p.click('#nsGo');
+    check('The night uses that order', (await ev(p, () => S.players.join())) === 'Ana,Ben,Cy');
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= TEAMS GAME NIGHT ================= */
   section('Teams game night', async AREA => {
     try {
