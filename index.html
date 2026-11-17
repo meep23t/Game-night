@@ -1022,7 +1022,7 @@ h3.sub{font-size:20px;margin-top:26px}
 <section id="fbwrite" hidden>
   <p class="eyebrow center">Add your words</p>
   <p class="big-name center" id="fbwName" style="font-size:clamp(34px,10vw,48px)"></p>
-  <p class="note center">Keep them secret! Words or short phrases both work.</p>
+  <p class="note center">Keep your words secret, and pick things everyone in the room would know. Words or short phrases both work.</p>
   <div id="fbInputs" style="display:grid;gap:10px"></div>
   <p class="error" id="fbwErr" role="alert"></p>
   <button id="fbwSave" class="primary">Put them in the bowl</button>
@@ -1189,6 +1189,7 @@ h3.sub{font-size:20px;margin-top:26px}
   <h3 class="sub" id="nightLogHead">Games tonight</h3>
   <ul class="result-list night-log" id="nightLog"></ul>
   <p class="note" id="nightEmpty">No games yet. Finish a game and its points land here.</p>
+  <p class="note" id="nightSaved" style="margin-top:14px">Your game is saved if the phone locks or you switch apps.</p>
   <button id="nightPlay" class="primary" style="margin-top:20px">Back to games</button>
   <button id="nightEnd" class="ghost" style="margin-top:12px">End game night</button>
 </section>
@@ -3547,6 +3548,7 @@ function renderNight(){
     log.appendChild(li);
   });
   $("nightEmpty").hidden = played > 0;
+  $("nightSaved").hidden = done;   // reassurance while the night is going
   $("nightStand").hidden = teamsMode || !$("nightStand").children.length;
   // When the night is over the games list folds away, and "Start a new game night" becomes the main button.
   const folded = done && played > 0 && !G.nightLogOpen;
