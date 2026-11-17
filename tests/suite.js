@@ -1092,6 +1092,34 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     await p.context().close();
   });
 
+  /* ================= KEEP THE SCREEN AWAKE ================= */
+  section('Screen stays awake', async AREA => {
+    const p = await fresh(b);
+    await ev(p, () => {   // stand-in for the phone's screen wake lock
+      window.__wl = { asks:0, held:false, refuse:false };
+      Object.defineProperty(navigator, 'wakeLock', { configurable:true, value:{ request: async () => {
+        __wl.asks++; if (__wl.refuse) throw new Error('NotAllowedError');
+        const t = new EventTarget(); __wl.held = true;
+        t.release = async () => { __wl.held = false; t.dispatchEvent(new Event('release')); };
+        return t; } } });
+    });
+    await setPlayers(p, ['Ana', 'Ben']);
+    await open(p, 'act');
+    check('Asleep is fine on setup', !(await ev(p, () => __wl.held)));
+    await ev(p, () => { S.rounds = 1; S.perTurn = 1; save(); }); await p.click('#startGame');
+    await p.waitForFunction(() => __wl.held);
+    check('Screen stays awake once the game starts', await ev(p, () => __wl.held));
+    await p.click('#startTurn'); await p.click('#pickEasy');
+    check('…and through the turn', await ev(p, () => __wl.held && __wl.asks === 1));
+    await ev(p, () => show('home')); await p.waitForFunction(() => !__wl.held);
+    check('Back on the homepage the phone can sleep again', !(await ev(p, () => __wl.held)));
+    await ev(p, () => { __wl.refuse = true; __wl.asks = 0; });
+    await open(p, 'act'); await p.click('#startGame'); await p.waitForTimeout(100);
+    check('If the phone refuses (e.g. low battery), it asks once and carries on', (await ev(p, () => __wl.asks)) === 1 && (await screen(p)) === 'pass');
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= TEAMS GAME NIGHT ================= */
   section('Teams game night', async AREA => {
     try {
