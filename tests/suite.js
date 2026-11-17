@@ -1071,6 +1071,9 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const p = await fresh(b);
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await ev(p, () => show('home')); await p.click('#nightStrip button');
+    await ev(p, () => { S.fbWrite = true; save(); }); await open(p, 'fb'); await p.click('#startGame'); await p.click('#fbNames button');
+    check('Word bowl writing screen: keep words secret and pick things everyone knows', /everyone in the room would know/.test(await txt(p, '#fbwrite')));
+    await ev(p, () => show('home')); await p.click('#nightStrip button');
     check('Start screen asks for seating order', /order you’re sitting/.test(await txt(p, '#nightStart')));
     check('Every player but the first has an ↑ button', (await p.locator('#nsList button[aria-label^="Move"]').count()) === 2);
     await p.click('#nsList button[aria-label="Move Cy up"]');
@@ -1081,6 +1084,10 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('Players keep their team when moved', await ev(p, b => { const team = Object.fromEntries(b.split(',').map(x => [x.slice(0, -1), x.slice(-1)])); return G.nightDraft.every((n, i) => team[n] === String(G.nightDraftTeam[i])); }, before));
     await p.click('#nsInd'); await p.click('#nsGo');
     check('The night uses that order', (await ev(p, () => S.players.join())) === 'Ana,Ben,Cy');
+    await ev(p, () => openNight());
+    check('Game night screen says the game is saved', await p.locator('#nightSaved').isVisible() && /saved if the phone locks/.test(await txt(p, '#nightSaved')));
+    await p.click('#nightEnd'); await p.click('#nightEnd');
+    check('…but not once the night is over', await p.locator('#nightSaved').isHidden());
     check('No page errors', p.errs.length === 0, p.errs.join(' | '));
     await p.context().close();
   });
