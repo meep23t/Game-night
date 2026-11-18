@@ -386,6 +386,20 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
   });
 
+  section('Pass the doodle timer', async AREA => {
+    const p = await fresh(b);
+    await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+    await ev(p, () => { S.teleTimerOn = true; S.teleSec = 45; save(); });
+    await open(p, 'tele');
+    const row = p.locator('#settings .setting', { hasText: 'Timer length' });
+    for (let i = 0; i < 5; i++) await row.locator('button[aria-label="Less"]').click();
+    check('Drawing timer goes down to 15 seconds', (await ev(p, () => S.teleSec)) === 15 && /15/.test(await row.innerText()), await row.innerText());
+    await row.locator('button[aria-label="More"]').click();
+    check('…in 15-second steps', (await ev(p, () => S.teleSec)) === 30);
+    check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+    await p.context().close();
+  });
+
   /* ================= IN THE RANGE ================= */
   section('In the range', async AREA => {
     try {
