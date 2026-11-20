@@ -43,6 +43,19 @@ def screen(row, *texts):
 
 def norm(s): return re.sub(r"\s+", " ", s.lower().replace("’", "'")).strip()
 
+# Describe it: a forbidden word may not be part of the card's own word, since saying any part of it is
+# already against the rules. "treasure hunt" can't forbid "treasure" or "hunt"; "snowman" can't forbid
+# "snow" or "man"; "sleepwalking" can't forbid "walk".
+NOT_PARTS = {("old", "cold"), ("ear", "hear"), ("land", "island")}   # look alike but aren't parts of each other
+def _toks(s): return [t for t in re.split(r"[\s\-’'.,!?]+", s.lower()) if t]
+def _part_of(a, b):
+    if a == b: return True
+    short, long_ = sorted([a, b], key=len)
+    if (short, long_) in NOT_PARTS: return False
+    return (len(short) >= 3 and (long_.startswith(short) or long_.endswith(short))) or (len(short) >= 4 and short in long_)
+def parts_of_word(word, forbidden):
+    return [f for f in forbidden if any(_part_of(ft, t) for ft in _toks(f) for t in _toks(word))]
+
 def need(row, *cols):
     for c in cols:
         if not row.get(c): problems.append(f'{row["_line"]}: "{c}" is empty')
@@ -75,6 +88,9 @@ for r in read("describe-it"):
     if len(forb) != FORBIDDEN_PER_LEVEL[r["Level"]]:
         problems.append(f'{r["_line"]}: level {r["Level"]} needs {FORBIDDEN_PER_LEVEL[r["Level"]]} forbidden words, found {len(forb)}')
     screen(r, r["Word"], *forb)
+    for f in parts_of_word(r["Word"], forb):
+        problems.append(f'{r["_line"]}: "{f}" is part of "{r["Word"]}" (saying any part of the word is already against the rules; pick another forbidden word)')
+    if len({norm(f) for f in forb}) < len(forb): problems.append(f'{r["_line"]}: a forbidden word is listed twice')
     desc[r["Level"]].append([r["Word"], forb])
     desc_seen.setdefault("(all levels)", []).append((r["Word"], r["_line"]))   # Word bowl mixes levels 1-2
 no_dupes(desc_seen, "Describe it")
