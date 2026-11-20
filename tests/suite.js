@@ -556,6 +556,8 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     check('In the range: the first clue giver is random each game', waveF === 3, waveF);
     const teleF = await ev(p, () => { S.teleBooks = 1; const f = new Set(); for (let r = 0; r < 60; r++) { teleStart(); f.add(G.seq[0].p); } return f.size; });
     check('Pass the doodle: the first drawer is random each game', teleF === 3, teleF);
+    check('Describe it rules: no part of the word either', /any part of it \(for “treasure hunt,” not “treasure” or “hunt”\)/.test(await ev(p, () => document.querySelector('.block[data-for="taboo"] .rules').textContent)));
+    check('No Describe it card forbids part of its own word', await ev(p, () => Object.values(TABOO).flat().every(([w, f]) => f.every(x => !w.toLowerCase().split(/[\s-]+/).includes(x.toLowerCase())))));
     await setPlayers(p, ['Ana', 'Ben', 'Cy', 'Dee']);
     const teamF = await ev(p, () => { G.mode = 'act'; G.pool = PACKS['Animals']; S.playAs = { ...S.playAs, act:true }; const f = new Set(), t = new Set(); for (let r = 0; r < 80; r++) { newGame(); f.add(G.seq[0]); t.add(teamOfPlayer(G.seq[0])); } return [f.size, t.size]; });
     check('Teams: the first team and first player are random', teamF[0] === 4 && teamF[1] === 2, JSON.stringify(teamF));

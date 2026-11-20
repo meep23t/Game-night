@@ -28,6 +28,7 @@ python3 words/build.py
 The build checks every row and stops, writing nothing, if it finds a problem:
 - **Missing:** an empty word or detail.
 - **Duplicate:** a word already in the same game. Act it out, Describe it and Pass the doodle are checked across all packs and levels; In the range and Word spies per level; Imposter per category.
+- **Forbidden word that's part of the card:** saying any part of the word is already against the rules, so "treasure hunt" can't forbid "treasure" or "hunt" (and "snowman" can't forbid "snow").
 - **Wrong forbidden-word count:** Describe it cards need 3, 4 or 5 forbidden words for levels 1, 2 or 3.
 - **Banned word:** anything on the content-screen list in `build.py`.
 - **Two-word spy word:** Word spies words must be a single word.

@@ -25,10 +25,10 @@
 1,bus,school; ride; yellow,approved,
 1,egg,chicken; breakfast; shell,approved,
 1,flower,garden; rose; smell,approved,
-1,toothbrush,teeth; brush; clean,approved,
+1,toothbrush,teeth; clean; toothpaste,approved,
 1,clock,time; hour; tick,approved,
 1,hat,head; wear; cap,approved,
-1,rainbow,colors; rain; sky,approved,
+1,rainbow,colors; sky; arch,approved,
 1,bread,sandwich; toast; bake,approved,
 1,horse,ride; farm; gallop,approved,
 1,beach,sand; ocean; waves,approved,
@@ -45,7 +45,7 @@
 1,lion,king; roar; jungle,approved,
 1,water,drink; wet; clear,approved,
 1,bath,tub; wash; soap,approved,
-1,butterfly,wings; fly; colors,approved,
+1,butterfly,wings; colors; caterpillar,approved,
 1,train,tracks; ride; station,approved,
 1,robot,machine; metal; beep,approved,
 1,birthday,cake; party; presents,approved,
@@ -64,12 +64,12 @@
 1,orange,fruit; color; juice,approved,
 1,grapes,purple; fruit; bunch,approved,
 1,carrot,orange; vegetable; rabbit,approved,
-1,corn,yellow; popcorn; farm,approved,
+1,corn,yellow; farm; cob,approved,
 1,soup,bowl; hot; spoon,approved,
 1,bubble,soap; pop; blow,approved,
 1,swing,playground; push; back,approved,
 1,slide,playground; down; fun,approved,
-1,sand,beach; castle; sandbox,approved,
+1,sand,beach; castle; grains,approved,
 1,leaf,tree; green; fall,approved,
 1,cloud,sky; white; rain,approved,
 1,wind,blow; air; kite,approved,
@@ -112,7 +112,7 @@
 1,snake,long; hiss; slither,approved,
 1,chicken,egg; farm; cluck,approved,
 1,sheep,wool; baa; farm,approved,
-1,princess,crown; castle; prince,approved,
+1,princess,crown; castle; tiara,approved,
 1,Santa,Christmas; presents; beard,approved,
 1,present,gift; birthday; wrap,approved,
 1,balloon,air; party; pop,approved,
@@ -125,19 +125,19 @@
 1,noodles,pasta; long; soup,approved,
 1,pancake,breakfast; syrup; flip,approved,
 1,cereal,breakfast; milk; bowl,approved,
-1,sandbox,sand; play; dig,approved,
+1,sandbox,play; dig; playground,approved,
 1,shirt,wear; clothes; buttons,approved,
 1,pants,legs; wear; jeans,approved,
 1,boots,feet; rain; snow,approved,
 1,mittens,hands; cold; winter,approved,
 1,key,lock; door; open,approved,
 1,ambulance,hospital; siren; sick,approved,
-1,fire truck,firefighter; red; siren,approved,
-1,police car,police; siren; drive,approved,
+1,fire truck,red; siren; ladder,approved,
+1,police car,siren; drive; cop,approved,
 1,ship,boat; ocean; sail,approved,
 1,camera,picture; photo; click,approved,
 1,trumpet,music; blow; loud,approved,
-1,mailbox,letter; mail; post,approved,
+1,mailbox,letter; post; stamp,approved,
 1,mud,dirty; wet; pig,approved,
 1,tooth,teeth; mouth; brush,approved,
 1,kitten,cat; baby; meow,approved,
@@ -163,10 +163,10 @@
 1,bubble gum,chew; pink; blow,approved,
 1,lollipop,candy; stick; lick,approved,
 1,jelly,peanut butter; sandwich; jam,approved,
-1,ladybug,bug; red; spots,approved,
+1,ladybug,red; spots; beetle,approved,
 1,worm,dirt; wiggle; bird,approved,
 1,ant,small; bug; picnic,approved,
-1,spider web,spider; sticky; bug,approved,
+1,spider web,sticky; bug; silk,approved,
 1,wagon,pull; red; wheels,approved,
 2,airport,plane; fly; travel; gate,approved,
 2,volcano,lava; mountain; erupt; hot,approved,
@@ -181,7 +181,7 @@
 2,sandwich,bread; lunch; meat; cheese,approved,
 2,homework,school; teacher; study; assignment,approved,
 2,umbrella,rain; wet; open; cover,approved,
-2,popcorn,movie; butter; corn; pop,approved,
+2,popcorn,movie; butter; kernels; theater,approved,
 2,superhero,power; cape; save; fly,approved,
 2,vacation,holiday; trip; travel; relax,approved,
 2,refrigerator,cold; kitchen; food; freezer,approved,
@@ -204,29 +204,29 @@
 2,Christmas,December; tree; presents; Jesus,approved,
 2,photograph,camera; picture; take; smile,approved,
 2,jungle,trees; animals; forest; rain,approved,
-2,firefighter,fire; truck; hose; rescue,approved,
+2,firefighter,truck; hose; rescue; flames,approved,
 2,backpack,school; carry; bag; books,approved,
 2,invitation,party; invite; card; come,approved,
 2,recipe,cook; ingredients; food; instructions,approved,
-2,sunglasses,eyes; sun; wear; dark,approved,
+2,sunglasses,eyes; wear; dark; shades,approved,
 2,pirate,ship; treasure; sea; parrot,approved,
-2,grandmother,grandma; family; old; mother,approved,
+2,grandmother,grandma; family; old; nana,approved,
 2,alarm clock,wake; morning; ring; time,approved,
 2,zoo,animals; cage; visit; lion,approved,
 2,astronaut,space; rocket; moon; NASA,approved,
 2,chocolate,sweet; candy; brown; cocoa,approved,
 2,bridge,cross; river; road; over,approved,
-2,waterfall,water; fall; river; cliff,approved,
+2,waterfall,river; cliff; splash; mist,approved,
 2,neighbor,next; door; house; live,approved,
 2,playground,swing; slide; kids; park,approved,
-2,skateboard,wheels; ride; trick; board,approved,
+2,skateboard,wheels; ride; trick; ramp,approved,
 2,tornado,wind; storm; spin; twister,approved,
-2,rainforest,trees; rain; jungle; animals,approved,
+2,rainforest,trees; jungle; animals; tropical,approved,
 2,desert,sand; hot; dry; camel,approved,
 2,octopus,eight; arms; sea; tentacles,approved,
 2,pancakes,breakfast; syrup; flat; flip,approved,
 2,tacos,Mexican; shell; meat; cheese,approved,
-2,snowman,snow; carrot; winter; cold,approved,
+2,snowman,carrot; winter; cold; frosty,approved,
 2,fireworks,sky; boom; colors; night,approved,
 2,parade,march; street; floats; music,approved,
 2,circus,clown; tent; show; elephant,approved,
@@ -236,13 +236,13 @@
 2,treasure,gold; pirate; chest; map,approved,
 2,mermaid,fish; tail; ocean; sea,approved,
 2,ghost,boo; scary; white; sheet,approved,
-2,volleyball,net; ball; beach; spike,approved,
-2,basketball,hoop; ball; dribble; dunk,approved,
-2,swimming pool,water; swim; dive; splash,approved,
+2,volleyball,net; beach; spike; serve,approved,
+2,basketball,hoop; dribble; dunk; court,approved,
+2,swimming pool,water; dive; splash; lifeguard,approved,
 2,hammer,nail; tool; hit; wood,approved,
 2,scientist,lab; experiment; science; test,approved,
 2,pilot,plane; fly; airport; cockpit,approved,
-2,farmer,farm; cow; crops; tractor,approved,
+2,farmer,cow; crops; tractor; barn,approved,
 2,tractor,farm; farmer; drive; field,approved,
 2,submarine,underwater; sea; boat; navy,approved,
 2,rocket,space; launch; fly; moon,approved,
@@ -251,19 +251,19 @@
 2,video game,play; controller; screen; level,approved,
 2,television,TV; watch; show; screen,approved,
 2,microwave,heat; kitchen; food; beep,approved,
-2,toaster,bread; toast; kitchen; hot,approved,
+2,toaster,bread; kitchen; hot; crispy,approved,
 2,vacuum,clean; floor; dust; noise,approved,
 2,helmet,head; bike; safe; wear,approved,
 2,glasses,eyes; see; wear; lenses,approved,
-2,necklace,neck; jewelry; wear; chain,approved,
+2,necklace,jewelry; wear; chain; pearls,approved,
 2,crown,king; queen; head; gold,approved,
 2,wallet,money; pocket; cards; cash,approved,
 2,suitcase,travel; pack; clothes; trip,approved,
 2,tent,camping; sleep; outside; poles,approved,
-2,flashlight,light; dark; battery; night,approved,
-2,rain boots,rain; feet; puddle; wear,approved,
+2,flashlight,dark; battery; night; beam,approved,
+2,rain boots,feet; puddle; wear; galoshes,approved,
 2,puddle,rain; water; jump; splash,approved,
-2,sunflower,yellow; flower; seeds; tall,approved,
+2,sunflower,yellow; seeds; tall; petals,approved,
 2,pumpkin,orange; Halloween; pie; seeds,approved,
 2,strawberry,red; fruit; seeds; sweet,approved,
 2,watermelon,fruit; green; red; seeds,approved,
@@ -273,15 +273,15 @@
 2,market,buy; sell; food; shop,approved,
 2,church,pray; Sunday; God; worship,approved,
 2,choir,sing; church; songs; group,approved,
-2,bakery,bread; cake; bake; shop,approved,
-2,lemonade,lemon; drink; sour; stand,approved,
-2,sleeping bag,camping; sleep; tent; zip,approved,
-2,ice skating,ice; skates; rink; winter,approved,
+2,bakery,bread; cake; shop; bagels,approved,
+2,lemonade,drink; sour; stand; lemons,approved,
+2,sleeping bag,camping; tent; zip; zipper,approved,
+2,ice skating,skates; rink; winter; frozen,approved,
 2,sledding,snow; hill; slide; winter,approved,
-2,snowball,snow; throw; fight; cold,approved,
+2,snowball,throw; fight; cold; packed,approved,
 2,birthday cake,candles; party; frosting; wish,approved,
 2,piñata,candy; party; hit; stick,approved,
-2,magician,magic; trick; rabbit; hat,approved,
+2,magician,trick; rabbit; hat; abracadabra,approved,
 2,alien,space; green; UFO; planet,approved,
 2,unicorn,horse; horn; magic; rainbow,approved,
 2,wizard,magic; wand; spell; hat,approved,
@@ -303,17 +303,17 @@
 2,hot dog,bun; sausage; mustard; ketchup,approved,
 2,donut,sweet; hole; glazed; bakery,approved,
 2,smoothie,fruit; blend; drink; straw,approved,
-2,cupcake,cake; frosting; small; sprinkles,approved,
+2,cupcake,frosting; small; sprinkles; muffin,approved,
 2,barbecue,grill; meat; summer; outside,approved,
 2,grocery store,food; shop; cart; buy,approved,
-2,toothache,tooth; hurt; dentist; pain,approved,
-2,bandage,cut; hurt; sticky; Band-Aid,approved,
+2,toothache,hurt; dentist; pain; cavity,approved,
+2,bandage,cut; hurt; sticky; wound,approved,
 2,elevator,up; down; floors; button,approved,
 2,escalator,stairs; moving; mall; up,approved,
 2,trampoline,jump; bounce; backyard; spring,approved,
-2,roller skates,wheels; skate; feet; rink,approved,
+2,roller skates,wheels; feet; rink; rolling,approved,
 2,kayak,boat; paddle; river; water,approved,
-2,fishing,fish; rod; hook; lake,approved,
+2,fishing,rod; hook; lake; bait,approved,
 2,hiking,walk; mountain; trail; boots,approved,
 2,bowling,ball; pins; strike; alley,approved,
 2,chess,board; king; queen; checkmate,approved,
@@ -324,25 +324,25 @@
 2,orchestra,music; instruments; conductor; violin,approved,
 2,concert,music; band; stage; tickets,approved,
 2,movie theater,popcorn; screen; film; seats,approved,
-2,newspaper,news; read; paper; daily,approved,
+2,newspaper,read; daily; headlines; print,approved,
 2,post office,mail; stamps; letters; package,approved,
-2,fire station,firefighter; truck; fire; pole,approved,
+2,fire station,truck; pole; engine; siren,approved,
 2,bank,money; save; teller; account,approved,
 2,lawn mower,grass; cut; yard; engine,approved,
-2,washing machine,laundry; clothes; wash; spin,approved,
+2,washing machine,laundry; clothes; spin; detergent,approved,
 2,laptop,computer; screen; keyboard; portable,approved,
 2,headphones,music; ears; listen; wireless,approved,
 2,stopwatch,time; race; timer; seconds,approved,
 2,calculator,math; numbers; add; buttons,approved,
 2,globe,world; map; round; earth,approved,
-2,sunscreen,sun; burn; beach; lotion,approved,
-2,swimsuit,swim; pool; beach; wear,approved,
-2,sandcastle,sand; beach; build; bucket,approved,
-2,seashell,beach; ocean; shell; sand,approved,
+2,sunscreen,burn; beach; lotion; SPF,approved,
+2,swimsuit,pool; beach; wear; bikini,approved,
+2,sandcastle,beach; build; bucket; moat,approved,
+2,seashell,beach; ocean; sand; conch,approved,
 3,procrastinate,delay; later; wait; put off; tomorrow,approved,
 3,bargain,deal; cheap; price; sale; shop,approved,
 3,nostalgia,past; memory; remember; old; miss,approved,
-3,lighthouse,light; ocean; ships; tower; coast,approved,
+3,lighthouse,ocean; ships; tower; coast; beam,approved,
 3,password,computer; secret; login; account; type,approved,
 3,traffic jam,cars; road; stuck; slow; rush hour,approved,
 3,gravity,fall; Newton; earth; pull; apple,approved,
@@ -361,16 +361,16 @@
 3,eclipse,sun; moon; dark; shadow; block,approved,
 3,sarcasm,joke; mean; tone; funny; opposite,approved,
 3,budget,money; spend; save; plan; cost,approved,
-3,campfire,fire; camping; marshmallows; wood; night,approved,
+3,campfire,camping; marshmallows; wood; night; flames,approved,
 3,detective,mystery; clues; solve; police; crime,approved,
 3,blizzard,snow; storm; cold; wind; winter,approved,
-3,handshake,hand; greet; meet; shake; hello,approved,
+3,handshake,greet; meet; hello; palms; greeting,approved,
 3,subscription,monthly; pay; sign up; magazine; cancel,approved,
 3,microscope,small; science; lens; see; lab,approved,
 3,roller coaster,ride; amusement park; loop; fast; scream,approved,
 3,hibernate,sleep; winter; bear; cave; animal,approved,
 3,referee,game; whistle; rules; sports; call,approved,
-3,fingerprint,finger; police; unique; touch; print,approved,
+3,fingerprint,police; unique; touch; thumb; ink,approved,
 3,shipwreck,boat; sink; ocean; sailors; crash,approved,
 3,selfie,photo; phone; picture; yourself; camera,approved,
 3,origami,paper; fold; Japan; crane; art,approved,
@@ -379,34 +379,34 @@
 3,graduation,school; cap; gown; diploma; finish,approved,
 3,vending machine,snacks; coins; buy; drink; button,approved,
 3,ventriloquist,puppet; dummy; voice; talk; mouth,approved,
-3,sunburn,sun; red; skin; beach; sunscreen,approved,
+3,sunburn,red; skin; beach; sunscreen; peeling,approved,
 3,boomerang,throw; return; back; Australia; curve,approved,
 3,marathon,run; race; miles; long; finish,approved,
 3,tsunami,wave; ocean; earthquake; water; flood,approved,
 3,scarecrow,crows; field; farm; straw; birds,approved,
-3,quicksand,sand; sink; stuck; trap; desert,approved,
+3,quicksand,sink; stuck; trap; desert; mud,approved,
 3,kangaroo,Australia; jump; pouch; hop; baby,approved,
-3,chopsticks,eat; sticks; Chinese; food; two,approved,
+3,chopsticks,eat; Chinese; food; two; rice,approved,
 3,leftovers,food; dinner; fridge; later; extra,approved,
-3,daydream,dream; imagine; awake; think; distracted,approved,
+3,daydream,imagine; awake; think; distracted; zone out,approved,
 3,time zone,hour; clock; country; different; travel,approved,
-3,homesick,home; miss; family; away; sad,approved,
+3,homesick,miss; family; away; sad; camp,approved,
 3,curiosity,curious; wonder; question; know; cat,approved,
 3,patience,wait; patient; calm; time; slow,approved,
 3,generous,give; share; kind; gift; money,approved,
-3,teamwork,team; together; group; help; work,approved,
-3,brainstorm,ideas; think; brain; storm; group,approved,
+3,teamwork,together; group; help; cooperate; crew,approved,
+3,brainstorm,ideas; think; group; suggest; whiteboard,approved,
 3,volunteer,help; free; work; serve; community,approved,
 3,allowance,money; parents; weekly; chores; kids,approved,
 3,landlord,rent; apartment; house; owner; tenant,approved,
-3,paycheck,money; work; job; salary; pay,approved,
+3,paycheck,money; work; job; salary; wages,approved,
 3,resume,job; work; paper; experience; apply,approved,
 3,customer,store; buy; shop; service; client,approved,
 3,refund,money; back; return; store; receipt,approved,
 3,warranty,broken; fix; free; product; years,approved,
 3,traffic light,red; green; yellow; stop; go,approved,
-3,crosswalk,street; cross; walk; stripes; car,approved,
-3,seatbelt,car; safe; buckle; seat; wear,approved,
+3,crosswalk,street; stripes; car; pedestrian; traffic light,approved,
+3,seatbelt,car; safe; buckle; wear; strap,approved,
 3,jet lag,tired; flight; time; travel; sleep,approved,
 3,souvenir,trip; gift; buy; remember; vacation,approved,
 3,tourist,visit; travel; camera; trip; sightseeing,approved,
@@ -428,59 +428,59 @@
 3,neighborhood,houses; street; live; area; neighbors,approved,
 3,rush hour,traffic; morning; work; busy; cars,approved,
 3,snooze,alarm; sleep; button; morning; more,approved,
-3,midnight,twelve; night; clock; dark; late,approved,
+3,midnight,twelve; clock; dark; late; twelve o'clock,approved,
 3,leap year,February; 29; calendar; extra; four,approved,
-3,sunrise,morning; sun; early; sky; up,approved,
+3,sunrise,morning; early; sky; up; dawn,approved,
 3,horizon,sky; line; far; sea; edge,approved,
 3,shortcut,fast; quick; way; path; faster,approved,
 3,detour,road; around; closed; long; way,approved,
-3,haircut,barber; scissors; hair; short; salon,approved,
+3,haircut,barber; scissors; short; salon; trim,approved,
 3,breakfast in bed,morning; tray; sleep; food; special,approved,
 3,sleepover,friends; night; pajamas; party; stay,approved,
-3,pillow fight,pillow; hit; bed; sleepover; feathers,approved,
-3,hide and seek,hide; seek; find; count; game,approved,
-3,thumb war,thumbs; hands; fight; game; wrestle,approved,
+3,pillow fight,hit; bed; sleepover; feathers; swing,approved,
+3,hide and seek,find; count; game; hiding; looking,approved,
+3,thumb war,"hands; fight; game; wrestle; 1, 2, 3, 4",approved,
 3,tug of war,rope; pull; team; win; game,approved,
-3,piggy bank,money; save; pig; coins; bank,approved,
-3,knock-knock joke,door; who; there; funny; joke,approved,
-3,tongue twister,say; fast; words; hard; tongue,approved,
-3,spelling bee,spell; words; contest; letters; school,approved,
+3,piggy bank,money; save; coins; oink; allowance,approved,
+3,knock-knock joke,door; who; there; funny; who's there,approved,
+3,tongue twister,say; fast; words; hard; tricky,approved,
+3,spelling bee,words; contest; letters; school; alphabet,approved,
 3,multitasking,many; things; same; time; juggle,approved,
 3,déjà vu,before; feeling; again; French; familiar,approved,
 3,small talk,chat; weather; conversation; polite; awkward,approved,
-3,bucket list,before; someday; list; goals; dreams,approved,
-3,white lie,lie; small; fib; polite; truth,approved,
-3,comfort zone,comfortable; safe; outside; stretch; familiar,approved,
-3,side effect,medicine; effect; unexpected; pills; warning,approved,
-3,first impression,first; meet; impression; opinion; judge,approved,
-3,inside joke,joke; friends; laugh; only; inside,approved,
-3,wake-up call,wake; alarm; warning; realize; phone,approved,
-3,peer pressure,friends; pressure; group; push; fit in,approved,
-3,stage fright,stage; nervous; scared; perform; audience,approved,
+3,bucket list,before; someday; goals; dreams; wish,approved,
+3,white lie,small; fib; polite; truth; harmless,approved,
+3,comfort zone,safe; outside; stretch; familiar; cozy,approved,
+3,side effect,medicine; unexpected; pills; warning; reaction,approved,
+3,first impression,meet; opinion; judge; introduce; new,approved,
+3,inside joke,friends; laugh; only; private; secret,approved,
+3,wake-up call,alarm; warning; realize; phone; startling,approved,
+3,peer pressure,friends; group; push; fit in; classmates,approved,
+3,stage fright,nervous; scared; perform; audience; jitters,approved,
 3,brain freeze,cold; ice cream; head; fast; hurt,approved,
-3,photobomb,photo; picture; jump; background; ruin,approved,
-3,bad hair day,hair; bad; messy; day; morning,approved,
+3,photobomb,picture; jump; background; ruin; selfie,approved,
+3,bad hair day,messy; morning; frizzy; tangled; ugh,approved,
 3,power outage,electricity; dark; lights; storm; candles,approved,
 3,group chat,text; friends; messages; phone; many,approved,
-3,screen time,phone; screen; hours; limit; tablet,approved,
-3,self-checkout,store; scan; yourself; cashier; machine,approved,
+3,screen time,phone; hours; limit; tablet; devices,approved,
+3,self-checkout,store; scan; cashier; machine; register,approved,
 3,voicemail,phone; message; call; leave; beep,approved,
 3,autocorrect,phone; spelling; typing; wrong; change,approved,
 3,Wi-Fi,internet; wireless; password; connect; signal,approved,
 3,traffic ticket,police; speeding; fine; car; pay,approved,
-3,parallel parking,park; car; between; reverse; street,approved,
+3,parallel parking,car; between; reverse; street; curb,approved,
 3,road trip,car; drive; travel; vacation; highway,approved,
 3,layover,flight; airport; wait; connect; stop,approved,
 3,first aid,help; hurt; kit; bandage; emergency,approved,
-3,fire drill,fire; alarm; practice; school; outside,approved,
+3,fire drill,alarm; practice; school; outside; evacuate,approved,
 3,potluck,food; bring; share; dish; party,approved,
-3,family reunion,family; together; relatives; cousins; gather,approved,
-3,baby shower,baby; gifts; party; mom; expecting,approved,
-3,housewarming,new; house; party; gift; move,approved,
-3,garage sale,sell; stuff; garage; cheap; yard,approved,
+3,family reunion,together; relatives; cousins; gather; grandparents,approved,
+3,baby shower,gifts; party; mom; expecting; newborn,approved,
+3,housewarming,new; party; gift; move; moving in,approved,
+3,garage sale,sell; stuff; cheap; yard; bargains,approved,
 3,thrift store,used; cheap; clothes; secondhand; shop,approved,
 3,coupon,discount; save; store; cut; deal,approved,
-3,tip jar,money; tip; jar; coffee; thank,approved,
+3,tip jar,money; coffee; thank; waiter; change,approved,
 3,overtime,work; extra; hours; late; pay,approved,
 3,promotion,job; boss; raise; better; work,approved,
 3,retirement,work; old; stop; pension; age,approved,
@@ -492,29 +492,29 @@
 3,sequel,movie; second; part two; book; after,approved,
 3,spoiler,ending; movie; ruin; tell; surprise,approved,
 3,plot twist,story; surprise; ending; unexpected; movie,approved,
-3,cliffhanger,ending; suspense; episode; next; cliff,approved,
-3,standing ovation,clap; stand; audience; applause; performance,approved,
+3,cliffhanger,ending; suspense; episode; next; to be continued,approved,
+3,standing ovation,clap; audience; applause; performance; bravo,approved,
 3,encore,again; concert; more; song; audience,approved,
 3,karaoke,sing; microphone; lyrics; song; party,approved,
-3,sunset,sun; evening; orange; down; sky,approved,
-3,full moon,moon; night; round; werewolf; bright,approved,
-3,shooting star,star; wish; sky; night; fall,approved,
-3,northern lights,sky; colors; north; aurora; night,approved,
+3,sunset,evening; orange; down; sky; dusk,approved,
+3,full moon,night; round; werewolf; bright; lunar,approved,
+3,shooting star,wish; sky; night; fall; meteor,approved,
+3,northern lights,sky; colors; aurora; night; Alaska,approved,
 3,fog,cloudy; see; gray; morning; thick,approved,
 3,drought,water; rain; dry; no; crops,approved,
 3,heat wave,hot; summer; temperature; weather; sun,approved,
 3,allergy,sneeze; pollen; react; nuts; itchy,approved,
 3,insomnia,sleep; can’t; night; awake; tired,approved,
-3,sleepwalking,sleep; walk; night; bed; dream,approved,
-3,sign language,hands; deaf; signs; talk; communicate,approved,
+3,sleepwalking,night; bed; dream; asleep; wander,approved,
+3,sign language,hands; deaf; talk; communicate; gesture,approved,
 3,optical illusion,eyes; trick; see; picture; brain,approved,
 3,time capsule,bury; future; open; years; box,approved,
-3,fortune cookie,Chinese; paper; message; future; cookie,approved,
+3,fortune cookie,Chinese; paper; message; future; dessert,approved,
 1,alligator,green; teeth; swamp,approved,batch 1
 1,alphabet,letters; ABC; learn,approved,batch 1
 1,angel,wings; halo; heaven,approved,batch 1
 1,ankle,foot; leg; sprain,approved,batch 1
-1,ant hill,ants; dirt; bugs,approved,batch 1
+1,ant hill,dirt; bugs; colony,approved,batch 1
 1,apron,cook; kitchen; wear,approved,batch 1
 1,aquarium,fish; tank; water,approved,batch 1
 1,arm,hand; elbow; body,approved,batch 1
@@ -524,11 +524,11 @@
 1,band-aid,cut; hurt; sticky,approved,batch 1
 1,bandana,scarf; head; cowboy,approved,batch 1
 1,barn,farm; animals; red,approved,batch 1
-1,baseball,bat; ball; base,approved,batch 1
+1,baseball,bat; bases; glove,approved,batch 1
 1,basket,carry; picnic; weave,approved,batch 1
 1,bat,fly; night; cave,approved,batch 1
-1,bathtub,bath; water; bubbles,approved,batch 1
-1,beach ball,beach; bounce; colorful,approved,batch 1
+1,bathtub,water; bubbles; soak,approved,batch 1
+1,beach ball,bounce; colorful; inflatable,approved,batch 1
 1,beard,face; hair; chin,approved,batch 1
 1,bedtime,sleep; night; story,approved,batch 1
 1,belt,pants; buckle; waist,approved,batch 1
@@ -538,22 +538,22 @@
 1,binoculars,see; far; eyes,approved,batch 1
 1,blender,smoothie; mix; kitchen,approved,batch 1
 1,blocks,build; toy; tower,approved,batch 1
-1,blueberry,blue; fruit; muffin,approved,batch 1
+1,blueberry,fruit; muffin; pancakes,approved,batch 1
 1,bone,dog; skeleton; body,approved,batch 1
-1,bookshelf,books; shelf; library,approved,batch 1
+1,bookshelf,library; novels; dusting,approved,batch 1
 1,bow,ribbon; tie; present,approved,batch 1
 1,bowl,cereal; soup; dish,approved,batch 1
 1,bracelet,wrist; jewelry; wear,approved,batch 1
 1,brain,think; head; smart,approved,batch 1
 1,branch,tree; leaf; stick,approved,batch 1
-1,bread crumbs,bread; small; birds,approved,batch 1
+1,bread crumbs,small; birds; toast,approved,batch 1
 1,broom,sweep; floor; witch,approved,batch 1
 1,brother,sister; family; boy,approved,batch 1
 1,bucket,water; sand; carry,approved,batch 1
 1,bug,insect; small; crawl,approved,batch 1
 1,bulldozer,dirt; push; truck,approved,batch 1
-1,bunk bed,bed; ladder; top,approved,batch 1
-1,bus stop,bus; wait; sign,approved,batch 1
+1,bunk bed,ladder; top; siblings,approved,batch 1
+1,bus stop,wait; sign; bench,approved,batch 1
 1,butter,toast; yellow; spread,approved,batch 1
 1,button,shirt; press; round,approved,batch 1
 1,camel,hump; desert; ride,approved,batch 1
@@ -561,40 +561,40 @@
 1,candy cane,Christmas; peppermint; stripes,approved,batch 1
 1,canoe,paddle; boat; river,approved,batch 1
 1,cap,hat; baseball; head,approved,batch 1
-1,car seat,car; baby; buckle,approved,batch 1
-1,cardboard box,box; brown; tape,approved,batch 1
+1,car seat,baby; buckle; toddler,approved,batch 1
+1,cardboard box,brown; tape; carton,approved,batch 1
 1,carpet,floor; rug; soft,approved,batch 1
-1,carrot cake,cake; orange; frosting,approved,batch 1
+1,carrot cake,orange; frosting; cream cheese,approved,batch 1
 1,cartwheel,hands; flip; gymnastics,approved,batch 1
 1,caterpillar,butterfly; crawl; green,approved,batch 1
 1,cave,dark; bat; rock,approved,batch 1
 1,celery,green; vegetable; crunch,approved,batch 1
-1,cellphone,call; phone; text,approved,batch 1
+1,cellphone,call; text; mobile,approved,batch 1
 1,chalk,sidewalk; draw; board,approved,batch 1
-1,cheeseburger,burger; cheese; bun,approved,batch 1
+1,cheeseburger,bun; beef; patty,approved,batch 1
 1,cherry,red; fruit; pit,approved,batch 1
-1,chick,chicken; baby; yellow,approved,batch 1
+1,chick,baby; yellow; hatch,approved,batch 1
 1,chimney,smoke; roof; Santa,approved,batch 1
 1,chin,face; mouth; beard,approved,batch 1
 1,chips,crunchy; bag; potato,approved,batch 1
-1,chocolate milk,chocolate; drink; cow,approved,batch 1
+1,chocolate milk,drink; cow; brown,approved,batch 1
 1,city,buildings; cars; big,approved,batch 1
 1,clap,hands; cheer; sound,approved,batch 1
 1,claw,crab; cat; sharp,approved,batch 1
-1,clock tower,clock; tall; time,approved,batch 1
+1,clock tower,tall; time; chime,approved,batch 1
 1,closet,clothes; door; hang,approved,batch 1
 1,coat,warm; winter; wear,approved,batch 1
 1,coconut,tree; brown; milk,approved,batch 1
 1,coin,money; penny; round,approved,batch 1
 1,comb,hair; brush; teeth,approved,batch 1
-1,cookie jar,cookies; jar; snack,approved,batch 1
-1,cookbook,recipe; cook; book,approved,batch 1
-1,corn dog,hot dog; stick; fair,approved,batch 1
+1,cookie jar,snack; treats; lid,approved,batch 1
+1,cookbook,recipe; kitchen; chef,approved,batch 1
+1,corn dog,stick; fair; batter,approved,batch 1
 1,couch,sit; living room; sofa,approved,batch 1
 1,cousin,family; aunt; uncle,approved,batch 1
 1,cowboy,horse; hat; ranch,approved,batch 1
 1,crab,claws; beach; sideways,approved,batch 1
-1,crayon box,crayons; colors; box,approved,batch 1
+1,crayon box,colors; markers; draw,approved,batch 1
 1,crib,baby; bed; sleep,approved,batch 1
 1,crocodile,teeth; green; river,approved,batch 1
 1,curtains,window; cover; hang,approved,batch 1
@@ -604,37 +604,37 @@
 1,dice,roll; game; numbers,approved,batch 1
 1,dinner,eat; night; food,approved,batch 1
 1,dishwasher,dishes; clean; kitchen,approved,batch 1
-1,doghouse,dog; house; backyard,approved,batch 1
-1,dollhouse,doll; toy; house,approved,batch 1
+1,doghouse,backyard; kennel; puppy,approved,batch 1
+1,dollhouse,toy; miniature; furniture,approved,batch 1
 1,donkey,animal; ears; hee-haw,approved,batch 1
-1,door bell,ring; door; button,approved,batch 1
-1,dragonfly,bug; wings; fly,approved,batch 1
+1,door bell,ring; button; ding-dong,approved,batch 1
+1,dragonfly,bug; wings; pond,approved,batch 1
 1,drawer,desk; open; pull,approved,batch 1
 1,dress,girl; wear; skirt,approved,batch 1
 1,drink,water; thirsty; cup,approved,batch 1
-1,duckling,duck; baby; yellow,approved,batch 1
+1,duckling,baby; yellow; quack,approved,batch 1
 1,eagle,bird; fly; bald,approved,batch 1
 1,earmuffs,ears; warm; winter,approved,batch 1
-1,earring,ear; jewelry; wear,approved,batch 1
+1,earring,jewelry; wear; lobe,approved,batch 1
 1,easel,paint; art; stand,approved,batch 1
-1,eggshell,egg; crack; white,approved,batch 1
+1,eggshell,crack; white; yolk,approved,batch 1
 1,elbow,arm; bend; joint,approved,batch 1
 1,envelope,letter; mail; stamp,approved,batch 1
 1,eraser,pencil; mistake; rub,approved,batch 1
-1,eyebrow,eye; face; hair,approved,batch 1
-1,eyelash,eye; blink; hair,approved,batch 1
+1,eyebrow,face; hair; raise,approved,batch 1
+1,eyelash,blink; hair; mascara,approved,batch 1
 1,fairy,wings; magic; small,approved,batch 1
 1,fan,cool; air; spin,approved,batch 1
 1,feather,bird; soft; light,approved,batch 1
 1,fence,yard; wood; gate,approved,batch 1
 1,finger,hand; five; point,approved,batch 1
-1,fishing pole,fish; hook; lake,approved,batch 1
+1,fishing pole,hook; lake; reel,approved,batch 1
 1,flag,wave; country; pole,approved,batch 1
 1,flamingo,pink; bird; leg,approved,batch 1
 1,flip-flops,shoes; beach; feet,approved,batch 1
 1,flute,music; blow; instrument,approved,batch 1
 1,fly,bug; buzz; wings,approved,batch 1
-1,football,ball; throw; touchdown,approved,batch 1
+1,football,throw; touchdown; tackle,approved,batch 1
 1,forest,trees; woods; animals,approved,batch 1
 1,fork,eat; spoon; knife,approved,batch 1
 1,fort,blanket; build; pillows,approved,batch 1
@@ -644,10 +644,10 @@
 1,fridge,cold; food; kitchen,approved,batch 1
 1,friend,buddy; play; best,approved,batch 1
 1,frosting,cake; sweet; icing,approved,batch 1
-1,fruit salad,fruit; bowl; mix,approved,batch 1
-1,garbage truck,trash; truck; smell,approved,batch 1
-1,garden hose,water; garden; spray,approved,batch 1
-1,gas station,car; gas; fill,approved,batch 1
+1,fruit salad,bowl; mix; grapes,approved,batch 1
+1,garbage truck,trash; smell; dump,approved,batch 1
+1,garden hose,water; spray; nozzle,approved,batch 1
+1,gas station,car; fill; pump,approved,batch 1
 1,gift,present; birthday; wrap,approved,batch 1
 1,gingerbread man,cookie; run; Christmas,approved,batch 1
 1,glitter,sparkle; shiny; craft,approved,batch 1
@@ -662,36 +662,36 @@
 1,grill,cook; barbecue; hot,approved,batch 1
 1,gum,chew; bubble; sticky,approved,batch 1
 1,gym,exercise; school; basketball,approved,batch 1
-1,hair dryer,hair; dry; hot,approved,batch 1
-1,hairbrush,hair; brush; comb,approved,batch 1
-1,hallway,hall; walk; door,approved,batch 1
+1,hair dryer,hot; blow; salon,approved,batch 1
+1,hairbrush,comb; bristles; tangles,approved,batch 1
+1,hallway,walk; door; corridor,approved,batch 1
 1,hammock,swing; lie; tree,approved,batch 1
-1,hand soap,wash; hands; soap,approved,batch 1
+1,hand soap,wash; bubbles; pump,approved,batch 1
 1,hay,horse; farm; yellow,approved,batch 1
-1,headband,head; hair; wear,approved,batch 1
+1,headband,hair; wear; forehead,approved,batch 1
 1,heart,love; red; beat,approved,batch 1
 1,hedgehog,spiky; small; animal,approved,batch 1
 1,hen,chicken; egg; farm,approved,batch 1
 1,hippo,big; water; gray,approved,batch 1
 1,hockey,ice; stick; puck,approved,batch 1
-1,hoodie,sweatshirt; hood; wear,approved,batch 1
+1,hoodie,sweatshirt; wear; zipper,approved,batch 1
 1,hop,jump; bunny; frog,approved,batch 1
 1,hose,water; garden; spray,approved,batch 1
 1,hot chocolate,drink; warm; marshmallow,approved,batch 1
 1,hotel,room; stay; vacation,approved,batch 1
 1,hula hoop,spin; hips; circle,approved,batch 1
-1,iceberg,ice; ocean; Titanic,approved,batch 1
-1,ice cube,ice; cold; drink,approved,batch 1
-1,ice skates,ice; skate; blades,approved,batch 1
+1,iceberg,ocean; Titanic; frozen,approved,batch 1
+1,ice cube,cold; drink; tray,approved,batch 1
+1,ice skates,blades; rink; figure,approved,batch 1
 1,igloo,ice; snow; house,approved,batch 1
 1,jam,jelly; toast; sweet,approved,batch 1
 1,jar,lid; glass; jam,approved,batch 1
 1,jeans,pants; blue; denim,approved,batch 1
 1,jellybean,candy; sweet; colorful,approved,batch 1
 1,jet,airplane; fast; fly,approved,batch 1
-1,jigsaw puzzle,pieces; picture; puzzle,approved,batch 1
-1,juice box,juice; straw; drink,approved,batch 1
-1,jump rope,jump; rope; skip,approved,batch 1
+1,jigsaw puzzle,pieces; picture; corners,approved,batch 1
+1,juice box,straw; drink; apple,approved,batch 1
+1,jump rope,skip; hop; playground,approved,batch 1
 1,ketchup,red; fries; tomato,approved,batch 1
 1,kettle,tea; hot; whistle,approved,batch 1
 1,keyboard,type; computer; keys,approved,batch 1
@@ -699,7 +699,7 @@
 1,king,crown; queen; castle,approved,batch 1
 1,kitchen,cook; food; stove,approved,batch 1
 1,kiwi,fruit; green; fuzzy,approved,batch 1
-1,knee,leg; bend; kneel,approved,batch 1
+1,knee,leg; bend; joint,approved,batch 1
 1,lake,water; swim; boat,approved,batch 1
 1,lamb,sheep; baby; wool,approved,batch 1
 1,lamp,light; bulb; table,approved,batch 1
@@ -707,26 +707,26 @@
 1,leash,dog; walk; collar,approved,batch 1
 1,leopard,spots; cat; fast,approved,batch 1
 1,letter,mail; write; envelope,approved,batch 1
-1,light bulb,light; lamp; bright,approved,batch 1
+1,light bulb,lamp; bright; watt,approved,batch 1
 1,lightning,storm; flash; thunder,approved,batch 1
 1,lime,green; sour; fruit,approved,batch 1
-1,lip,mouth; kiss; lipstick,approved,batch 1
+1,lip,mouth; kiss; smile,approved,batch 1
 1,lizard,reptile; tail; green,approved,batch 1
 1,lobster,red; claws; ocean,approved,batch 1
 1,lock,key; door; open,approved,batch 1
-1,lunchbox,lunch; school; box,approved,batch 1
+1,lunchbox,school; sandwich; thermos,approved,batch 1
 1,macaroni,pasta; cheese; noodles,approved,batch 1
 1,magnet,stick; metal; fridge,approved,batch 1
-1,mailman,mail; letters; deliver,approved,batch 1
+1,mailman,letters; deliver; stamps,approved,batch 1
 1,maple syrup,pancakes; sweet; tree,approved,batch 1
 1,marble,glass; round; roll,approved,batch 1
 1,marker,draw; color; pen,approved,batch 1
 1,marshmallow,white; soft; campfire,approved,batch 1
 1,mask,face; Halloween; cover,approved,batch 1
 1,mat,floor; wipe; door,approved,batch 1
-1,meatball,spaghetti; meat; round,approved,batch 1
+1,meatball,spaghetti; round; sauce,approved,batch 1
 1,medal,win; gold; neck,approved,batch 1
-1,melon,fruit; watermelon; green,approved,batch 1
+1,melon,fruit; green; cantaloupe,approved,batch 1
 1,mitten,hand; glove; winter,approved,batch 1
 1,mole,dig; underground; animal,approved,batch 1
 1,money,dollar; pay; buy,approved,batch 1
@@ -753,7 +753,7 @@
 1,oatmeal,breakfast; bowl; oats,approved,batch 1
 1,ocean,water; sea; waves,approved,batch 1
 1,onion,cry; vegetable; smell,approved,batch 1
-1,orange juice,orange; drink; breakfast,approved,batch 1
+1,orange juice,drink; breakfast; pulp,approved,batch 1
 1,ostrich,bird; big; run,approved,batch 1
 1,otter,water; swim; cute,approved,batch 1
 1,oven,bake; hot; kitchen,approved,batch 1
@@ -761,15 +761,15 @@
 1,pan,cook; fry; stove,approved,batch 1
 1,panda,bear; black; white,approved,batch 1
 1,paper,write; white; sheet,approved,batch 1
-1,paper airplane,fold; fly; paper,approved,batch 1
+1,paper airplane,fold; fly; glide,approved,batch 1
 1,party,fun; birthday; friends,approved,batch 1
 1,pasta,noodles; Italian; spaghetti,approved,batch 1
 1,peach,fruit; fuzzy; pit,approved,batch 1
-1,peanut,nut; butter; elephant,approved,batch 1
+1,peanut,butter; elephant; shell,approved,batch 1
 1,pear,fruit; green; tree,approved,batch 1
 1,pebble,rock; small; stone,approved,batch 1
 1,pelican,bird; beak; fish,approved,batch 1
-1,pencil case,pencil; case; school,approved,batch 1
+1,pencil case,school; zipper; supplies,approved,batch 1
 1,penny,coin; money; cent,approved,batch 1
 1,pepper,salt; spicy; shake,approved,batch 1
 1,pet,dog; cat; animal,approved,batch 1
@@ -777,14 +777,14 @@
 1,picture,photo; frame; draw,approved,batch 1
 1,pie,apple; bake; crust,approved,batch 1
 1,pigeon,bird; city; gray,approved,batch 1
-1,pillowcase,pillow; cover; bed,approved,batch 1
-1,pinecone,tree; pine; brown,approved,batch 1
+1,pillowcase,cover; bed; sheets,approved,batch 1
+1,pinecone,tree; brown; evergreen,approved,batch 1
 1,pinwheel,spin; wind; toy,approved,batch 1
-1,pizza box,pizza; box; delivery,approved,batch 1
+1,pizza box,delivery; cardboard; slices,approved,batch 1
 1,plant,grow; green; pot,approved,batch 1
 1,plate,dish; eat; food,approved,batch 1
 1,pocket,pants; jeans; put,approved,batch 1
-1,polar bear,white; bear; ice,approved,batch 1
+1,polar bear,white; ice; Arctic,approved,batch 1
 1,police,officer; car; siren,approved,batch 1
 1,pond,water; frog; duck,approved,batch 1
 1,pony,horse; small; ride,approved,batch 1
@@ -792,20 +792,20 @@
 1,porcupine,quills; spiky; animal,approved,batch 1
 1,poster,wall; picture; hang,approved,batch 1
 1,pot,cook; soup; stove,approved,batch 1
-1,potato chip,chip; crunch; bag,approved,batch 1
+1,potato chip,crunch; bag; salty,approved,batch 1
 1,pretzel,salty; twist; snack,approved,batch 1
-1,prince,king; princess; castle,approved,batch 1
+1,prince,king; castle; royal,approved,batch 1
 1,puppet,hand; show; strings,approved,batch 1
 1,purse,bag; money; carry,approved,batch 1
 1,quilt,blanket; bed; sew,approved,batch 1
 1,raccoon,mask; trash; night,approved,batch 1
-1,race car,race; fast; car,approved,batch 1
+1,race car,fast; speedway; driver,approved,batch 1
 1,radio,music; listen; station,approved,batch 1
 1,raft,float; water; river,approved,batch 1
-1,raincoat,rain; coat; wet,approved,batch 1
+1,raincoat,wet; hood; drizzle,approved,batch 1
 1,raisin,grape; dried; small,approved,batch 1
 1,rake,leaves; yard; fall,approved,batch 1
-1,raspberry,berry; red; fruit,approved,batch 1
+1,raspberry,red; fruit; jam,approved,batch 1
 1,recess,school; play; outside,approved,batch 1
 1,recorder,music; blow; school,approved,batch 1
 1,reindeer,Santa; antlers; sleigh,approved,batch 1
@@ -822,9 +822,9 @@
 1,rope,tie; pull; knot,approved,batch 1
 1,rose,flower; red; thorns,approved,batch 1
 1,ruler,measure; inches; straight,approved,batch 1
-1,sailboat,sail; boat; wind,approved,batch 1
+1,sailboat,wind; mast; sea,approved,batch 1
 1,salad,lettuce; green; dressing,approved,batch 1
-1,salt,pepper; shake; salty,approved,batch 1
+1,salt,pepper; shake; shaker,approved,batch 1
 1,sandal,shoe; summer; feet,approved,batch 1
 1,sauce,pasta; tomato; dip,approved,batch 1
 1,sausage,meat; breakfast; link,approved,batch 1
@@ -832,24 +832,24 @@
 1,saxophone,music; jazz; blow,approved,batch 1
 1,scale,weigh; pounds; bathroom,approved,batch 1
 1,scarf,neck; warm; winter,approved,batch 1
-1,school bus,yellow; bus; school,approved,batch 1
+1,school bus,yellow; kids; driver,approved,batch 1
 1,scooter,ride; wheels; kick,approved,batch 1
-1,screwdriver,screw; tool; turn,approved,batch 1
+1,screwdriver,tool; turn; Phillips,approved,batch 1
 1,seagull,bird; beach; ocean,approved,batch 1
-1,seahorse,ocean; horse; small,approved,batch 1
+1,seahorse,ocean; small; pony,approved,batch 1
 1,seal,ocean; clap; flipper,approved,batch 1
 1,seed,plant; grow; garden,approved,batch 1
 1,seesaw,playground; up; down,approved,batch 1
 1,shampoo,hair; wash; shower,approved,batch 1
 1,shelf,books; wall; put,approved,batch 1
 1,shell,beach; turtle; egg,approved,batch 1
-1,shoelace,shoe; tie; string,approved,batch 1
+1,shoelace,tie; string; knot,approved,batch 1
 1,shopping cart,store; push; groceries,approved,batch 1
 1,shorts,pants; summer; legs,approved,batch 1
 1,shovel,dig; dirt; snow,approved,batch 1
 1,shower,water; clean; bath,approved,batch 1
-1,sidewalk,walk; street; chalk,approved,batch 1
-1,singer,sing; song; music,approved,batch 1
+1,sidewalk,street; chalk; pavement,approved,batch 1
+1,singer,song; music; voice,approved,batch 1
 1,sink,water; wash; faucet,approved,batch 1
 1,sister,brother; family; girl,approved,batch 1
 1,skeleton,bones; Halloween; body,approved,batch 1
@@ -863,20 +863,20 @@
 1,smoke,fire; gray; chimney,approved,batch 1
 1,snack,food; eat; hungry,approved,batch 1
 1,sneaker,shoe; run; feet,approved,batch 1
-1,snowflake,snow; winter; cold,approved,batch 1
+1,snowflake,winter; cold; unique,approved,batch 1
 1,socks,feet; wear; shoes,approved,batch 1
 1,sofa,couch; sit; living room,approved,batch 1
 1,soldier,army; uniform; march,approved,batch 1
-1,sparkler,fire; sparkle; Fourth of July,approved,batch 1
+1,sparkler,fire; Fourth of July; sparks,approved,batch 1
 1,spatula,flip; pancake; kitchen,approved,batch 1
 1,spinach,green; vegetable; Popeye,approved,batch 1
 1,sponge,wash; soap; squeeze,approved,batch 1
 1,sprinkler,water; grass; spray,approved,batch 1
 1,stairs,steps; up; down,approved,batch 1
 1,stamp,letter; mail; sticker,approved,batch 1
-1,starfish,ocean; star; beach,approved,batch 1
+1,starfish,ocean; beach; five arms,approved,batch 1
 1,steak,meat; cow; grill,approved,batch 1
-1,sticker,stick; paper; star,approved,batch 1
+1,sticker,paper; star; label,approved,batch 1
 1,stomach,belly; food; tummy,approved,batch 1
 1,stool,sit; chair; kitchen,approved,batch 1
 1,store,buy; shop; money,approved,batch 1
@@ -894,29 +894,29 @@
 1,tape,sticky; roll; stick,approved,batch 1
 1,taxi,car; yellow; ride,approved,batch 1
 1,tea,drink; hot; cup,approved,batch 1
-1,teapot,tea; pour; hot,approved,batch 1
+1,teapot,pour; hot; spout,approved,batch 1
 1,teeth,mouth; brush; bite,approved,batch 1
-1,telephone,call; phone; ring,approved,batch 1
+1,telephone,call; ring; dial,approved,batch 1
 1,tennis,racket; ball; net,approved,batch 1
 1,thumb,finger; hand; up,approved,batch 1
 1,thunder,storm; loud; lightning,approved,batch 1
 1,ticket,movie; show; buy,approved,batch 1
 1,tire,car; wheel; rubber,approved,batch 1
 1,toad,frog; jump; warts,approved,batch 1
-1,toast,bread; toaster; butter,approved,batch 1
+1,toast,bread; butter; jam,approved,batch 1
 1,toe,foot; five; nail,approved,batch 1
 1,toilet,bathroom; flush; potty,approved,batch 1
 1,tomato,red; vegetable; ketchup,approved,batch 1
 1,tongue,mouth; lick; taste,approved,batch 1
-1,toolbox,tools; hammer; box,approved,batch 1
-1,tooth fairy,tooth; money; pillow,approved,batch 1
-1,toothpick,tooth; stick; small,approved,batch 1
+1,toolbox,tools; hammer; wrench,approved,batch 1
+1,tooth fairy,money; pillow; teeth,approved,batch 1
+1,toothpick,stick; small; teeth,approved,batch 1
 1,tortoise,turtle; slow; shell,approved,batch 1
 1,tower,tall; castle; building,approved,batch 1
 1,toy,play; fun; kids,approved,batch 1
-1,toy box,toys; box; put away,approved,batch 1
-1,trash can,garbage; trash; throw,approved,batch 1
-1,treehouse,tree; house; climb,approved,batch 1
+1,toy box,put away; playroom; storage,approved,batch 1
+1,trash can,garbage; throw; lid,approved,batch 1
+1,treehouse,climb; branches; fort,approved,batch 1
 1,triangle,shape; three; sides,approved,batch 1
 1,tricycle,three; wheels; bike,approved,batch 1
 1,trophy,win; gold; first,approved,batch 1
@@ -935,18 +935,18 @@
 1,waiter,restaurant; food; serve,approved,batch 1
 1,walrus,tusks; ocean; ice,approved,batch 1
 1,watch,time; wrist; clock,approved,batch 1
-1,water bottle,water; drink; bottle,approved,batch 1
+1,water bottle,drink; thirsty; cap,approved,batch 1
 1,wave,ocean; hand; hello,approved,batch 1
 1,web,spider; sticky; internet,approved,batch 1
 1,wheel,round; car; roll,approved,batch 1
-1,wheelbarrow,garden; push; wheel,approved,batch 1
+1,wheelbarrow,garden; push; dirt,approved,batch 1
 1,whisker,cat; face; hair,approved,batch 1
 1,whistle,blow; sound; coach,approved,batch 1
-1,windmill,wind; spin; farm,approved,batch 1
+1,windmill,spin; farm; blades,approved,batch 1
 1,wing,bird; fly; feathers,approved,batch 1
 1,winter,cold; snow; season,approved,batch 1
 1,wolf,howl; moon; dog,approved,batch 1
-1,woodpecker,bird; tree; peck,approved,batch 1
+1,woodpecker,bird; tree; tapping,approved,batch 1
 1,wrench,tool; bolt; turn,approved,batch 1
 1,wrist,hand; arm; watch,approved,batch 1
 1,xylophone,music; hit; keys,approved,batch 1
@@ -955,7 +955,7 @@
 1,yawn,tired; mouth; sleep,approved,batch 1
 1,yo-yo,string; toy; up,approved,batch 1
 1,yogurt,cup; spoon; breakfast,approved,batch 1
-1,zipper,zip; jacket; close,approved,batch 1
+1,zipper,jacket; close; teeth,approved,batch 1
 2,acrobat,circus; flip; trapeze; balance,approved,batch 1
 2,actor,movie; play; stage; role,approved,batch 1
 2,address,house; street; mail; live,approved,batch 1
@@ -968,7 +968,7 @@
 2,archery,bow; arrow; target; aim,approved,batch 1
 2,arena,stadium; game; concert; seats,approved,batch 1
 2,armor,knight; metal; protect; suit,approved,batch 1
-2,art gallery,paintings; museum; art; walls,approved,batch 1
+2,art gallery,paintings; museum; walls; exhibit,approved,batch 1
 2,athlete,sports; train; compete; player,approved,batch 1
 2,attic,top; house; storage; dusty,approved,batch 1
 2,auction,bid; sell; highest; sold,approved,batch 1
@@ -976,7 +976,7 @@
 2,author,book; write; story; writer,approved,batch 1
 2,autumn,fall; leaves; season; orange,approved,batch 1
 2,award,prize; win; trophy; honor,approved,batch 1
-2,backflip,flip; back; jump; gymnastics,approved,batch 1
+2,backflip,jump; gymnastics; somersault; tumble,approved,batch 1
 2,badge,police; pin; wear; sheriff,approved,batch 1
 2,bake sale,cookies; sell; money; school,approved,batch 1
 2,balcony,outside; floor; apartment; railing,approved,batch 1
@@ -986,38 +986,38 @@
 2,barber,haircut; hair; cut; shave,approved,batch 1
 2,barcode,scan; lines; store; price,approved,batch 1
 2,basement,downstairs; house; below; dark,approved,batch 1
-2,bat cave,bats; cave; hero; secret,approved,batch 1
+2,bat cave,hero; secret; Gotham; Robin,approved,batch 1
 2,battery,power; charge; AA; energy,approved,batch 1
-2,beehive,bees; honey; hive; buzz,approved,batch 1
-2,bell pepper,pepper; vegetable; green; red,approved,batch 1
+2,beehive,bees; honey; buzz; honeycomb,approved,batch 1
+2,bell pepper,vegetable; green; red; stuffed,approved,batch 1
 2,bench,sit; park; seat; wood,approved,batch 1
 2,bicycle helmet,bike; head; safe; wear,approved,batch 1
 2,billboard,sign; road; ad; big,approved,batch 1
-2,birdhouse,bird; house; tree; nest,approved,batch 1
-2,birthday party,birthday; cake; presents; celebrate,approved,batch 1
+2,birdhouse,tree; nest; birdseed; feeder,approved,batch 1
+2,birthday party,cake; presents; celebrate; candles,approved,batch 1
 2,blindfold,eyes; cover; see; game,approved,batch 1
 2,blister,foot; shoe; hurt; bubble,approved,batch 1
-2,bodyguard,protect; famous; guard; security,approved,batch 1
-2,bonfire,fire; wood; big; outside,approved,batch 1
-2,bookmark,book; page; place; read,approved,batch 1
+2,bodyguard,protect; famous; security; bouncer,approved,batch 1
+2,bonfire,wood; big; outside; flames,approved,batch 1
+2,bookmark,page; place; read; ribbon,approved,batch 1
 2,bouquet,flowers; bunch; wedding; roses,approved,batch 1
-2,bowling alley,bowling; pins; ball; lanes,approved,batch 1
-2,bowtie,tie; neck; fancy; suit,approved,batch 1
-2,bread machine,bread; bake; machine; loaf,approved,batch 1
+2,bowling alley,pins; ball; lanes; strike,approved,batch 1
+2,bowtie,neck; fancy; suit; tuxedo,approved,batch 1
+2,bread machine,bake; loaf; dough; kneading,approved,batch 1
 2,bride,wedding; dress; marry; groom,approved,batch 1
-2,bubble wrap,pop; bubbles; package; plastic,approved,batch 1
+2,bubble wrap,pop; package; plastic; shipping,approved,batch 1
 2,bull,cow; horns; charge; red,approved,batch 1
-2,bulletin board,board; pins; notes; school,approved,batch 1
-2,bungee jump,jump; rope; bridge; bounce,approved,batch 1
+2,bulletin board,pins; notes; school; thumbtacks,approved,batch 1
+2,bungee jump,rope; bridge; bounce; cord,approved,batch 1
 2,burglar,steal; house; thief; night,approved,batch 1
-2,bus driver,bus; drive; school; wheel,approved,batch 1
-2,butterfly net,net; catch; bugs; butterfly,approved,batch 1
+2,bus driver,school; wheel; steering; route,approved,batch 1
+2,butterfly net,catch; bugs; insects; wings,approved,batch 1
 2,cafeteria,lunch; school; tray; eat,approved,batch 1
 2,camouflage,hide; blend; army; green,approved,batch 1
 2,campground,camping; tent; site; outdoors,approved,batch 1
 2,canyon,deep; valley; Grand; rocks,approved,batch 1
 2,captain,ship; leader; boat; team,approved,batch 1
-2,car wash,car; clean; soap; water,approved,batch 1
+2,car wash,clean; soap; water; suds,approved,batch 1
 2,carousel,horses; ride; round; merry-go-round,approved,batch 1
 2,cartoon,animated; TV; funny; drawing,approved,batch 1
 2,cash register,money; store; checkout; drawer,approved,batch 1
@@ -1025,346 +1025,346 @@
 2,catapult,launch; throw; castle; fling,approved,batch 1
 2,cattle,cows; ranch; herd; farm,approved,batch 1
 2,cello,violin; big; strings; bow,approved,batch 1
-2,cereal box,cereal; breakfast; box; prize,approved,batch 1
+2,cereal box,breakfast; prize; cardboard; flakes,approved,batch 1
 2,championship,win; final; title; game,approved,batch 1
 2,chandelier,lights; ceiling; fancy; crystal,approved,batch 1
-2,cheerleader,cheer; pom-poms; team; game,approved,batch 1
-2,chess club,chess; club; school; game,approved,batch 1
+2,cheerleader,pom-poms; team; game; cartwheels,approved,batch 1
+2,chess club,school; game; checkmate; members,approved,batch 1
 2,chimpanzee,monkey; ape; banana; smart,approved,batch 1
 2,cinema,movie; theater; screen; popcorn,approved,batch 1
 2,clarinet,music; blow; reed; instrument,approved,batch 1
 2,classroom,school; teacher; desk; students,approved,batch 1
 2,cliff,edge; high; rock; fall,approved,batch 1
-2,climbing wall,climb; wall; rope; gym,approved,batch 1
-2,clockwork,gears; clock; tick; machine,approved,batch 1
-2,closet monster,monster; closet; scary; night,approved,batch 1
+2,climbing wall,rope; gym; harness; grips,approved,batch 1
+2,clockwork,gears; tick; machine; wind-up,approved,batch 1
+2,closet monster,scary; night; hiding; under the bed,approved,batch 1
 2,clue,mystery; hint; detective; solve,approved,batch 1
 2,coach,team; sports; whistle; train,approved,batch 1
 2,coast,beach; ocean; shore; sea,approved,batch 1
 2,cocoon,caterpillar; butterfly; wrap; change,approved,batch 1
-2,coffee shop,coffee; cafe; latte; drink,approved,batch 1
+2,coffee shop,cafe; latte; drink; barista,approved,batch 1
 2,collar,dog; neck; shirt; leash,approved,batch 1
 2,comet,space; tail; star; sky,approved,batch 1
-2,comic book,superhero; read; pictures; comic,approved,batch 1
+2,comic book,superhero; read; pictures; cartoons,approved,batch 1
 2,composer,music; write; songs; Mozart,approved,batch 1
 2,conductor,orchestra; train; music; lead,approved,batch 1
 2,confetti,party; paper; throw; celebrate,approved,batch 1
 2,construction,build; crane; hard hat; site,approved,batch 1
-2,cookie cutter,cookie; shape; cut; bake,approved,batch 1
-2,coral reef,ocean; fish; colorful; reef,approved,batch 1
+2,cookie cutter,shape; bake; dough; mold,approved,batch 1
+2,coral reef,ocean; fish; colorful; scuba,approved,batch 1
 2,costume,Halloween; dress up; wear; mask,approved,batch 1
 2,cotton candy,fair; sugar; pink; fluffy,approved,batch 1
-2,countdown,count; ten; backwards; zero,approved,batch 1
-2,courtroom,judge; trial; lawyer; court,approved,batch 1
+2,countdown,ten; backwards; zero; liftoff,approved,batch 1
+2,courtroom,judge; trial; lawyer; gavel,approved,batch 1
 2,cowgirl,horse; ranch; hat; rodeo,approved,batch 1
 2,crane,bird; lift; construction; tall,approved,batch 1
 2,crossword,puzzle; words; clues; newspaper,approved,batch 1
-2,cruise ship,cruise; ship; vacation; ocean,approved,batch 1
+2,cruise ship,vacation; ocean; deck; boat,approved,batch 1
 2,crystal ball,future; fortune; glass; see,approved,batch 1
 2,cupboard,kitchen; dishes; shelf; door,approved,batch 1
 2,curfew,home; time; late; night,approved,batch 1
-2,daycare,kids; babies; care; watch,approved,batch 1
+2,daycare,kids; babies; watch; preschool,approved,batch 1
 2,decorations,party; decorate; holiday; hang,approved,batch 1
-2,delivery,package; deliver; pizza; door,approved,batch 1
-2,dentist chair,dentist; chair; teeth; sit,approved,batch 1
+2,delivery,package; pizza; door; drop off,approved,batch 1
+2,dentist chair,teeth; sit; drill; open wide,approved,batch 1
 2,diamond,ring; jewel; sparkle; expensive,approved,batch 1
 2,diary,write; secret; journal; day,approved,batch 1
 2,dictionary,words; meaning; book; definition,approved,batch 1
 2,diner,restaurant; burger; booth; breakfast,approved,batch 1
-2,dinosaur bones,dinosaur; fossil; museum; bones,approved,batch 1
+2,dinosaur bones,fossil; museum; skeleton; T. rex,approved,batch 1
 2,diploma,graduate; school; paper; degree,approved,batch 1
 2,director,movie; film; action; boss,approved,batch 1
 2,disguise,hide; costume; wig; fake,approved,batch 1
-2,diving board,dive; pool; jump; board,approved,batch 1
-2,dodgeball,ball; throw; dodge; gym,approved,batch 1
-2,dog park,dog; park; play; fence,approved,batch 1
-2,doorknob,door; turn; open; handle,approved,batch 1
-2,drawbridge,castle; bridge; moat; lower,approved,batch 1
+2,diving board,dive; pool; jump; high dive,approved,batch 1
+2,dodgeball,throw; gym; duck; team,approved,batch 1
+2,dog park,play; fence; leash; off leash,approved,batch 1
+2,doorknob,turn; open; handle; twist,approved,batch 1
+2,drawbridge,castle; moat; lower; chains,approved,batch 1
 2,dream,sleep; night; bed; imagine,approved,batch 1
 2,dress rehearsal,practice; play; costumes; before,approved,batch 1
 2,drive-through,car; food; window; order,approved,batch 1
-2,drum set,drums; music; sticks; beat,approved,batch 1
-2,dust bunny,dust; under; bed; fluffy,approved,batch 1
+2,drum set,music; sticks; beat; cymbal,approved,batch 1
+2,dust bunny,under; bed; fluffy; vacuum,approved,batch 1
 2,editor,newspaper; fix; write; magazine,approved,batch 1
-2,electrician,wires; electric; power; fix,approved,batch 1
+2,electrician,wires; power; fix; electricity,approved,batch 1
 2,elf,Santa; Christmas; pointy; ears,approved,batch 1
 2,emergency,help; 911; urgent; ambulance,approved,batch 1
 2,emoji,smiley; text; face; phone,approved,batch 1
 2,encyclopedia,facts; books; knowledge; reference,approved,batch 1
 2,engine,car; motor; power; run,approved,batch 1
 2,exercise,workout; gym; fit; sweat,approved,batch 1
-2,explorer,explore; discover; map; travel,approved,batch 1
+2,explorer,discover; map; travel; adventure,approved,batch 1
 2,factory,make; workers; machines; build,approved,batch 1
 2,fairy tale,once upon a time; princess; story; happily,approved,batch 1
-2,fan club,fans; club; famous; join,approved,batch 1
-2,farmers market,farm; fresh; vegetables; buy,approved,batch 1
+2,fan club,famous; join; members; autograph,approved,batch 1
+2,farmers market,fresh; vegetables; buy; produce,approved,batch 1
 2,fashion show,clothes; model; runway; style,approved,batch 1
 2,fast food,burger; quick; fries; drive-through,approved,batch 1
-2,field trip,school; trip; bus; class,approved,batch 1
+2,field trip,school; bus; class; permission slip,approved,batch 1
 2,film,movie; camera; watch; theater,approved,batch 1
-2,fire escape,stairs; fire; building; outside,approved,batch 1
-2,fishing boat,fish; boat; net; sea,approved,batch 1
-2,flashlight tag,flashlight; tag; dark; game,approved,batch 1
-2,flat tire,tire; flat; car; air,approved,batch 1
-2,food court,mall; food; eat; tables,approved,batch 1
-2,footprint,foot; print; sand; step,approved,batch 1
+2,fire escape,stairs; building; outside; ladder,approved,batch 1
+2,fishing boat,net; sea; catch; deck,approved,batch 1
+2,flashlight tag,dark; game; chase; night,approved,batch 1
+2,flat tire,car; air; puncture; spare,approved,batch 1
+2,food court,mall; eat; tables; pretzels,approved,batch 1
+2,footprint,sand; step; footstep; mud,approved,batch 1
 2,forecast,weather; predict; rain; tomorrow,approved,batch 1
 2,fossil,dinosaur; bones; rock; old,approved,batch 1
 2,freezer,ice; cold; frozen; fridge,approved,batch 1
 2,frostbite,cold; fingers; freeze; winter,approved,batch 1
 2,garage,car; park; house; door,approved,batch 1
-2,garden gnome,gnome; garden; statue; hat,approved,batch 1
+2,garden gnome,statue; hat; beard; lawn,approved,batch 1
 2,genie,lamp; wish; three; magic,approved,batch 1
 2,geography,maps; countries; world; class,approved,batch 1
-2,ghost story,ghost; scary; tell; campfire,approved,batch 1
-2,gift card,gift; card; store; money,approved,batch 1
+2,ghost story,scary; tell; campfire; spooky,approved,batch 1
+2,gift card,store; money; present; balance,approved,batch 1
 2,glacier,ice; melt; mountain; cold,approved,batch 1
 2,gladiator,fight; Rome; arena; sword,approved,batch 1
-2,glue stick,glue; stick; paper; craft,approved,batch 1
-2,goalie,goal; soccer; hockey; block,approved,batch 1
-2,gold medal,gold; win; Olympics; first,approved,batch 1
-2,golf cart,golf; cart; drive; course,approved,batch 1
-2,grand piano,piano; big; keys; music,approved,batch 1
+2,glue stick,paper; craft; paste; school supplies,approved,batch 1
+2,goalie,soccer; hockey; block; net,approved,batch 1
+2,gold medal,win; Olympics; first; champion,approved,batch 1
+2,golf cart,drive; course; caddie; putt,approved,batch 1
+2,grand piano,big; keys; music; pianist,approved,batch 1
 2,greenhouse,plants; grow; glass; garden,approved,batch 1
-2,guidebook,guide; travel; book; tourist,approved,batch 1
-2,gymnast,gymnastics; flip; balance; beam,approved,batch 1
-2,hailstorm,ice; storm; balls; sky,approved,batch 1
+2,guidebook,travel; tourist; maps; directions,approved,batch 1
+2,gymnast,flip; balance; beam; tumbling,approved,batch 1
+2,hailstorm,ice; balls; sky; weather,approved,batch 1
 2,Halloween,costume; candy; trick-or-treat; October,approved,batch 1
-2,hard hat,construction; helmet; safety; hat,approved,batch 1
+2,hard hat,construction; helmet; safety; builder,approved,batch 1
 2,harmonica,music; blow; mouth; instrument,approved,batch 1
 2,harp,strings; angel; music; pluck,approved,batch 1
-2,haunted house,ghost; scary; spooky; house,approved,batch 1
-2,high five,hand; slap; five; celebrate,approved,batch 1
+2,haunted house,ghost; scary; spooky; creepy,approved,batch 1
+2,high five,hand; slap; celebrate; clap,approved,batch 1
 2,highway,road; cars; fast; drive,approved,batch 1
 2,history,past; class; old; events,approved,batch 1
-2,hockey puck,hockey; puck; ice; stick,approved,batch 1
+2,hockey puck,ice; stick; rubber; slapshot,approved,batch 1
 2,honeymoon,wedding; trip; married; vacation,approved,batch 1
-2,horse race,horse; race; jockey; track,approved,batch 1
-2,hot air balloon,balloon; fly; basket; hot,approved,batch 1
-2,hot tub,water; hot; bubbles; relax,approved,batch 1
+2,horse race,jockey; track; derby; gallop,approved,batch 1
+2,hot air balloon,fly; basket; float; burner,approved,batch 1
+2,hot tub,water; bubbles; relax; jacuzzi,approved,batch 1
 2,hula,Hawaii; dance; grass skirt; hips,approved,batch 1
-2,ice cream truck,ice cream; truck; music; summer,approved,batch 1
-2,ice rink,ice; skate; rink; hockey,approved,batch 1
-2,identical twins,twins; same; look; alike,approved,batch 1
-2,inventor,invent; create; idea; Edison,approved,batch 1
+2,ice cream truck,music; summer; jingle; cone,approved,batch 1
+2,ice rink,skate; hockey; frozen; Zamboni,approved,batch 1
+2,identical twins,same; look; alike; double,approved,batch 1
+2,inventor,create; idea; Edison; invention,approved,batch 1
 2,invisible,see; disappear; can't; hidden,approved,batch 1
 2,itchy,scratch; bite; rash; mosquito,approved,batch 1
 2,jack-o'-lantern,pumpkin; Halloween; carve; face,approved,batch 1
 2,jail,prison; bars; cell; police,approved,batch 1
 2,janitor,clean; school; mop; custodian,approved,batch 1
 2,jeep,car; off-road; drive; four-wheel,approved,batch 1
-2,jewelry box,jewelry; box; necklace; rings,approved,batch 1
+2,jewelry box,necklace; rings; earrings; treasures,approved,batch 1
 2,jockey,horse; ride; race; small,approved,batch 1
 2,joke,funny; laugh; punchline; tell,approved,batch 1
 2,journal,write; diary; notebook; daily,approved,batch 1
 2,judge,court; trial; decide; gavel,approved,batch 1
-2,juggler,juggle; balls; circus; throw,approved,batch 1
+2,juggler,balls; circus; throw; clubs,approved,batch 1
 2,jukebox,music; songs; coins; diner,approved,batch 1
 2,junk food,chips; candy; unhealthy; snack,approved,batch 1
-2,kite surfing,kite; surf; wind; board,approved,batch 1
-2,lab coat,scientist; white; coat; doctor,approved,batch 1
-2,laboratory,science; experiment; lab; test,approved,batch 1
+2,kite surfing,wind; board; ocean; string,approved,batch 1
+2,lab coat,scientist; white; doctor; goggles,approved,batch 1
+2,laboratory,science; experiment; test; beakers,approved,batch 1
 2,lasso,rope; cowboy; throw; catch,approved,batch 1
 2,laundromat,laundry; wash; machines; clothes,approved,batch 1
 2,lava,volcano; hot; melt; red,approved,batch 1
-2,lawyer,court; law; judge; client,approved,batch 1
-2,lemonade stand,lemonade; stand; sell; summer,approved,batch 1
+2,lawyer,court; judge; client; attorney,approved,batch 1
+2,lemonade stand,sell; summer; lemons; sidewalk,approved,batch 1
 2,librarian,library; books; quiet; check out,approved,batch 1
 2,lifeguard,pool; beach; save; whistle,approved,batch 1
-2,limo,limousine; long; car; fancy,approved,batch 1
+2,limo,long; car; fancy; prom,approved,batch 1
 2,llama,animal; spit; wool; Peru,approved,batch 1
-2,locker,school; lock; combination; hallway,approved,batch 1
-2,log cabin,wood; cabin; house; woods,approved,batch 1
-2,lost and found,lost; found; items; box,approved,batch 1
+2,locker,school; combination; hallway; hall,approved,batch 1
+2,log cabin,wood; house; woods; cozy,approved,batch 1
+2,lost and found,items; box; missing; claim,approved,batch 1
 2,luggage,suitcase; travel; bags; airport,approved,batch 1
 2,lullaby,song; sleep; baby; sing,approved,batch 1
-2,lunch break,lunch; break; work; eat,approved,batch 1
-2,magic trick,magic; trick; rabbit; hat,approved,batch 1
-2,magnifying glass,magnify; glass; look; detective,approved,batch 1
+2,lunch break,work; eat; noon; rest,approved,batch 1
+2,magic trick,rabbit; hat; wand; illusion,approved,batch 1
+2,magnifying glass,look; detective; zoom; bigger,approved,batch 1
 2,mall,shopping; stores; buy; food court,approved,batch 1
 2,manners,polite; please; thank you; rude,approved,batch 1
-2,marching band,band; march; music; parade,approved,batch 1
+2,marching band,music; parade; drums; tuba,approved,batch 1
 2,mascot,team; costume; cheer; animal,approved,batch 1
-2,math test,math; test; numbers; school,approved,batch 1
+2,math test,numbers; school; exam; calculator,approved,batch 1
 2,maze,lost; path; find; exit,approved,batch 1
 2,mechanic,car; fix; tools; garage,approved,batch 1
 2,meditation,calm; breathe; quiet; relax,approved,batch 1
 2,meteor,space; rock; falling; star,approved,batch 1
-2,milkshake,milk; ice cream; straw; shake,approved,batch 1
-2,minivan,van; family; car; seats,approved,batch 1
-2,mirror maze,mirror; maze; fun house; reflection,approved,batch 1
+2,milkshake,ice cream; straw; blender; thick,approved,batch 1
+2,minivan,family; car; seats; soccer mom,approved,batch 1
+2,mirror maze,fun house; reflection; lost; carnival,approved,batch 1
 2,mission,goal; task; secret; agent,approved,batch 1
-2,model airplane,model; airplane; build; small,approved,batch 1
-2,moonwalk,moon; walk; dance; backwards,approved,batch 1
+2,model airplane,build; small; kit; glue,approved,batch 1
+2,moonwalk,dance; backwards; Michael Jackson; slide,approved,batch 1
 2,mosaic,tiles; art; pieces; picture,approved,batch 1
 2,motel,hotel; stay; road; room,approved,batch 1
-2,mountain bike,bike; mountain; trail; ride,approved,batch 1
+2,mountain bike,trail; ride; helmet; dirt,approved,batch 1
 2,moving day,move; boxes; house; truck,approved,batch 1
 2,mummy,wrap; Egypt; tomb; bandage,approved,batch 1
-2,museum guide,museum; tour; guide; explain,approved,batch 1
-2,music video,music; video; song; watch,approved,batch 1
+2,museum guide,tour; explain; exhibits; docent,approved,batch 1
+2,music video,song; watch; singer; MTV,approved,batch 1
 2,nachos,chips; cheese; Mexican; snack,approved,batch 1
-2,national park,park; nature; ranger; camping,approved,batch 1
-2,nest egg,save; money; future; egg,approved,batch 1
-2,news anchor,news; TV; report; desk,approved,batch 1
-2,nightlight,light; dark; night; bedroom,approved,batch 1
+2,national park,nature; ranger; camping; Yellowstone,approved,batch 1
+2,nest egg,save; money; future; retirement,approved,batch 1
+2,news anchor,TV; report; desk; broadcast,approved,batch 1
+2,nightlight,dark; bedroom; glow; outlet,approved,batch 1
 2,nightmare,bad; dream; scary; sleep,approved,batch 1
 2,oasis,desert; water; palm; green,approved,batch 1
-2,obstacle course,obstacle; course; climb; race,approved,batch 1
-2,octopus ink,octopus; ink; squirt; black,approved,batch 1
+2,obstacle course,climb; race; crawl; hurdles,approved,batch 1
+2,octopus ink,squirt; black; cloud; escape,approved,batch 1
 2,office,work; desk; boss; job,approved,batch 1
 2,Olympics,games; medal; athletes; world,approved,batch 1
 2,opera,sing; loud; music; theater,approved,batch 1
 2,orchard,apples; trees; fruit; pick,approved,batch 1
-2,outer space,space; stars; planets; astronaut,approved,batch 1
+2,outer space,stars; planets; astronaut; galaxy,approved,batch 1
 2,overalls,jeans; farmer; straps; wear,approved,batch 1
 2,oyster,pearl; shell; ocean; seafood,approved,batch 1
-2,pajama party,pajamas; party; sleepover; friends,approved,batch 1
-2,palm tree,tree; beach; coconut; tropical,approved,batch 1
-2,pancake flip,pancake; flip; pan; breakfast,approved,batch 1
-2,paperclip,paper; clip; metal; office,approved,batch 1
+2,pajama party,sleepover; friends; PJs; slumber,approved,batch 1
+2,palm tree,beach; coconut; tropical; fronds,approved,batch 1
+2,pancake flip,breakfast; spatula; toss; syrup,approved,batch 1
+2,paperclip,metal; office; binder; bend,approved,batch 1
 2,paramedic,ambulance; help; emergency; hurt,approved,batch 1
-2,parking lot,park; cars; spaces; lot,approved,batch 1
+2,parking lot,cars; spaces; spots; mall,approved,batch 1
 2,passenger,ride; car; plane; seat,approved,batch 1
 2,patio,outside; backyard; chairs; deck,approved,batch 1
 2,pen pal,letters; friend; write; far,approved,batch 1
 2,penalty,foul; punish; rule; soccer,approved,batch 1
-2,pet store,pet; store; animals; buy,approved,batch 1
-2,photographer,photo; camera; picture; click,approved,batch 1
-2,picnic basket,picnic; basket; food; blanket,approved,batch 1
-2,piggyback,ride; back; carry; shoulders,approved,batch 1
-2,pinball,ball; machine; flippers; arcade,approved,batch 1
-2,pirate ship,pirate; ship; flag; treasure,approved,batch 1
-2,pizza delivery,pizza; deliver; driver; box,approved,batch 1
+2,pet store,animals; buy; puppies; fish tank,approved,batch 1
+2,photographer,camera; picture; click; photos,approved,batch 1
+2,picnic basket,food; blanket; wicker; sandwiches,approved,batch 1
+2,piggyback,ride; carry; shoulders; riding,approved,batch 1
+2,pinball,machine; flippers; arcade; bumpers,approved,batch 1
+2,pirate ship,flag; treasure; sails; plank,approved,batch 1
+2,pizza delivery,driver; box; hot; tip,approved,batch 1
 2,plumber,pipes; toilet; leak; fix,approved,batch 1
-2,pogo stick,bounce; jump; stick; spring,approved,batch 1
+2,pogo stick,bounce; jump; spring; hop,approved,batch 1
 2,poison ivy,itchy; plant; rash; leaves,approved,batch 1
-2,polka dots,dots; spots; pattern; circles,approved,batch 1
+2,polka dots,spots; pattern; circles; dotted,approved,batch 1
 2,pom-poms,cheerleader; fluffy; cheer; shake,approved,batch 1
-2,pool party,pool; party; swim; summer,approved,batch 1
-2,popcorn machine,popcorn; machine; movie; pop,approved,batch 1
-2,postcard,vacation; mail; picture; card,approved,batch 1
+2,pool party,swim; summer; splash; floaties,approved,batch 1
+2,popcorn machine,movie; butter; kernels; theater,approved,batch 1
+2,postcard,vacation; mail; picture; stamp,approved,batch 1
 2,pottery,clay; wheel; vase; make,approved,batch 1
 2,prank,joke; trick; funny; April Fools,approved,batch 1
 2,principal,school; office; boss; teacher,approved,batch 1
-2,puppet show,puppet; show; strings; stage,approved,batch 1
+2,puppet show,strings; stage; marionette; curtain,approved,batch 1
 2,quarterback,football; throw; team; pass,approved,batch 1
-2,race track,race; track; cars; laps,approved,batch 1
+2,race track,cars; laps; oval; finish line,approved,batch 1
 2,radar,detect; weather; screen; signal,approved,batch 1
 2,ranch,cowboy; horses; cattle; farm,approved,batch 1
 2,rap,music; rhyme; beat; song,approved,batch 1
 2,rehearsal,practice; play; perform; before,approved,batch 1
-2,relay race,race; baton; team; run,approved,batch 1
+2,relay race,baton; team; run; pass,approved,batch 1
 2,remote,control; TV; channel; button,approved,batch 1
 2,rescue,save; help; emergency; danger,approved,batch 1
-2,rock band,rock; band; guitar; drums,approved,batch 1
-2,rocking chair,rock; chair; porch; grandma,approved,batch 1
+2,rock band,guitar; drums; concert; lead singer,approved,batch 1
+2,rocking chair,porch; grandma; creak; sway,approved,batch 1
 2,rodeo,cowboy; bull; ride; horse,approved,batch 1
-2,room service,hotel; room; food; order,approved,batch 1
-2,rowboat,row; boat; oars; lake,approved,batch 1
-2,rubber duck,rubber; duck; bath; yellow,approved,batch 1
+2,room service,hotel; food; order; tray,approved,batch 1
+2,rowboat,oars; lake; paddle; oars in water,approved,batch 1
+2,rubber duck,bath; yellow; squeak; tub,approved,batch 1
 2,safari,Africa; animals; jeep; wild,approved,batch 1
 2,sailor,ship; sea; boat; navy,approved,batch 1
-2,sand castle,sand; castle; beach; build,approved,batch 1
+2,sand castle,beach; build; bucket; moat,approved,batch 1
 2,satellite,space; orbit; signal; TV,approved,batch 1
-2,scavenger hunt,hunt; find; list; clues,approved,batch 1
-2,school play,play; school; stage; act,approved,batch 1
-2,science fair,science; fair; project; volcano,approved,batch 1
+2,scavenger hunt,find; list; clues; search,approved,batch 1
+2,school play,stage; act; drama; actors,approved,batch 1
+2,science fair,project; volcano; experiment; poster,approved,batch 1
 2,scuba diving,dive; underwater; tank; ocean,approved,batch 1
 2,sculpture,statue; art; clay; carve,approved,batch 1
-2,secret agent,spy; secret; agent; mission,approved,batch 1
-2,security guard,guard; security; protect; uniform,approved,batch 1
-2,shadow puppet,shadow; hands; light; wall,approved,batch 1
+2,secret agent,spy; mission; undercover; 007,approved,batch 1
+2,security guard,protect; uniform; badge; night shift,approved,batch 1
+2,shadow puppet,hands; light; wall; silhouette,approved,batch 1
 2,sheriff,badge; cowboy; police; town,approved,batch 1
-2,shopping list,list; groceries; buy; store,approved,batch 1
-2,singing contest,sing; contest; judges; win,approved,batch 1
-2,skateboard park,skate; ramp; park; tricks,approved,batch 1
-2,sketchbook,draw; sketch; book; art,approved,batch 1
-2,skydiving,plane; jump; parachute; sky,approved,batch 1
+2,shopping list,groceries; buy; store; errands,approved,batch 1
+2,singing contest,judges; win; vocals; microphone,approved,batch 1
+2,skateboard park,ramp; tricks; halfpipe; helmet,approved,batch 1
+2,sketchbook,draw; art; pencil; doodle,approved,batch 1
+2,skydiving,plane; jump; parachute; freefall,approved,batch 1
 2,sleigh,Santa; snow; reindeer; ride,approved,batch 1
 2,slingshot,launch; rubber band; aim; rock,approved,batch 1
-2,slow motion,slow; movie; motion; replay,approved,batch 1
-2,smoke alarm,smoke; alarm; fire; beep,approved,batch 1
+2,slow motion,movie; replay; frame; dramatic,approved,batch 1
+2,smoke alarm,fire; beep; detector; battery,approved,batch 1
 2,snorkel,swim; underwater; breathe; mask,approved,batch 1
-2,snow day,snow; school; cancel; day off,approved,batch 1
-2,snowboard,snow; board; mountain; ski,approved,batch 1
+2,snow day,school; cancel; no school; sledding,approved,batch 1
+2,snowboard,mountain; ski; slopes; winter,approved,batch 1
 2,soap opera,TV; drama; show; daytime,approved,batch 1
 2,solar system,planets; sun; space; orbit,approved,batch 1
-2,space station,space; station; orbit; astronaut,approved,batch 1
-2,speed bump,speed; bump; road; slow,approved,batch 1
-2,sports car,car; fast; race; red,approved,batch 1
-2,spotlight,light; stage; shine; attention,approved,batch 1
+2,space station,orbit; astronaut; astronauts; float,approved,batch 1
+2,speed bump,road; slow; car; hump,approved,batch 1
+2,sports car,fast; race; red; convertible,approved,batch 1
+2,spotlight,stage; shine; attention; beam,approved,batch 1
 2,stadium,game; seats; fans; sports,approved,batch 1
 2,stagecoach,horses; cowboy; old; ride,approved,batch 1
-2,stand-up comedy,comedy; joke; laugh; stage,approved,batch 1
+2,stand-up comedy,joke; laugh; stage; comedian,approved,batch 1
 2,statue,stone; still; museum; carve,approved,batch 1
 2,stethoscope,doctor; heart; listen; ears,approved,batch 1
 2,stilts,tall; walk; circus; legs,approved,batch 1
-2,stop sign,stop; sign; red; road,approved,batch 1
+2,stop sign,red; road; octagon; brakes,approved,batch 1
 2,storm,rain; thunder; wind; lightning,approved,batch 1
-2,storyteller,story; tell; listen; book,approved,batch 1
-2,substitute teacher,teacher; substitute; class; replace,approved,batch 1
-2,summer camp,summer; camp; kids; cabins,approved,batch 1
-2,surfboard,surf; wave; board; beach,approved,batch 1
+2,storyteller,listen; book; tale; once upon a time,approved,batch 1
+2,substitute teacher,class; replace; lesson plan; fill in,approved,batch 1
+2,summer camp,kids; cabins; canoe; bunks,approved,batch 1
+2,surfboard,wave; beach; wax; ocean,approved,batch 1
 2,surgeon,doctor; operation; hospital; surgery,approved,batch 1
-2,surprise party,surprise; party; birthday; secret,approved,batch 1
-2,sushi chef,sushi; chef; fish; rice,approved,batch 1
-2,swing set,swing; playground; push; backyard,approved,batch 1
+2,surprise party,birthday; secret; guests; hide,approved,batch 1
+2,sushi chef,fish; rice; knife; Japanese,approved,batch 1
+2,swing set,playground; push; backyard; chains,approved,batch 1
 2,tailgate,football; party; truck; parking lot,approved,batch 1
-2,talent show,talent; show; perform; stage,approved,batch 1
-2,tap dance,dance; shoes; tap; sound,approved,batch 1
+2,talent show,perform; stage; acts; judges,approved,batch 1
+2,tap dance,shoes; sound; clicking; feet,approved,batch 1
 2,tattoo,skin; ink; arm; draw,approved,batch 1
-2,taxi driver,taxi; drive; car; yellow,approved,batch 1
-2,tea party,tea; party; cups; fancy,approved,batch 1
+2,taxi driver,car; yellow; cab; meter,approved,batch 1
+2,tea party,cups; fancy; saucers; pinkies,approved,batch 1
 2,temperature,hot; cold; degrees; thermometer,approved,batch 1
-2,tennis court,tennis; court; net; racket,approved,batch 1
+2,tennis court,net; racket; ball; lines,approved,batch 1
 2,thermostat,temperature; heat; cool; house,approved,batch 1
-2,tightrope,rope; walk; circus; balance,approved,batch 1
-2,time machine,time; travel; past; future,approved,batch 1
+2,tightrope,walk; circus; balance; wire,approved,batch 1
+2,time machine,travel; past; future; DeLorean,approved,batch 1
 2,tiptoe,toes; quiet; sneak; walk,approved,batch 1
-2,toll booth,toll; pay; road; booth,approved,batch 1
-2,tour guide,tour; guide; visit; explain,approved,batch 1
-2,tow truck,tow; truck; car; pull,approved,batch 1
-2,town hall,town; hall; mayor; meeting,approved,batch 1
-2,toy store,toys; store; buy; kids,approved,batch 1
-2,track meet,track; race; run; jump,approved,batch 1
-2,trading cards,cards; trade; collect; baseball,approved,batch 1
-2,train station,train; station; tracks; ticket,approved,batch 1
+2,toll booth,pay; road; highway; coins,approved,batch 1
+2,tour guide,visit; explain; sightseeing; group,approved,batch 1
+2,tow truck,car; pull; hook; broken down,approved,batch 1
+2,town hall,mayor; meeting; council; city,approved,batch 1
+2,toy store,buy; kids; games; dolls,approved,batch 1
+2,track meet,race; run; jump; hurdles,approved,batch 1
+2,trading cards,trade; collect; baseball; swap,approved,batch 1
+2,train station,tracks; ticket; platform; conductor,approved,batch 1
 2,trapeze,circus; swing; high; catch,approved,batch 1
 2,treadmill,run; gym; machine; walk,approved,batch 1
-2,treasure chest,treasure; chest; gold; pirate,approved,batch 1
-2,tree house,tree; house; climb; backyard,approved,batch 1
+2,treasure chest,gold; pirate; coins; jewels,approved,batch 1
+2,tree house,climb; backyard; branches; ladder,approved,batch 1
 2,trick-or-treat,Halloween; candy; costume; door,approved,batch 1
 2,tuxedo,suit; fancy; bowtie; wedding,approved,batch 1
 2,twins,two; same; siblings; look,approved,batch 1
 2,umpire,baseball; strike; call; referee,approved,batch 1
-2,underwater,water; below; dive; ocean,approved,batch 1
+2,underwater,below; dive; ocean; submerged,approved,batch 1
 2,upside down,flip; over; head; reverse,approved,batch 1
 2,vampire,bite; fangs; Dracula; bat,approved,batch 1
-2,veterinarian,vet; animals; doctor; pets,approved,batch 1
-2,video call,video; call; screen; face,approved,batch 1
+2,veterinarian,animals; doctor; pets; puppy,approved,batch 1
+2,video call,screen; face; Zoom; webcam,approved,batch 1
 2,village,town; small; houses; people,approved,batch 1
 2,vitamins,healthy; pills; body; daily,approved,batch 1
-2,waiting room,wait; doctor; room; chairs,approved,batch 1
-2,walkie-talkie,talk; radio; over; walkie,approved,batch 1
-2,wallpaper,wall; paper; pattern; decorate,approved,batch 1
-2,water balloon,water; balloon; throw; splash,approved,batch 1
-2,water park,water; slides; park; swim,approved,batch 1
-2,weather report,weather; forecast; TV; rain,approved,batch 1
-2,wedding cake,wedding; cake; tall; white,approved,batch 1
+2,waiting room,doctor; chairs; magazines; appointment,approved,batch 1
+2,walkie-talkie,radio; over; over and out; channel,approved,batch 1
+2,wallpaper,pattern; decorate; glue; roll,approved,batch 1
+2,water balloon,throw; splash; summer; burst,approved,batch 1
+2,water park,slides; swim; wave pool; sunscreen,approved,batch 1
+2,weather report,forecast; TV; rain; meteorologist,approved,batch 1
+2,wedding cake,tall; white; tiers; bride,approved,batch 1
 2,weekend,Saturday; Sunday; days; off,approved,batch 1
-2,werewolf,wolf; moon; full; howl,approved,batch 1
-2,wheelchair,wheels; chair; roll; push,approved,batch 1
+2,werewolf,moon; full; howl; transform,approved,batch 1
+2,wheelchair,wheels; roll; push; ramp,approved,batch 1
 2,whisper,quiet; secret; soft; ear,approved,batch 1
-2,wildfire,fire; forest; smoke; spread,approved,batch 1
-2,wind chime,wind; chime; sound; porch,approved,batch 1
-2,window seat,window; seat; plane; view,approved,batch 1
-2,wishbone,wish; bone; turkey; break,approved,batch 1
-2,wristwatch,watch; wrist; time; clock,approved,batch 1
-2,yard sale,yard; sell; stuff; garage,approved,batch 1
+2,wildfire,forest; smoke; spread; flames,approved,batch 1
+2,wind chime,sound; porch; breeze; tinkle,approved,batch 1
+2,window seat,plane; view; aisle; airplane,approved,batch 1
+2,wishbone,turkey; break; Thanksgiving; pull,approved,batch 1
+2,wristwatch,time; clock; band; tick,approved,batch 1
+2,yard sale,sell; stuff; garage; bargains,approved,batch 1
 2,yoga,stretch; mat; pose; relax,approved,batch 1
-2,zip line,zip; line; ride; harness,approved,batch 1
-2,zookeeper,zoo; animals; feed; keeper,approved,batch 1
+2,zip line,ride; harness; helmet; cable,approved,batch 1
+2,zookeeper,animals; feed; cages; feeding time,approved,batch 1
 3,acupuncture,needles; Chinese; medicine; pain; skin,approved,batch 1
 3,adrenaline,rush; excited; heart; danger; energy,approved,batch 1
 3,algorithm,computer; steps; code; program; math,approved,batch 1
@@ -1377,454 +1377,454 @@
 3,architect,building; design; plans; house; draw,approved,batch 1
 3,astronomy,stars; planets; space; telescope; science,approved,batch 1
 3,atmosphere,air; sky; earth; layer; mood,approved,batch 1
-3,autopilot,plane; automatic; fly; pilot; control,approved,batch 1
+3,autopilot,plane; automatic; fly; control; cockpit,approved,batch 1
 3,awkward,uncomfortable; clumsy; silence; weird; embarrassing,approved,batch 1
-3,backstage,stage; behind; theater; actors; show,approved,batch 1
-3,backup plan,plan; B; fail; spare; second,approved,batch 1
-3,bad habit,habit; bad; break; nail; biting,approved,batch 1
+3,backstage,behind; theater; actors; show; curtain,approved,batch 1
+3,backup plan,B; fail; spare; second; alternative,approved,batch 1
+3,bad habit,break; nail; biting; quit; nail polish,approved,batch 1
 3,bagpipes,Scotland; music; blow; kilt; loud,approved,batch 1
-3,balance beam,gymnastics; beam; balance; narrow; fall,approved,batch 1
+3,balance beam,gymnastics; narrow; fall; tumble; gymnast,approved,batch 1
 3,bandwagon,join; popular; everyone; jump; trend,approved,batch 1
 3,bankrupt,money; broke; debt; business; lose,approved,batch 1
 3,barefoot,shoes; feet; without; walk; grass,approved,batch 1
 3,bargain hunt,deal; cheap; shopping; sale; find,approved,batch 1
-3,bedtime story,bed; story; read; kids; sleep,approved,batch 1
-3,bestseller,book; popular; sell; list; top,approved,batch 1
+3,bedtime story,read; kids; sleep; tuck in; fairy tale,approved,batch 1
+3,bestseller,book; popular; list; top; bookstore,approved,batch 1
 3,bibliography,sources; books; list; essay; cite,approved,batch 1
-3,bicycle kick,soccer; kick; backwards; air; goal,approved,batch 1
+3,bicycle kick,soccer; backwards; air; goal; overhead,approved,batch 1
 3,big picture,overall; view; whole; details; see,approved,batch 1
 3,biography,life; story; book; person; about,approved,batch 1
-3,birthmark,skin; born; spot; mark; body,approved,batch 1
+3,birthmark,skin; born; spot; body; mole,approved,batch 1
 3,blackout,dark; power; lights; electricity; faint,approved,batch 1
-3,blind date,date; meet; stranger; set up; romantic,approved,batch 1
+3,blind date,meet; stranger; set up; romantic; setup,approved,batch 1
 3,blooper,mistake; funny; movie; outtake; reel,approved,batch 1
 3,blueprint,plan; house; design; architect; drawing,approved,batch 1
-3,boardwalk,beach; wood; walk; ocean; shops,approved,batch 1
-3,body language,body; gestures; posture; signals; nonverbal,approved,batch 1
-3,bookworm,read; books; lover; worm; library,approved,batch 1
-3,boredom,bored; nothing; dull; yawn; time,approved,batch 1
-3,bottleneck,traffic; narrow; slow; bottle; jam,approved,batch 1
+3,boardwalk,beach; wood; ocean; shops; pier,approved,batch 1
+3,body language,gestures; posture; signals; nonverbal; crossed arms,approved,batch 1
+3,bookworm,read; books; lover; library; reader,approved,batch 1
+3,boredom,nothing; dull; yawn; time; unbored,approved,batch 1
+3,bottleneck,traffic; narrow; slow; jam; squeeze,approved,batch 1
 3,boycott,refuse; buy; protest; avoid; company,approved,batch 1
-3,breaking news,news; urgent; TV; report; alert,approved,batch 1
+3,breaking news,urgent; TV; report; alert; headlines,approved,batch 1
 3,breakthrough,discovery; progress; finally; science; success,approved,batch 1
 3,bribe,money; pay; illegal; favor; cheat,approved,batch 1
-3,bucket hat,hat; bucket; fishing; sun; floppy,approved,batch 1
-3,bulletproof,bullet; protect; vest; armor; police,approved,batch 1
-3,bumper sticker,car; bumper; sticker; slogan; back,approved,batch 1
+3,bucket hat,fishing; sun; floppy; brim; rain,approved,batch 1
+3,bulletproof,protect; vest; armor; police; bullets,approved,batch 1
+3,bumper sticker,car; slogan; back; decal; rear,approved,batch 1
 3,bureaucracy,government; paperwork; rules; slow; office,approved,batch 1
 3,burnout,tired; exhausted; work; stress; quit,approved,batch 1
 3,butterflies,nervous; stomach; feeling; insect; wings,approved,batch 1
 3,caffeine,coffee; energy; awake; tea; soda,approved,batch 1
-3,call center,phone; customer; service; calls; hold,approved,batch 1
+3,call center,phone; customer; service; hold; operator,approved,batch 1
 3,calligraphy,writing; fancy; pen; letters; art,approved,batch 1
-3,camera shy,camera; photo; shy; hide; picture,approved,batch 1
+3,camera shy,photo; hide; picture; lens; timid,approved,batch 1
 3,campaign,election; vote; politics; candidate; ads,approved,batch 1
-3,candlelight dinner,candles; dinner; romantic; date; light,approved,batch 1
-3,carpool,car; share; ride; together; drive,approved,batch 1
+3,candlelight dinner,candles; romantic; date; flame; wax,approved,batch 1
+3,carpool,share; ride; together; drive; commute,approved,batch 1
 3,cartographer,maps; draw; map maker; geography; world,approved,batch 1
-3,cast iron,pan; iron; heavy; skillet; cook,approved,batch 1
-3,catchphrase,phrase; saying; famous; repeat; character,approved,batch 1
+3,cast iron,pan; heavy; skillet; cook; frying pan,approved,batch 1
+3,catchphrase,saying; famous; repeat; character; line,approved,batch 1
 3,celebrity,famous; star; Hollywood; fans; paparazzi,approved,batch 1
 3,censorship,ban; block; hide; words; government,approved,batch 1
-3,chain reaction,domino; reaction; chain; cause; effect,approved,batch 1
+3,chain reaction,domino; cause; effect; dominoes; spark,approved,batch 1
 3,chaperone,supervise; dance; adult; trip; watch,approved,batch 1
 3,charades,act; guess; game; mime; silent,approved,batch 1
 3,charity,donate; give; help; money; nonprofit,approved,batch 1
-3,cheat sheet,cheat; test; notes; answers; paper,approved,batch 1
+3,cheat sheet,test; notes; answers; paper; crib,approved,batch 1
 3,checkmate,chess; king; win; game; trapped,approved,batch 1
 3,cheerful,happy; smile; positive; bright; mood,approved,batch 1
 3,chemistry,science; elements; lab; reactions; atoms,approved,batch 1
-3,chopping block,axe; cut; wood; block; fired,approved,batch 1
-3,chore chart,chores; chart; kids; list; clean,approved,batch 1
-3,circle of life,life; circle; nature; Lion King; cycle,approved,batch 1
-3,city hall,mayor; city; government; building; office,approved,batch 1
+3,chopping block,axe; cut; wood; fired; butcher,approved,batch 1
+3,chore chart,kids; list; clean; stickers; tasks,approved,batch 1
+3,circle of life,nature; Lion King; cycle; birth; Simba,approved,batch 1
+3,city hall,mayor; government; building; office; council,approved,batch 1
 3,claustrophobic,small; space; fear; tight; trapped,approved,batch 1
-3,climate change,climate; warming; earth; weather; carbon,approved,batch 1
+3,climate change,warming; earth; weather; carbon; global,approved,batch 1
 3,close call,almost; near; miss; lucky; danger,approved,batch 1
 3,cold case,crime; unsolved; old; detective; file,approved,batch 1
-3,cold shoulder,ignore; cold; rude; shoulder; avoid,approved,batch 1
+3,cold shoulder,ignore; rude; avoid; snub; freeze out,approved,batch 1
 3,collateral,loan; bank; security; money; promise,approved,batch 1
-3,comeback,return; win; behind; back; again,approved,batch 1
-3,comfort food,comfort; food; warm; home; soup,approved,batch 1
+3,comeback,return; win; behind; again; rally,approved,batch 1
+3,comfort food,warm; home; soup; mac and cheese; cozy,approved,batch 1
 3,commute,work; drive; train; daily; travel,approved,batch 1
 3,compromise,agree; middle; both; meet; give,approved,batch 1
 3,confidence,self; believe; sure; brave; trust,approved,batch 1
 3,contract,sign; agreement; legal; paper; deal,approved,batch 1
-3,copycat,copy; imitate; cat; same; steal,approved,batch 1
-3,couch potato,lazy; couch; TV; potato; sit,approved,batch 1
-3,cover letter,job; letter; resume; apply; introduce,approved,batch 1
-3,cowlick,hair; stick up; tuft; cow; messy,approved,batch 1
-3,crash course,quick; learn; crash; course; fast,approved,batch 1
-3,credit card,credit; card; pay; bank; debt,approved,batch 1
-3,crowdfunding,money; online; donate; project; crowd,approved,batch 1
-3,cruise control,car; speed; cruise; highway; automatic,approved,batch 1
+3,copycat,imitate; same; steal; mimic; twin,approved,batch 1
+3,couch potato,lazy; TV; sit; sofa; snacks,approved,batch 1
+3,cover letter,job; resume; apply; introduce; hiring,approved,batch 1
+3,cowlick,hair; stick up; tuft; messy; hairdo,approved,batch 1
+3,crash course,quick; learn; fast; cram; intro,approved,batch 1
+3,credit card,pay; bank; debt; swipe; plastic,approved,batch 1
+3,crowdfunding,money; online; donate; project; Kickstarter,approved,batch 1
+3,cruise control,car; speed; highway; automatic; pedal,approved,batch 1
 3,cubicle,office; desk; walls; work; small,approved,batch 1
-3,culture shock,culture; shock; foreign; new; different,approved,batch 1
-3,customer service,customer; help; service; complaint; phone,approved,batch 1
-3,cyberbully,online; bully; mean; internet; harass,approved,batch 1
+3,culture shock,foreign; new; different; travel; customs,approved,batch 1
+3,customer service,help; complaint; phone; clerk; returns,approved,batch 1
+3,cyberbully,online; mean; internet; harass; bullying,approved,batch 1
 3,daylight saving,clock; hour; spring; fall; time,approved,batch 1
-3,dead end,street; end; road; stop; no way,approved,batch 1
+3,dead end,street; road; stop; no way; cul-de-sac,approved,batch 1
 3,debate,argue; sides; discuss; opinion; team,approved,batch 1
 3,decision,choose; decide; choice; option; pick,approved,batch 1
-3,deep dive,research; detail; thorough; dive; deep,approved,batch 1
+3,deep dive,research; detail; thorough; investigate; in-depth,approved,batch 1
 3,defense,protect; team; attack; guard; offense,approved,batch 1
 3,democracy,vote; people; government; freedom; elect,approved,batch 1
-3,dessert first,dessert; first; sweet; meal; rules,approved,batch 1
+3,dessert first,sweet; meal; rules; cake; backwards,approved,batch 1
 3,detention,school; punish; after; stay; teacher,approved,batch 1
-3,dial tone,phone; sound; dial; beep; line,approved,batch 1
-3,dinner party,dinner; party; guests; host; food,approved,batch 1
-3,dinosaur egg,dinosaur; egg; fossil; hatch; baby,approved,batch 1
+3,dial tone,phone; sound; beep; line; hum,approved,batch 1
+3,dinner party,guests; host; food; invite; dishes,approved,batch 1
+3,dinosaur egg,fossil; hatch; baby; T. rex; nest,approved,batch 1
 3,disclaimer,warning; legal; responsible; note; fine print,approved,batch 1
 3,documentary,film; real; facts; TV; nature,approved,batch 1
-3,dog days,summer; hot; dog; August; lazy,approved,batch 1
-3,domino effect,dominoes; fall; chain; effect; one,approved,batch 1
-3,door prize,prize; door; raffle; ticket; win,approved,batch 1
-3,double-check,check; again; sure; twice; verify,approved,batch 1
+3,dog days,summer; hot; August; lazy; heat,approved,batch 1
+3,domino effect,fall; chain; one; topple; tiles,approved,batch 1
+3,door prize,raffle; ticket; win; drawing; lucky,approved,batch 1
+3,double-check,again; sure; twice; verify; confirm,approved,batch 1
 3,doubleheader,baseball; two; games; same; day,approved,batch 1
-3,drama queen,drama; queen; overreact; fuss; dramatic,approved,batch 1
-3,dream job,job; dream; perfect; career; work,approved,batch 1
-3,dress code,dress; clothes; rules; wear; formal,approved,batch 1
+3,drama queen,overreact; fuss; diva; tantrum; scene,approved,batch 1
+3,dream job,perfect; career; work; ideal; hire,approved,batch 1
+3,dress code,clothes; rules; wear; formal; uniform,approved,batch 1
 3,drive-in,movie; car; outdoor; screen; park,approved,batch 1
-3,dry cleaning,clean; clothes; suit; chemical; dry,approved,batch 1
-3,dumpster dive,trash; dumpster; dig; garbage; find,approved,batch 1
-3,early bird,early; morning; bird; worm; first,approved,batch 1
-3,echo chamber,echo; agree; same; opinions; bubble,approved,batch 1
+3,dry cleaning,clothes; suit; chemical; stains; hanger,approved,batch 1
+3,dumpster dive,trash; dig; garbage; find; bin,approved,batch 1
+3,early bird,morning; worm; first; sunrise; dawn,approved,batch 1
+3,echo chamber,agree; same; opinions; bubble; repeat,approved,batch 1
 3,efficiency,fast; less; waste; productive; time,approved,batch 1
-3,elbow grease,work; hard; scrub; effort; elbow,approved,batch 1
-3,election day,vote; election; ballot; polls; November,approved,batch 1
-3,elevator pitch,pitch; quick; idea; elevator; short,approved,batch 1
+3,elbow grease,work; hard; scrub; effort; scrubbing,approved,batch 1
+3,election day,vote; ballot; polls; November; president,approved,batch 1
+3,elevator pitch,quick; idea; short; sell; thirty seconds,approved,batch 1
 3,empathy,feel; others; understand; kind; shoes,approved,batch 1
 3,endangered,species; extinct; animals; protect; rare,approved,batch 1
-3,energy drink,energy; drink; caffeine; can; awake,approved,batch 1
+3,energy drink,caffeine; can; awake; energizing; sugar,approved,batch 1
 3,entrepreneur,business; start; owner; company; risk,approved,batch 1
 3,envy,jealous; want; green; others; have,approved,batch 1
-3,escape room,escape; room; puzzle; locked; clues,approved,batch 1
+3,escape room,puzzle; locked; clues; team; timer,approved,batch 1
 3,etiquette,manners; polite; rules; proper; behavior,approved,batch 1
-3,exchange student,student; country; foreign; host; abroad,approved,batch 1
+3,exchange student,country; foreign; host; abroad; semester,approved,batch 1
 3,excuse,reason; late; explain; sorry; why,approved,batch 1
-3,extension cord,plug; cord; electric; long; outlet,approved,batch 1
-3,face mask,face; mask; cover; skin; protect,approved,batch 1
-3,fact check,fact; true; check; verify; false,approved,batch 1
-3,fall asleep,sleep; tired; bed; eyes; doze,approved,batch 1
-3,family tree,family; tree; ancestors; relatives; roots,approved,batch 1
-3,fan fiction,fans; story; write; characters; online,approved,batch 1
-3,fast forward,skip; ahead; speed; remote; forward,approved,batch 1
+3,extension cord,plug; electric; long; outlet; socket,approved,batch 1
+3,face mask,cover; skin; protect; spa; cream,approved,batch 1
+3,fact check,true; verify; false; sources; research,approved,batch 1
+3,fall asleep,tired; bed; eyes; doze; drowsy,approved,batch 1
+3,family tree,ancestors; relatives; roots; grandparents; genealogy,approved,batch 1
+3,fan fiction,story; write; characters; online; imagination,approved,batch 1
+3,fast forward,skip; ahead; speed; remote; button,approved,batch 1
 3,fender bender,car; crash; small; accident; dent,approved,batch 1
-3,field day,school; games; outside; races; day,approved,batch 1
-3,fifteen minutes of fame,fame; famous; short; minutes; celebrity,approved,batch 1
-3,fine print,small; print; contract; read; details,approved,batch 1
-3,fire hydrant,fire; water; street; dog; red,approved,batch 1
-3,fitness tracker,steps; watch; exercise; track; wrist,approved,batch 1
+3,field day,school; games; outside; races; relay,approved,batch 1
+3,fifteen minutes of fame,famous; short; celebrity; viral; fleeting,approved,batch 1
+3,fine print,small; contract; read; details; tiny,approved,batch 1
+3,fire hydrant,water; street; dog; red; spray,approved,batch 1
+3,fitness tracker,steps; watch; exercise; wrist; Fitbit,approved,batch 1
 3,flash mob,dance; crowd; surprise; public; sudden,approved,batch 1
-3,flat-pack furniture,furniture; assemble; IKEA; box; instructions,approved,batch 1
-3,flea market,market; used; cheap; stalls; buy,approved,batch 1
-3,flight attendant,plane; serve; flight; passengers; safety,approved,batch 1
-3,flip side,other; side; opposite; coin; flip,approved,batch 1
-3,flu shot,flu; shot; vaccine; needle; doctor,approved,batch 1
-3,food coma,food; tired; eat; full; sleepy,approved,batch 1
-3,food truck,food; truck; street; order; window,approved,batch 1
+3,flat-pack furniture,assemble; IKEA; box; instructions; Allen wrench,approved,batch 1
+3,flea market,used; cheap; stalls; buy; antiques,approved,batch 1
+3,flight attendant,plane; serve; passengers; safety; airplane,approved,batch 1
+3,flip side,other; opposite; coin; reverse; tails,approved,batch 1
+3,flu shot,vaccine; needle; doctor; arm; sick,approved,batch 1
+3,food coma,tired; eat; full; sleepy; nap,approved,batch 1
+3,food truck,street; order; window; tacos; wheels,approved,batch 1
 3,foreshadowing,story; hint; future; clue; later,approved,batch 1
-3,fortune teller,future; fortune; crystal ball; palm; predict,approved,batch 1
-3,four-leaf clover,luck; clover; four; leaf; Irish,approved,batch 1
-3,free sample,free; sample; taste; store; try,approved,batch 1
+3,fortune teller,future; crystal ball; palm; predict; psychic,approved,batch 1
+3,four-leaf clover,luck; Irish; lucky; green; shamrock,approved,batch 1
+3,free sample,taste; store; try; costco; nothing,approved,batch 1
 3,freelance,work; self; independent; client; job,approved,batch 1
-3,frenemy,friend; enemy; fake; both; rival,approved,batch 1
-3,frequent flyer,fly; miles; airline; travel; often,approved,batch 1
-3,friend zone,friend; romance; zone; crush; only,approved,batch 1
-3,frozen yogurt,yogurt; frozen; toppings; cold; swirl,approved,batch 1
-3,fundraiser,money; raise; charity; event; donate,approved,batch 1
-3,game show,game; show; TV; contestant; prize,approved,batch 1
+3,frenemy,friend; fake; both; rival; frenemies,approved,batch 1
+3,frequent flyer,miles; airline; travel; often; airports,approved,batch 1
+3,friend zone,romance; crush; only; pal; platonic,approved,batch 1
+3,frozen yogurt,toppings; cold; swirl; froyo; sprinkles,approved,batch 1
+3,fundraiser,money; charity; event; donate; raising,approved,batch 1
+3,game show,TV; contestant; prize; host; buzzer,approved,batch 1
 3,gaming console,video; games; controller; play; TV,approved,batch 1
-3,garage band,band; garage; music; practice; rock,approved,batch 1
-3,generation gap,generation; old; young; difference; age,approved,batch 1
+3,garage band,music; practice; rock; drummer; loud,approved,batch 1
+3,generation gap,old; young; difference; age; parents,approved,batch 1
 3,genius,smart; brilliant; IQ; Einstein; clever,approved,batch 1
-3,gift wrap,gift; wrap; paper; present; bow,approved,batch 1
+3,gift wrap,paper; present; bow; tape; ribbon,approved,batch 1
 3,global warming,earth; hot; climate; ice; carbon,approved,batch 1
-3,glow stick,glow; stick; light; dark; crack,approved,batch 1
-3,going viral,viral; internet; share; popular; video,approved,batch 1
+3,glow stick,light; dark; crack; neon; bend,approved,batch 1
+3,going viral,internet; share; popular; video; trending,approved,batch 1
 3,goldilocks,bears; porridge; just right; too; fairy tale,approved,batch 1
-3,good luck charm,luck; charm; lucky; carry; wish,approved,batch 1
+3,good luck charm,carry; wish; horseshoe; rabbit's foot; fortune,approved,batch 1
 3,gossip,rumor; talk; secret; spread; about,approved,batch 1
 3,gourmet,fancy; food; chef; fine; expensive,approved,batch 1
-3,graveyard shift,night; work; shift; late; overnight,approved,batch 1
-3,green thumb,garden; plants; grow; green; thumb,approved,batch 1
-3,grocery list,list; groceries; buy; store; food,approved,batch 1
-3,group project,group; project; team; school; work,approved,batch 1
-3,guilty pleasure,guilty; pleasure; secret; enjoy; shame,approved,batch 1
-3,gut feeling,gut; feeling; instinct; sense; know,approved,batch 1
+3,graveyard shift,night; work; late; overnight; night owl,approved,batch 1
+3,green thumb,garden; plants; grow; gardener; flowers,approved,batch 1
+3,grocery list,groceries; buy; store; food; errands,approved,batch 1
+3,group project,team; school; work; classmates; partners,approved,batch 1
+3,guilty pleasure,secret; enjoy; shame; indulge; treat,approved,batch 1
+3,gut feeling,instinct; sense; know; hunch; stomach,approved,batch 1
 3,haiku,poem; Japanese; syllables; seventeen; three,approved,batch 1
 3,hand-me-down,used; old; sibling; clothes; pass,approved,batch 1
-3,handwriting,write; hand; neat; messy; pen,approved,batch 1
-3,hangry,hungry; angry; food; mood; grumpy,approved,batch 1
+3,handwriting,write; neat; messy; pen; cursive,approved,batch 1
+3,hangry,hungry; food; mood; grumpy; snack,approved,batch 1
 3,hard drive,computer; storage; files; data; memory,approved,batch 1
-3,hashtag,social media; tag; pound; trend; post,approved,batch 1
-3,headache,head; pain; ache; hurt; pill,approved,batch 1
-3,heartbreak,heart; break; sad; love; breakup,approved,batch 1
+3,hashtag,social media; pound; trend; post; #,approved,batch 1
+3,headache,pain; hurt; pill; migraine; aspirin,approved,batch 1
+3,heartbreak,sad; love; breakup; tears; broken,approved,batch 1
 3,heirloom,family; old; passed; valuable; grandma,approved,batch 1
-3,helicopter parent,parent; hover; overprotective; kids; helicopter,approved,batch 1
+3,helicopter parent,hover; overprotective; kids; hovering; protective,approved,batch 1
 3,hibernation,sleep; winter; bear; cave; months,approved,batch 1
-3,hide the evidence,hide; evidence; proof; crime; secret,approved,batch 1
-3,high school reunion,reunion; school; classmates; years; old,approved,batch 1
+3,hide the evidence,proof; crime; secret; cover up; clues,approved,batch 1
+3,high school reunion,classmates; years; old; graduates; yearbook,approved,batch 1
 3,highlight reel,best; moments; video; sports; clips,approved,batch 1
 3,hindsight,past; look back; know; after; regret,approved,batch 1
 3,hitchhiker,ride; thumb; road; stranger; car,approved,batch 1
-3,hockey mom,hockey; mom; parent; games; cheer,approved,batch 1
-3,holiday spirit,holiday; spirit; cheer; Christmas; festive,approved,batch 1
+3,hockey mom,parent; games; cheer; rink; mother,approved,batch 1
+3,holiday spirit,cheer; Christmas; festive; merry; decorations,approved,batch 1
 3,home run,baseball; hit; over; fence; score,approved,batch 1
 3,honor roll,grades; school; good; list; student,approved,batch 1
-3,hot seat,pressure; seat; questions; spot; hot,approved,batch 1
-3,house party,party; house; guests; music; friends,approved,batch 1
+3,hot seat,pressure; questions; spot; interrogation; sweat,approved,batch 1
+3,house party,guests; music; friends; loud; host,approved,batch 1
 3,humble,modest; brag; proud; down to earth; quiet,approved,batch 1
 3,hypnotize,trance; sleep; spell; watch; swing,approved,batch 1
-3,identity theft,identity; steal; credit; fake; fraud,approved,batch 1
+3,identity theft,steal; credit; fake; fraud; scam,approved,batch 1
 3,impatient,wait; rush; hurry; patience; now,approved,batch 1
 3,impostor syndrome,fake; doubt; fraud; feel; deserve,approved,batch 1
 3,improv,comedy; make up; scene; spot; acting,approved,batch 1
-3,inbox,email; mail; messages; unread; box,approved,batch 1
+3,inbox,email; mail; messages; unread; unopened,approved,batch 1
 3,infomercial,TV; ad; sell; product; late night,approved,batch 1
-3,inside out,wrong; reverse; clothes; inside; out,approved,batch 1
-3,instant replay,replay; again; video; slow motion; sports,approved,batch 1
-3,instruction manual,instructions; manual; read; how to; book,approved,batch 1
+3,inside out,wrong; reverse; clothes; backwards; tag,approved,batch 1
+3,instant replay,again; video; slow motion; sports; rewind,approved,batch 1
+3,instruction manual,read; how to; book; directions; assemble,approved,batch 1
 3,intern,job; learn; young; company; summer,approved,batch 1
-3,internet troll,troll; online; mean; comments; bully,approved,batch 1
-3,jack of all trades,skills; many; master; none; jack,approved,batch 1
-3,jaywalking,cross; street; illegal; walk; road,approved,batch 1
-3,jet ski,water; ride; ski; jet; lake,approved,batch 1
-3,jigsaw,puzzle; pieces; fit; picture; saw,approved,batch 1
-3,job interview,job; interview; hire; questions; resume,approved,batch 1
+3,internet troll,online; mean; comments; bully; troublemaker,approved,batch 1
+3,jack of all trades,skills; many; master; none; handyman,approved,batch 1
+3,jaywalking,cross; street; illegal; road; ticket,approved,batch 1
+3,jet ski,water; ride; lake; waves; personal watercraft,approved,batch 1
+3,jigsaw,puzzle; pieces; fit; picture; edges,approved,batch 1
+3,job interview,hire; questions; resume; nervous; employer,approved,batch 1
 3,jury,court; trial; verdict; twelve; guilty,approved,batch 1
 3,karma,what goes around; fate; deserve; good; bad,approved,batch 1
-3,key chain,keys; ring; chain; hold; carry,approved,batch 1
-3,kickoff,start; football; kick; game; begin,approved,batch 1
+3,key chain,ring; hold; carry; lock; dangle,approved,batch 1
+3,kickoff,start; football; game; begin; tee,approved,batch 1
 3,kindergarten,school; kids; young; first; class,approved,batch 1
 3,knock-off,fake; copy; brand; cheap; imitation,approved,batch 1
-3,know-it-all,smart; knows; everything; annoying; brag,approved,batch 1
+3,know-it-all,smart; everything; annoying; brag; show-off,approved,batch 1
 3,landmark,famous; place; building; monument; visit,approved,batch 1
-3,last minute,late; rush; deadline; minute; end,approved,batch 1
-3,late fee,late; fee; pay; library; charge,approved,batch 1
-3,laugh track,laugh; sitcom; TV; fake; audience,approved,batch 1
-3,learning curve,learn; difficult; new; curve; improve,approved,batch 1
-3,left-handed,left; hand; write; lefty; right,approved,batch 1
-3,lemon law,car; lemon; law; defective; return,approved,batch 1
-3,lie detector,lie; detect; truth; test; machine,approved,batch 1
-3,life hack,trick; tip; easy; shortcut; life,approved,batch 1
+3,last minute,late; rush; deadline; end; scramble,approved,batch 1
+3,late fee,pay; library; charge; overdue; fine,approved,batch 1
+3,laugh track,sitcom; TV; fake; audience; canned,approved,batch 1
+3,learning curve,difficult; new; improve; beginner; struggle,approved,batch 1
+3,left-handed,write; right; southpaw; scissors; pencil,approved,batch 1
+3,lemon law,car; defective; return; warranty; broken,approved,batch 1
+3,lie detector,truth; test; machine; polygraph; fib,approved,batch 1
+3,life hack,trick; tip; easy; shortcut; clever,approved,batch 1
 3,lifeline,help; rescue; rope; phone; save,approved,batch 1
-3,light year,space; distance; light; travel; far,approved,batch 1
+3,light year,space; distance; travel; far; stars,approved,batch 1
 3,limelight,attention; spotlight; fame; center; stage,approved,batch 1
-3,line cutter,line; cut; wait; rude; front,approved,batch 1
-3,lip sync,lips; sing; mouth; fake; music,approved,batch 1
-3,living room,room; couch; TV; family; sit,approved,batch 1
-3,loading screen,loading; wait; game; bar; screen,approved,batch 1
-3,local news,news; local; town; TV; weather,approved,batch 1
+3,line cutter,wait; rude; front; budge; queue,approved,batch 1
+3,lip sync,sing; mouth; fake; music; pretend,approved,batch 1
+3,living room,couch; TV; family; sit; lounge,approved,batch 1
+3,loading screen,wait; game; bar; spinning; progress,approved,batch 1
+3,local news,town; TV; weather; anchor; neighborhood,approved,batch 1
 3,long distance,far; apart; relationship; miles; call,approved,batch 1
-3,loose change,coins; change; pocket; money; small,approved,batch 1
-3,lost cause,hopeless; lost; cause; give up; fail,approved,batch 1
-3,lucky streak,luck; win; streak; row; lucky,approved,batch 1
-3,lunch money,lunch; money; school; bully; pay,approved,batch 1
-3,mad scientist,crazy; scientist; lab; experiment; evil,approved,batch 1
-3,magic word,please; magic; word; polite; say,approved,batch 1
-3,mailing list,email; list; subscribe; newsletter; send,approved,batch 1
+3,loose change,coins; pocket; money; small; quarters,approved,batch 1
+3,lost cause,hopeless; give up; fail; doomed; pointless,approved,batch 1
+3,lucky streak,win; row; fortune; hot hand; winning,approved,batch 1
+3,lunch money,school; bully; pay; cafeteria; quarters,approved,batch 1
+3,mad scientist,crazy; lab; experiment; evil; potions,approved,batch 1
+3,magic word,please; polite; say; abracadabra; thank you,approved,batch 1
+3,mailing list,email; subscribe; newsletter; send; emails,approved,batch 1
 3,makeover,change; new; look; style; transform,approved,batch 1
-3,market crash,stock; market; crash; money; fall,approved,batch 1
+3,market crash,stock; money; fall; recession; panic,approved,batch 1
 3,masterpiece,art; best; work; painting; great,approved,batch 1
-3,matchmaker,match; love; couple; set up; date,approved,batch 1
-3,meal prep,meals; prepare; ahead; week; containers,approved,batch 1
-3,melting pot,cultures; mix; pot; together; America,approved,batch 1
-3,memory lane,memories; past; remember; lane; nostalgia,approved,batch 1
-3,mental note,remember; mind; note; think; later,approved,batch 1
-3,mic drop,microphone; drop; end; done; speech,approved,batch 1
-3,midlife crisis,middle; age; crisis; sports car; change,approved,batch 1
-3,milestone,achievement; important; step; mile; stone,approved,batch 1
-3,mind reader,mind; read; thoughts; psychic; know,approved,batch 1
+3,matchmaker,love; couple; set up; date; cupid,approved,batch 1
+3,meal prep,ahead; week; containers; Sunday; lunches,approved,batch 1
+3,melting pot,cultures; mix; together; America; blend,approved,batch 1
+3,memory lane,memories; past; remember; nostalgia; reminisce,approved,batch 1
+3,mental note,remember; mind; think; later; brain,approved,batch 1
+3,mic drop,end; done; speech; boom; walk off,approved,batch 1
+3,midlife crisis,middle; age; sports car; change; forty,approved,batch 1
+3,milestone,achievement; important; step; marker; birthday,approved,batch 1
+3,mind reader,thoughts; psychic; know; telepathy; guess,approved,batch 1
 3,minimalist,less; simple; few; clean; stuff,approved,batch 1
-3,mixed signals,signals; confusing; mixed; flirt; unclear,approved,batch 1
-3,mob scene,crowd; chaos; mob; people; crazy,approved,batch 1
-3,mobile home,trailer; home; move; wheels; park,approved,batch 1
-3,money tree,money; tree; grow; rich; cash,approved,batch 1
-3,monkey business,mischief; trouble; monkey; silly; business,approved,batch 1
-3,moonlight,moon; light; night; glow; romantic,approved,batch 1
-3,morning person,morning; early; person; awake; cheerful,approved,batch 1
+3,mixed signals,confusing; flirt; unclear; hints; flirting,approved,batch 1
+3,mob scene,crowd; chaos; people; crazy; swarm,approved,batch 1
+3,mobile home,trailer; move; wheels; park; RV,approved,batch 1
+3,money tree,grow; rich; cash; leaves; dollars,approved,batch 1
+3,monkey business,mischief; trouble; silly; pranks; shenanigans,approved,batch 1
+3,moonlight,night; glow; romantic; stars; silver,approved,batch 1
+3,morning person,early; awake; cheerful; sunrise; coffee,approved,batch 1
 3,motivation,reason; drive; inspire; goal; energy,approved,batch 1
-3,mouthwash,mouth; wash; breath; rinse; minty,approved,batch 1
-3,movie marathon,movies; marathon; binge; watch; night,approved,batch 1
-3,multiple choice,test; choice; answers; A; B,approved,batch 1
-3,mute button,mute; sound; button; silent; remote,approved,batch 1
-3,mystery novel,mystery; book; detective; solve; whodunit,approved,batch 1
-3,name tag,name; tag; sticker; meet; wear,approved,batch 1
-3,nap time,nap; sleep; afternoon; kids; rest,approved,batch 1
-3,neat freak,neat; clean; tidy; organized; obsessed,approved,batch 1
+3,mouthwash,breath; rinse; minty; gargle; teeth,approved,batch 1
+3,movie marathon,binge; watch; night; popcorn; trilogy,approved,batch 1
+3,multiple choice,test; answers; A; B; C,approved,batch 1
+3,mute button,sound; silent; remote; quiet; volume,approved,batch 1
+3,mystery novel,book; detective; solve; whodunit; clues,approved,batch 1
+3,name tag,sticker; meet; wear; label; introduce,approved,batch 1
+3,nap time,sleep; afternoon; kids; rest; cot,approved,batch 1
+3,neat freak,clean; tidy; organized; obsessed; germs,approved,batch 1
 3,negotiation,deal; agree; bargain; terms; talk,approved,batch 1
-3,nervous laugh,laugh; nervous; awkward; giggle; uncomfortable,approved,batch 1
-3,news flash,news; sudden; announcement; alert; breaking,approved,batch 1
-3,night owl,night; late; owl; stay up; sleep,approved,batch 1
-3,no-show,absent; didn't come; missing; appointment; show,approved,batch 1
-3,nosebleed,nose; bleed; red; tissue; dry,approved,batch 1
-3,nothing to wear,clothes; closet; wear; outfit; nothing,approved,batch 1
-3,odd one out,different; odd; out; group; fit,approved,batch 1
-3,off the record,secret; record; private; unofficial; quote,approved,batch 1
-3,office party,office; party; work; coworkers; holiday,approved,batch 1
-3,open book test,test; open; book; notes; allowed,approved,batch 1
+3,nervous laugh,awkward; giggle; uncomfortable; chuckle; tense,approved,batch 1
+3,news flash,sudden; announcement; alert; breaking; bulletin,approved,batch 1
+3,night owl,late; stay up; sleep; bedtime; moon,approved,batch 1
+3,no-show,absent; didn't come; missing; appointment; stood up,approved,batch 1
+3,nosebleed,red; tissue; dry; pinch; tilt head,approved,batch 1
+3,nothing to wear,clothes; closet; outfit; shopping; wardrobe,approved,batch 1
+3,odd one out,different; group; fit; match; misfit,approved,batch 1
+3,off the record,secret; private; unofficial; quote; confidential,approved,batch 1
+3,office party,work; coworkers; holiday; boss; coworker,approved,batch 1
+3,open book test,notes; allowed; exam; cheat sheet; class,approved,batch 1
 3,opinion,think; believe; view; thought; agree,approved,batch 1
 3,optimist,positive; hopeful; glass; half full; bright,approved,batch 1
-3,outdated,old; out; date; old-fashioned; modern,approved,batch 1
-3,overbooked,flight; too many; seats; book; full,approved,batch 1
+3,outdated,old; old-fashioned; modern; retro; behind the times,approved,batch 1
+3,overbooked,flight; too many; seats; full; bumped,approved,batch 1
 3,paparazzi,photos; celebrity; cameras; follow; famous,approved,batch 1
-3,paper trail,records; documents; evidence; trail; paper,approved,batch 1
-3,parent-teacher conference,parents; teacher; meeting; grades; school,approved,batch 1
-3,parking ticket,ticket; park; fine; car; meter,approved,batch 1
-3,party pooper,fun; spoil; party; boring; grump,approved,batch 1
+3,paper trail,records; documents; evidence; receipts; track,approved,batch 1
+3,parent-teacher conference,meeting; grades; school; mom and dad; classroom,approved,batch 1
+3,parking ticket,fine; car; meter; tow; windshield,approved,batch 1
+3,party pooper,fun; spoil; boring; grump; killjoy,approved,batch 1
 3,passive-aggressive,indirect; mean; polite; annoyed; hint,approved,batch 1
-3,pay it forward,kindness; pay; forward; good deed; next,approved,batch 1
-3,pen name,fake; name; author; write; pseudonym,approved,batch 1
-3,pep talk,encourage; talk; motivate; coach; speech,approved,batch 1
-3,perfectionist,perfect; flawless; picky; detail; mistake,approved,batch 1
-3,personal space,space; close; bubble; distance; personal,approved,batch 1
-3,pet peeve,annoy; pet; bother; dislike; habit,approved,batch 1
-3,phone battery,battery; phone; charge; dead; percent,approved,batch 1
-3,photo bomb,photo; jump; background; picture; ruin,approved,batch 1
-3,picky eater,picky; eat; food; vegetables; won't,approved,batch 1
-3,pins and needles,nervous; waiting; tingling; anxious; needles,approved,batch 1
-3,pit stop,stop; race; quick; break; car,approved,batch 1
-3,plan B,backup; plan; second; option; alternative,approved,batch 1
-3,pocket money,money; pocket; allowance; spend; kids,approved,batch 1
-3,poker face,face; expression; hide; cards; blank,approved,batch 1
-3,pop quiz,quiz; surprise; test; teacher; pop,approved,batch 1
-3,power nap,nap; short; sleep; quick; energy,approved,batch 1
-3,practice makes perfect,practice; perfect; better; repeat; skill,approved,batch 1
-3,prank call,phone; prank; joke; call; fake,approved,batch 1
-3,press conference,press; reporters; questions; announce; microphone,approved,batch 1
-3,pressure cooker,pressure; cook; pot; steam; fast,approved,batch 1
-3,price tag,price; tag; cost; label; store,approved,batch 1
-3,promise ring,promise; ring; love; finger; future,approved,batch 1
+3,pay it forward,kindness; good deed; next; generous; favor,approved,batch 1
+3,pen name,fake; author; write; pseudonym; alias,approved,batch 1
+3,pep talk,encourage; motivate; coach; speech; cheer up,approved,batch 1
+3,perfectionist,flawless; picky; detail; mistake; flawless work,approved,batch 1
+3,personal space,close; bubble; distance; elbow room; crowd,approved,batch 1
+3,pet peeve,annoy; bother; dislike; habit; irritate,approved,batch 1
+3,phone battery,charge; dead; percent; charger; low,approved,batch 1
+3,photo bomb,jump; background; picture; ruin; selfie,approved,batch 1
+3,picky eater,food; vegetables; won't; fussy; plate,approved,batch 1
+3,pins and needles,nervous; waiting; tingling; anxious; numb,approved,batch 1
+3,pit stop,race; quick; break; car; tires,approved,batch 1
+3,plan B,backup; second; option; alternative; fallback,approved,batch 1
+3,pocket money,allowance; spend; kids; chores; jeans,approved,batch 1
+3,poker face,expression; hide; cards; blank; bluff,approved,batch 1
+3,pop quiz,surprise; test; teacher; unannounced; exam,approved,batch 1
+3,power nap,short; sleep; quick; energy; recharge,approved,batch 1
+3,practice makes perfect,better; repeat; skill; rehearse; improve,approved,batch 1
+3,prank call,phone; joke; fake; giggle; hang up,approved,batch 1
+3,press conference,reporters; questions; announce; microphone; podium,approved,batch 1
+3,pressure cooker,pot; steam; fast; instant pot; lid,approved,batch 1
+3,price tag,cost; label; store; sticker; dollars,approved,batch 1
+3,promise ring,love; finger; future; pinky swear; commitment,approved,batch 1
 3,public speaking,speech; audience; nervous; talk; stage,approved,batch 1
-3,puppy love,puppy; love; crush; young; first,approved,batch 1
+3,puppy love,crush; young; first; innocent; childhood,approved,batch 1
 3,push notification,phone; alert; app; buzz; message,approved,batch 1
-3,quality time,time; together; family; spend; quality,approved,batch 1
+3,quality time,together; family; spend; bonding; attention,approved,batch 1
 3,quarantine,isolate; sick; stay; home; virus,approved,batch 1
-3,quiet time,quiet; time; calm; rest; silence,approved,batch 1
-3,rain check,later; another time; rain; check; postpone,approved,batch 1
-3,random act of kindness,kind; random; nice; stranger; help,approved,batch 1
-3,reality TV,reality; TV; show; drama; real,approved,batch 1
+3,quiet time,calm; rest; silence; nap; hush,approved,batch 1
+3,rain check,later; another time; postpone; reschedule; IOU,approved,batch 1
+3,random act of kindness,nice; stranger; help; surprise; good deed,approved,batch 1
+3,reality TV,show; drama; cameras; contestants; unscripted,approved,batch 1
 3,rebound,bounce; basketball; back; relationship; recover,approved,batch 1
-3,recycling bin,recycle; bin; plastic; paper; blue,approved,batch 1
-3,red carpet,red; carpet; celebrity; Hollywood; premiere,approved,batch 1
-3,red flag,warning; red; flag; sign; bad,approved,batch 1
-3,remote work,remote; work; home; online; office,approved,batch 1
-3,report card,grades; report; card; school; A,approved,batch 1
+3,recycling bin,recycle; plastic; paper; blue; cans,approved,batch 1
+3,red carpet,celebrity; Hollywood; premiere; stars; gown,approved,batch 1
+3,red flag,warning; sign; bad; danger; caution,approved,batch 1
+3,remote work,home; online; office; laptop; commute,approved,batch 1
+3,report card,grades; school; A; teacher; honor roll,approved,batch 1
 3,reservation,book; table; restaurant; hotel; reserve,approved,batch 1
-3,retail therapy,shopping; feel better; buy; therapy; stores,approved,batch 1
+3,retail therapy,shopping; feel better; buy; stores; mall,approved,batch 1
 3,retro,old; style; vintage; past; seventies,approved,batch 1
-3,road rage,road; angry; driver; traffic; honk,approved,batch 1
-3,role model,role; model; look up; example; hero,approved,batch 1
-3,rollercoaster of emotions,emotions; up; down; feelings; ride,approved,batch 1
-3,roommate,room; share; live; apartment; mate,approved,batch 1
-3,sales pitch,sell; pitch; convince; buy; salesman,approved,batch 1
-3,scapegoat,blame; goat; fault; innocent; take,approved,batch 1
-3,screenshot,screen; picture; capture; phone; save,approved,batch 1
-3,seat belt,seat; belt; car; buckle; safety,approved,batch 1
-3,second wind,energy; again; tired; second; wind,approved,batch 1
-3,secret ingredient,secret; ingredient; recipe; special; cook,approved,batch 1
-3,selfie stick,selfie; stick; photo; phone; camera,approved,batch 1
-3,senior year,senior; year; last; school; graduate,approved,batch 1
-3,sense of humor,funny; humor; laugh; joke; sense,approved,batch 1
-3,shopping spree,shopping; spend; buy; lots; money,approved,batch 1
-3,short notice,short; notice; last minute; quick; warning,approved,batch 1
-3,sibling rivalry,siblings; rivalry; brother; sister; compete,approved,batch 1
-3,sick day,sick; day; home; work; off,approved,batch 1
-3,side hustle,side; job; extra; money; hustle,approved,batch 1
-3,silent treatment,silent; ignore; quiet; angry; talk,approved,batch 1
-3,sixth sense,sense; sixth; feeling; intuition; psychic,approved,batch 1
-3,skeleton key,key; skeleton; open; every; lock,approved,batch 1
-3,sleepwalk,sleep; walk; night; bed; dream,approved,batch 1
-3,slow cooker,slow; cooker; crock pot; cook; hours,approved,batch 1
-3,smoke screen,distraction; hide; smoke; cover; screen,approved,batch 1
-3,snail mail,mail; letter; slow; post; snail,approved,batch 1
-3,sneak peek,preview; sneak; peek; early; look,approved,batch 1
-3,snooze button,snooze; alarm; button; morning; sleep,approved,batch 1
-3,social butterfly,social; friendly; butterfly; party; people,approved,batch 1
-3,soft spot,weakness; soft; spot; love; care,approved,batch 1
-3,sore loser,lose; angry; sore; game; bad sport,approved,batch 1
-3,soul mate,soul; mate; love; partner; meant to be,approved,batch 1
-3,spare tire,spare; tire; car; flat; trunk,approved,batch 1
-3,speed dating,speed; date; minutes; meet; singles,approved,batch 1
-3,spelling error,spelling; error; wrong; typo; word,approved,batch 1
-3,spoiler alert,spoiler; ending; movie; tell; ruin,approved,batch 1
-3,sports fan,sports; fan; team; cheer; game,approved,batch 1
-3,spring cleaning,spring; clean; house; organize; season,approved,batch 1
-3,stand-up desk,desk; stand; work; office; sit,approved,batch 1
-3,starving artist,artist; poor; starving; art; money,approved,batch 1
-3,staycation,stay; home; vacation; local; relax,approved,batch 1
-3,sticky note,sticky; note; paper; yellow; remind,approved,batch 1
-3,stock market,stocks; market; money; invest; Wall Street,approved,batch 1
-3,street smart,street; smart; savvy; clever; experience,approved,batch 1
-3,stress ball,stress; squeeze; ball; relax; hand,approved,batch 1
-3,study group,study; group; together; test; learn,approved,batch 1
-3,sugar rush,sugar; energy; hyper; candy; rush,approved,batch 1
-3,summer job,summer; job; teen; work; money,approved,batch 1
-3,sweet tooth,sweet; tooth; candy; dessert; sugar,approved,batch 1
-3,table manners,table; manners; polite; eat; elbows,approved,batch 1
-3,tailgate party,tailgate; party; truck; football; parking,approved,batch 1
-3,take a hint,hint; take; clue; understand; subtle,approved,batch 1
-3,talent scout,talent; scout; find; discover; star,approved,batch 1
-3,tan line,tan; line; sun; skin; swimsuit,approved,batch 1
-3,team player,team; player; together; cooperate; help,approved,batch 1
-3,tech support,tech; support; computer; help; fix,approved,batch 1
+3,road rage,angry; driver; traffic; honk; yell,approved,batch 1
+3,role model,look up; example; hero; inspire; idol,approved,batch 1
+3,rollercoaster of emotions,up; down; feelings; ride; emotional,approved,batch 1
+3,roommate,share; live; apartment; dorm; rent,approved,batch 1
+3,sales pitch,sell; convince; buy; offer; persuade,approved,batch 1
+3,scapegoat,blame; fault; innocent; take; guilty,approved,batch 1
+3,screenshot,picture; capture; phone; save; snap,approved,batch 1
+3,seat belt,car; buckle; safety; click; strap,approved,batch 1
+3,second wind,energy; again; tired; boost; revive,approved,batch 1
+3,secret ingredient,recipe; special; cook; chef; mystery,approved,batch 1
+3,selfie stick,photo; phone; camera; pole; pose,approved,batch 1
+3,senior year,last; school; graduate; twelfth grade; prom,approved,batch 1
+3,sense of humor,funny; laugh; joke; wit; comedy,approved,batch 1
+3,shopping spree,spend; buy; lots; money; splurge,approved,batch 1
+3,short notice,last minute; quick; warning; sudden; surprise,approved,batch 1
+3,sibling rivalry,brother; sister; compete; fight; jealous,approved,batch 1
+3,sick day,home; work; off; fever; stay in bed,approved,batch 1
+3,side hustle,job; extra; money; gig; Etsy,approved,batch 1
+3,silent treatment,ignore; quiet; angry; talk; cold shoulder,approved,batch 1
+3,sixth sense,feeling; intuition; psychic; ghosts; gut,approved,batch 1
+3,skeleton key,open; every; lock; master; door,approved,batch 1
+3,sleepwalk,night; bed; dream; wander; asleep,approved,batch 1
+3,slow cooker,crock pot; hours; stew; Crock-Pot; chili,approved,batch 1
+3,smoke screen,distraction; hide; cover; cover-up; decoy,approved,batch 1
+3,snail mail,letter; slow; post; stamp; envelope,approved,batch 1
+3,sneak peek,preview; early; look; glimpse; teaser,approved,batch 1
+3,snooze button,alarm; morning; sleep; five more minutes; bed,approved,batch 1
+3,social butterfly,friendly; party; people; mingle; outgoing,approved,batch 1
+3,soft spot,weakness; love; care; fond; favorite,approved,batch 1
+3,sore loser,angry; game; bad sport; whiner; pout,approved,batch 1
+3,soul mate,love; partner; meant to be; the one; destiny,approved,batch 1
+3,spare tire,car; flat; trunk; jack; donut,approved,batch 1
+3,speed dating,date; minutes; meet; singles; fast,approved,batch 1
+3,spelling error,wrong; typo; word; misspell; red line,approved,batch 1
+3,spoiler alert,ending; movie; tell; ruin; plot,approved,batch 1
+3,sports fan,team; cheer; game; jersey; stadium,approved,batch 1
+3,spring cleaning,house; organize; season; dust; scrub,approved,batch 1
+3,stand-up desk,work; office; sit; tall; posture,approved,batch 1
+3,starving artist,poor; money; painter; struggling; hungry,approved,batch 1
+3,staycation,home; vacation; local; relax; backyard,approved,batch 1
+3,sticky note,paper; yellow; remind; Post-it; reminder,approved,batch 1
+3,stock market,money; invest; Wall Street; shares; trading,approved,batch 1
+3,street smart,savvy; clever; experience; tough; city,approved,batch 1
+3,stress ball,squeeze; relax; hand; foam; tension,approved,batch 1
+3,study group,together; test; learn; exam; classmates,approved,batch 1
+3,sugar rush,energy; hyper; candy; sweets; crash,approved,batch 1
+3,summer job,teen; work; money; lifeguard; teenager,approved,batch 1
+3,sweet tooth,candy; dessert; sugar; cravings; chocolate,approved,batch 1
+3,table manners,polite; eat; elbows; napkin; fork,approved,batch 1
+3,tailgate party,truck; football; parking; grill; fans,approved,batch 1
+3,take a hint,clue; understand; subtle; obvious; get it,approved,batch 1
+3,talent scout,find; discover; star; recruit; agent,approved,batch 1
+3,tan line,sun; skin; swimsuit; bronze; strap,approved,batch 1
+3,team player,together; cooperate; help; share; unselfish,approved,batch 1
+3,tech support,computer; help; fix; IT; troubleshoot,approved,batch 1
 3,telemarketer,phone; sell; call; annoying; dinner,approved,batch 1
-3,test drive,drive; test; car; try; buy,approved,batch 1
-3,text message,text; message; phone; send; type,approved,batch 1
-3,thank-you note,thank; note; card; write; gift,approved,batch 1
-3,thinking cap,think; cap; hat; smart; focus,approved,batch 1
-3,tickle fight,tickle; fight; laugh; giggle; play,approved,batch 1
-3,time management,time; manage; schedule; plan; busy,approved,batch 1
-3,time-out,time; out; corner; kids; punish,approved,batch 1
-3,to-do list,list; tasks; do; check; organize,approved,batch 1
-3,tongue-tied,tongue; tied; speak; words; nervous,approved,batch 1
-3,tourist trap,tourist; trap; expensive; crowded; attraction,approved,batch 1
-3,trash talk,trash; talk; insult; game; brag,approved,batch 1
-3,treasure hunt,treasure; hunt; map; clues; find,approved,batch 1
-3,trial and error,trial; error; try; mistakes; learn,approved,batch 1
-3,trick question,trick; question; answer; catch; tricky,approved,batch 1
-3,true story,true; story; real; happened; fact,approved,batch 1
-3,trust fall,trust; fall; catch; back; team,approved,batch 1
-3,turning point,turn; point; change; moment; important,approved,batch 1
+3,test drive,car; try; buy; dealership; spin,approved,batch 1
+3,text message,phone; send; type; emoji; thumbs,approved,batch 1
+3,thank-you note,card; write; gift; grateful; manners,approved,batch 1
+3,thinking cap,hat; smart; focus; brain; ideas,approved,batch 1
+3,tickle fight,laugh; giggle; play; wrestle; armpits,approved,batch 1
+3,time management,schedule; plan; busy; calendar; organized,approved,batch 1
+3,time-out,corner; kids; punish; naughty; sit,approved,batch 1
+3,to-do list,tasks; check; organize; chores; errands,approved,batch 1
+3,tongue-tied,speak; words; nervous; stammer; speechless,approved,batch 1
+3,tourist trap,expensive; crowded; attraction; souvenirs; gift shop,approved,batch 1
+3,trash talk,insult; game; brag; taunt; smack,approved,batch 1
+3,treasure hunt,map; clues; find; X marks the spot; pirate,approved,batch 1
+3,trial and error,try; mistakes; learn; experiment; attempts,approved,batch 1
+3,trick question,answer; catch; gotcha; riddle; tough,approved,batch 1
+3,true story,real; happened; fact; based on; nonfiction,approved,batch 1
+3,trust fall,catch; back; team; arms; backwards,approved,batch 1
+3,turning point,change; moment; important; crossroads; milestone,approved,batch 1
 3,two-factor,password; code; login; security; phone,approved,batch 1
 3,typo,typing; mistake; spelling; error; keyboard,approved,batch 1
-3,umbrella policy,insurance; umbrella; policy; cover; coverage,approved,batch 1
-3,unboxing,unbox; open; video; package; new,approved,batch 1
-3,under the weather,sick; weather; under; ill; feeling,approved,batch 1
+3,umbrella policy,insurance; cover; coverage; liability; extra,approved,batch 1
+3,unboxing,open; video; package; new; unwrap,approved,batch 1
+3,under the weather,sick; ill; feeling; cold; flu,approved,batch 1
 3,underdog,win; unlikely; team; weak; favorite,approved,batch 1
-3,unfriend,friend; remove; social media; delete; block,approved,batch 1
+3,unfriend,remove; social media; delete; block; unfollow,approved,batch 1
 3,upgrade,better; new; improve; version; phone,approved,batch 1
-3,user name,user; name; login; account; password,approved,batch 1
-3,vacation mode,vacation; relax; mode; off; holiday,approved,batch 1
+3,user name,login; account; password; handle; screen,approved,batch 1
+3,vacation mode,relax; off; holiday; away; out of office,approved,batch 1
 3,valedictorian,top; student; speech; graduation; grades,approved,batch 1
 3,vanity,mirror; vain; proud; appearance; self,approved,batch 1
 3,vegetarian,meat; vegetables; eat; no; veggie,approved,batch 1
-3,video chat,video; chat; call; screen; face,approved,batch 1
-3,viral video,viral; video; internet; share; million,approved,batch 1
-3,virtual reality,virtual; reality; headset; VR; game,approved,batch 1
-3,voice mail,voice; mail; message; phone; beep,approved,batch 1
-3,walk of fame,stars; Hollywood; sidewalk; walk; famous,approved,batch 1
-3,wallflower,shy; wall; party; quiet; flower,approved,batch 1
-3,war of words,argue; fight; words; insult; debate,approved,batch 1
-3,weather balloon,weather; balloon; sky; science; float,approved,batch 1
-3,wedding crasher,wedding; crash; uninvited; party; guest,approved,batch 1
-3,weekend warrior,weekend; warrior; sports; hobby; Saturday,approved,batch 1
-3,wet blanket,boring; spoil; fun; wet; blanket,approved,batch 1
-3,wild card,wild; card; unpredictable; joker; surprise,approved,batch 1
-3,win-win,both; win; good; everyone; deal,approved,batch 1
-3,window shopping,window; shop; look; buy; stores,approved,batch 1
-3,winning streak,win; streak; row; lucky; games,approved,batch 1
-3,wisdom tooth,tooth; wisdom; dentist; pull; back,approved,batch 1
-3,wishful thinking,wish; hope; thinking; dream; unlikely,approved,batch 1
-3,word of mouth,word; mouth; tell; spread; recommend,approved,batch 1
-3,work from home,work; home; remote; office; laptop,approved,batch 1
-3,workaholic,work; always; addicted; busy; job,approved,batch 1
-3,worst-case scenario,worst; case; bad; plan; disaster,approved,batch 1
-3,writer's block,write; stuck; block; ideas; author,approved,batch 1
-3,yard work,yard; work; lawn; mow; leaves,approved,batch 1
-3,yearbook,year; book; school; photos; sign,approved,batch 1
-3,yes-man,agree; yes; boss; always; man,approved,batch 1
-3,zero gravity,gravity; float; space; weightless; zero,approved,batch 1
-3,zip code,zip; code; mail; address; numbers,approved,batch 1
-3,zombie apocalypse,zombie; end of world; undead; survive; apocalypse,approved,batch 1
+3,video chat,call; screen; face; webcam; FaceTime,approved,batch 1
+3,viral video,internet; share; million; views; meme,approved,batch 1
+3,virtual reality,headset; VR; game; goggles; simulation,approved,batch 1
+3,voice mail,message; phone; beep; leave a message; inbox,approved,batch 1
+3,walk of fame,stars; Hollywood; famous; stars on the ground; names,approved,batch 1
+3,wallflower,shy; party; quiet; timid; corner,approved,batch 1
+3,war of words,argue; fight; insult; debate; argument,approved,batch 1
+3,weather balloon,sky; science; float; helium; forecast,approved,batch 1
+3,wedding crasher,uninvited; party; guest; sneak in; reception,approved,batch 1
+3,weekend warrior,sports; hobby; Saturday; athlete; Sunday,approved,batch 1
+3,wet blanket,boring; spoil; fun; downer; damp,approved,batch 1
+3,wild card,unpredictable; joker; surprise; random; playoffs,approved,batch 1
+3,win-win,both; good; everyone; deal; compromise,approved,batch 1
+3,window shopping,look; buy; stores; browse; mall,approved,batch 1
+3,winning streak,row; lucky; games; wins; undefeated,approved,batch 1
+3,wisdom tooth,dentist; pull; back; molar; extract,approved,batch 1
+3,wishful thinking,hope; dream; unlikely; fantasy; daydream,approved,batch 1
+3,word of mouth,tell; spread; recommend; gossip; reviews,approved,batch 1
+3,work from home,remote; office; laptop; pajamas; Zoom,approved,batch 1
+3,workaholic,always; addicted; busy; job; overtime,approved,batch 1
+3,worst-case scenario,bad; plan; disaster; nightmare; prepare,approved,batch 1
+3,writer's block,stuck; ideas; author; blank page; writing,approved,batch 1
+3,yard work,lawn; mow; leaves; rake; weeds,approved,batch 1
+3,yearbook,school; photos; sign; memories; signatures,approved,batch 1
+3,yes-man,agree; boss; always; suck up; obey,approved,batch 1
+3,zero gravity,float; space; weightless; astronaut; floating,approved,batch 1
+3,zip code,mail; address; numbers; five digits; postal,approved,batch 1
+3,zombie apocalypse,end of world; undead; survive; walkers; brains,approved,batch 1
