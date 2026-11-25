@@ -1396,6 +1396,30 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
   });
 
+  /* ================= INSTALL BANNER ON IPHONE ================= */
+  section('iPhone install banner', async AREA => {
+    const UA = {
+      safari: devices['iPhone 13'].userAgent,
+      chrome: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/126.0.6478.54 Mobile/15E148 Safari/604.1',
+      instagram: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 337.0.3.23.54 (iPhone14,5; iOS 17_5; en_US)',
+    };
+    const open1 = async ua => { const ctx = await b.newContext({ ...devices['iPhone 13'], userAgent: ua }); const p = await ctx.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message)); await p.goto(URL); return p; };
+    const s = await open1(UA.safari);
+    check('iPhone never shows an Install button', await s.locator('#installGo').isHidden() && /home screen/i.test(await txt(s, '#installBar')));
+    check('Steps are hidden until the banner is tapped', await s.locator('#installSteps').isHidden());
+    await s.click('#installHelp');
+    check('Tapping the banner shows the steps', await s.locator('#installSteps').isVisible() && /Share/.test(await txt(s, '#installSteps')) && /Add to Home Screen/.test(await txt(s, '#installSteps')));
+    check('Safari steps: Share at the bottom, or under •••', /bottom/.test(await txt(s, '#installSteps')) && /•••/.test(await txt(s, '#installSteps')));
+    const c = await open1(UA.chrome); await c.click('#installHelp');
+    check('Chrome on iPhone: Share at the top right', /top right/.test(await txt(c, '#installSteps')));
+    const i = await open1(UA.instagram); await i.click('#installHelp');
+    check('Inside Instagram/Facebook: open in Safari first', /Open in Safari/.test(await txt(i, '#installBar')) && /Open in Safari/.test(await txt(i, '#installSteps')));
+    await s.click('#installX');
+    check('× hides the banner and steps', await s.locator('#installBar').isHidden() && await s.locator('#installSteps').isHidden());
+    check('No page errors', [s, c, i].every(p => !p.errs.length), [s, c, i].flatMap(p => p.errs).join(' | '));
+    for (const p of [s, c, i]) await p.context().close();
+  });
+
   /* ================= HOME ICON MOTION ================= */
   section('Home icons', async AREA => {
     try {
