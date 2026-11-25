@@ -230,6 +230,7 @@ textarea{resize:vertical;font-size:15px}
 details.custom{margin-top:14px}
 summary{font-weight:600;cursor:pointer;padding:4px 0}
 .hint{font-size:14px;color:var(--muted);margin:6px 0 8px}
+.reorder-tip{font-size:13px;margin:-2px 0 10px}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
 .setting + .setting{border-top:1px solid var(--line)}
 .setting small{display:block;color:var(--muted);font-size:13px}
@@ -592,6 +593,7 @@ h3.sub{font-size:20px;margin-top:26px}
     <p class="hint" data-for="fb" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below or tap Shuffle teams. Sitting so the teams alternate around the circle helps.</p>
     <p class="hint" data-for="spy" style="margin:-4px 0 12px">With 4 or more players: two teams. Pick the teams below or tap Shuffle teams. Spymasters are picked before each board.</p>
     <div id="players"></div>
+    <p class="hint reorder-tip" id="reorderTip">Tap ↑ to move a player up one seat.</p>
     <button id="addPlayer" class="ghost">Add player</button>
     <div id="sitOut" class="sit-out" hidden>
       <p class="note" id="sitOutNote"></p>
