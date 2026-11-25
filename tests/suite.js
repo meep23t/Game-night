@@ -1087,7 +1087,8 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     const p = await fresh(b);
     await setPlayers(p, ['Ana', 'Ben', 'Cy']);
     await ev(p, () => show('home')); await p.click('#nightStrip button');
-    await ev(p, () => { S.fbWrite = true; save(); }); await open(p, 'fb'); await p.click('#startGame'); await p.click('#fbNames button');
+    await ev(p, () => { S.fbWrite = true; save(); }); await open(p, 'fb');
+    check('Game setup tells players to tap ↑ to reorder', await p.isVisible('#reorderTip') && /Tap ↑/.test(await txt(p, '#reorderTip'))); await p.click('#startGame'); await p.click('#fbNames button');
     check('Word bowl writing screen: keep words secret and pick things everyone knows', /everyone in the room would know/.test(await txt(p, '#fbwrite')));
     await ev(p, () => show('home')); await p.click('#nightStrip button');
     check('Start screen asks for seating order', /order you’re sitting/.test(await txt(p, '#nightStart')));
