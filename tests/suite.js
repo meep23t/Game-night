@@ -183,10 +183,10 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await setPlayers(p, ['ana', 'Ben']);
       await ev(p, () => { S.rounds = 1; S.perTurn = 2; S.picSec = 25; save(); });
       await open(p, 'act');
-      check('Word cards by default', (await p.getAttribute('#cmWords', 'aria-pressed')) === 'true' && (await txt(p, '#packsTitle')) === 'Word packs');
+      check('Word cards by default', (await p.getAttribute('#cmWords', 'aria-pressed')) === 'true' && await p.locator('#picPacksBlock').isHidden());
       await p.click('#cmPics');
-      check('Pictures: picture packs with an emoji on each', (await txt(p, '#packsTitle')) === 'Picture packs' && (await p.locator('#packs .chip-pic').count()) >= 6);
-      check('Pictures: no "add your own words"', await p.locator('#customWrap').isHidden());
+      check('Pictures: picture packs with an emoji on each', await p.locator('#picPacksBlock').isVisible() && (await p.locator('#picPacks .chip-pic').count()) >= 6);
+      check('Pictures: no word packs or "add your own words"', await p.locator('#wordPacksBlock').isHidden());
       const st = await txt(p, '#settings');
       check('Pictures: one card timer instead of easy/hard', /Card timer/.test(st) && !/Easy card timer|Hard card timer/.test(st), st);
       await p.click('#startGame');
@@ -205,7 +205,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       check('Summary lists picture and name', /\p{Extended_Pictographic}.* [a-z]/u.test(await txt(p, '#sumList')), await txt(p, '#sumList'));
       // words mode is unchanged
       await open(p, 'act'); await p.click('#cmWords');
-      check('Back to words: easy/hard timers and own words return', /Easy card timer/.test(await txt(p, '#settings')) && await p.locator('#customWrap').isVisible());
+      check('Back to words: easy/hard timers and own words return', /Easy card timer/.test(await txt(p, '#settings')) && await p.locator('#customWrap').isVisible() && await p.locator('#picPacksBlock').isHidden());
       await p.click('#startGame');
       check('Words: no circle on the pass screen', (await p.locator('#passName .pass-avatar').count()) === 0);
       await p.click('#startTurn');
@@ -215,6 +215,31 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await ev(p, () => { S.picPacks = []; renderPacks(); });
       await p.click('#startGame');
       check('No picture packs → clear error', /picture pack/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
+      await ev(p, () => { S.picPacks = ['Animals']; save(); });
+      // Mix: only the picked player gets pictures
+      await setPlayers(p, ['Ana', 'Ben', 'Cy']);
+      await open(p, 'act'); await p.click('#cmMix');
+      check('Mix: both word and picture packs, all three timers', await p.locator('#wordPacksBlock').isVisible() && await p.locator('#picPacksBlock').isVisible() && /Easy card timer[\s\S]*Card timer/.test(await txt(p, '#settings')));
+      check('Mix: a chip for each player', (await p.locator('#picWhoChips .chip').count()) === 3);
+      await p.click('#startGame');
+      check('Mix with nobody picked → asks who gets pictures', /who gets picture cards/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
+      await p.click('#picWhoChips .chip:has-text("Ben")');
+      await p.click('#startGame');
+      check('Mix: a reader gets the easy/hard pick', (await txt(p, '#passName')) === 'Ana' && (await p.locator('#passName .pass-avatar').count()) === 0);
+      await p.click('#startTurn');
+      check('Mix: Ana picks easy/hard', (await screen(p)) === 'pick');
+      await p.click('#pickEasy'); await p.click('#gotBtn'); await p.clock.runFor(1000);
+      await p.click('#pickEasy'); await p.click('#gotBtn'); await p.clock.runFor(1000);
+      await p.click('#nextTurn');
+      check('Mix: Ben gets his circle', (await txt(p, '#passName .pass-avatar')) === 'B');
+      await p.click('#startTurn'); await p.clock.runFor(2500);
+      check('Mix: Ben gets picture cards', (await screen(p)) === 'act' && !/[a-z]/i.test(await txt(p, '#actWord')), await txt(p, '#actWord'));
+      await p.click('#gotBtn'); await p.clock.runFor(1000); await p.click('#gotBtn'); await p.clock.runFor(1000);
+      await p.click('#nextTurn');
+      check('Mix: Cy is back to words', (await p.locator('#passName .pass-avatar').count()) === 0);
+      await p.click('#startTurn');
+      check('Mix: Cy picks easy/hard', (await screen(p)) === 'pick');
+      check('Picked players are remembered by name', (await ev(p, () => S.picPlayers.join())) === 'ben');
       check('No page errors', p.errs.length === 0, p.errs.join(' | '));
       if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'actpics');
       await p.context().close();

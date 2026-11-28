@@ -297,7 +297,7 @@ button:disabled{opacity:.4}
 .act-name{font-weight:700;font-size:15px;opacity:.6;margin-top:6px}
 .act-name:empty{display:none}
 .pass-avatar{display:grid;place-items:center;width:132px;height:132px;margin:4px auto 12px;border-radius:50%;color:#fff;font-size:72px;font-weight:800;box-shadow:0 6px 0 var(--shadow)}
-.seg.two{grid-template-columns:1fr 1fr}
+
 .act-card.paused .act-time{opacity:.35}
 .act-card > .flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,12vw,60px);
   font-weight:800;color:#fff;opacity:0;pointer-events:none;letter-spacing:-.02em}
@@ -628,13 +628,18 @@ h3.sub{font-size:20px;margin-top:26px}
 
   <div class="block" data-for="act">
     <h2>Cards</h2>
-    <div class="seg two" id="cardMode">
-      <button id="cmWords">Words<small>For readers</small></button>
-      <button id="cmPics">Pictures<small>No reading needed</small></button>
+    <div class="seg" id="cardMode">
+      <button id="cmWords" data-cards="words">Words<small>Readers</small></button>
+      <button id="cmPics" data-cards="pics">Pictures<small>No reading</small></button>
+      <button id="cmMix" data-cards="mix">Mix<small>Some of each</small></button>
+    </div>
+    <div id="picWho" hidden>
+      <p class="hint" style="margin:14px 0 8px">Picture cards for:</p>
+      <div class="chips" id="picWhoChips"></div>
     </div>
   </div>
 
-  <div class="block" data-for="act">
+  <div class="block" data-for="act" id="wordPacksBlock">
     <h2 id="packsTitle">Word packs</h2>
     <div id="packs" class="chips"></div>
     <details class="custom" id="customWrap">
@@ -642,6 +647,11 @@ h3.sub{font-size:20px;margin-top:26px}
       <p class="hint">One card per line. Write “easy | hard” for a two-sided card, or a single word for a one-sided card worth 1 point.</p>
       <textarea id="custom" rows="6" placeholder="lighthouse | lighthouse keeper in a storm&#10;volcano"></textarea>
     </details>
+  </div>
+
+  <div class="block" data-for="act" id="picPacksBlock">
+    <h2>Picture packs</h2>
+    <div id="picPacks" class="chips"></div>
   </div>
 
   <div class="block" data-for="taboo">
@@ -673,6 +683,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Skip a card or run out of time and that card scores nothing.</li>
         <li><b>Teams (needs at least 4 players):</b> teams take turns acting, only your teammates guess, and points go to your team.</li>
         <li><b>Pictures (under Cards):</b> for kids who can’t read yet. Each card is a big picture, worth 1 point, with one timer. Each turn starts with a 3-2-1 countdown, and the player’s colored circle shows whose turn it is.</li>
+        <li><b>Mix:</b> pick who gets picture cards. They get pictures on their turn, and everyone else gets word cards.</li>
       </ul>
     </details>
   </div>
@@ -1280,7 +1291,8 @@ try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 if (!Array.isArray(S.playerIds) || S.playerIds.length !== S.players.length) S.playerIds = S.players.map(() => null);
 if (S.tabooPenalty === undefined) S.tabooPenalty = true;
-for (const [k,v] of Object.entries({ actPics:false, picPacks:["Animals","Actions","Food"], picSec:30 })) if (S[k] === undefined) S[k] = v;
+for (const [k,v] of Object.entries({ actCards: S.actPics ? "pics" : "words", picPacks:["Animals","Actions","Food"], picSec:30, picPlayers:[] })) if (S[k] === undefined) S[k] = v;
+delete S.actPics;
 
 const $ = id => document.getElementById(id);
 const G = { mode:"act", screen:"home", scores:[], deck:[], pool:[], round:1, turn:0, card:0, turnLog:[], missed:[], current:null, choice:null };
@@ -1416,7 +1428,7 @@ function estimate(mode, o){
   const n = teamPlay(mode) && S.players.length >= 4 ? 2 * Math.max(...makeTeams().map(t => t.length)) : S.players.length;   // turns per round
   switch (mode) {
     case "act": {
-      const turns = n * x.rounds, avg = x.actPics ? x.picSec : (x.easy + x.hard) / 2;
+      const turns = n * x.rounds, words = (x.easy + x.hard) / 2, avg = x.actCards === "pics" ? x.picSec : x.actCards === "mix" ? (words + x.picSec) / 2 : words;
       return [turns * (x.perTurn * (avg * .5 + 6) + 20), turns * (x.perTurn * (avg + 6) + 20)];
     }
     case "taboo": { const t = n * x.rounds * (x.turnSec + 20); return [t, t]; }
@@ -1466,6 +1478,7 @@ function openSetup(mode){
   $("setupIntro").textContent = INTROS[mode][1];
   document.querySelectorAll("[data-for]").forEach(el => el.hidden = el.dataset.for !== mode);
   renderSettings(); $("setupError").textContent = "";
+  if (mode === "act") renderPacks();
   renderPlayAs(); renderTeams(); renderEstimate();
   show("setup");
   requestAnimationFrame(() => playIcon($("setupIcon")));   // the game's icon does its move once as the screen opens
@@ -1483,7 +1496,7 @@ function renderPlayers(){
     inp.addEventListener("input", () => {
       S.players[i] = inp.value;
       if (night) nightRename(S.playerIds[i], inp.value);
-      save(); renderTeams();
+      save(); renderTeams(); renderPicWho();
     });
     row.appendChild(inp);
     if (i === 0) { const sp = document.createElement("span"); sp.className = "icon-btn"; sp.style.visibility = "hidden"; row.appendChild(sp); }
@@ -1503,7 +1516,7 @@ function renderPlayers(){
   });
   $("addPlayer").hidden = S.players.length >= MAX_PLAYERS;
   $("addPlayer").textContent = night ? "Add someone new" : "Add player";
-  renderSitOut(); renderTeams(); renderEstimate();
+  renderSitOut(); renderTeams(); renderEstimate(); renderPicWho();
 }
 function movePlayer(a, b){
   [S.players[a], S.players[b]] = [S.players[b], S.players[a]];
@@ -1623,12 +1636,10 @@ function renderTeamList(){
   count();
 }
 
-function renderPacks(){
-  const pics = S.actPics, src = pics ? PICS : PACKS, key = pics ? "picPacks" : "packs";
-  $("packsTitle").textContent = pics ? "Picture packs" : "Word packs";
-  $("customWrap").hidden = pics;   // your own words need reading
-  document.querySelectorAll("#cardMode button").forEach(b => b.setAttribute("aria-pressed", (b.id === "cmPics") === pics));
-  const box = $("packs"); box.innerHTML = "";
+// Act it out cards: Words (everyone reads), Pictures (no reading), or Mix (picked players get pictures).
+const picKey = nm => nm.trim().toLowerCase();   // who gets pictures is remembered by name
+function packChips(box, src, key, pics){
+  box.innerHTML = "";
   Object.keys(src).forEach(name => {
     const b = document.createElement("button"); b.className = "chip";
     if (pics) { const e = document.createElement("span"); e.className = "chip-pic"; e.textContent = src[name][0][0]; e.setAttribute("aria-hidden", "true"); b.append(e, name); }
@@ -1641,8 +1652,30 @@ function renderPacks(){
     box.appendChild(b);
   });
 }
-$("cmWords").onclick = () => { S.actPics = false; save(); renderPacks(); renderSettings(); renderEstimate(); };
-$("cmPics").onclick = () => { S.actPics = true; save(); renderPacks(); renderSettings(); renderEstimate(); };
+function renderPacks(){
+  const c = S.actCards, act = G.mode === "act";
+  document.querySelectorAll("#cardMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.cards === c));
+  if (act) { $("wordPacksBlock").hidden = c === "pics"; $("picPacksBlock").hidden = c === "words"; }
+  packChips($("packs"), PACKS, "packs", false);
+  packChips($("picPacks"), PICS, "picPacks", true);
+  renderPicWho();
+}
+function renderPicWho(){
+  $("picWho").hidden = S.actCards !== "mix";
+  const box = $("picWhoChips"); box.innerHTML = "";
+  S.players.forEach((nm, i) => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = nm.trim() || `Player ${i + 1}`;
+    const on = () => S.picPlayers.includes(picKey(nm)) && nm.trim() !== "";
+    b.setAttribute("aria-pressed", on());
+    b.onclick = () => {
+      const k = picKey(S.players[i]); if (!k) return;
+      S.picPlayers = S.picPlayers.includes(k) ? S.picPlayers.filter(x => x !== k) : [...S.picPlayers, k];
+      b.setAttribute("aria-pressed", on()); save(); $("setupError").textContent = "";
+    };
+    box.appendChild(b);
+  });
+}
+document.querySelectorAll("#cardMode button").forEach(b => b.onclick = () => { S.actCards = b.dataset.cards; save(); renderPacks(); renderSettings(); renderEstimate(); });
 function renderLevel(){
   document.querySelectorAll("#levels button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.level === S.level));
   $("levelHint").textContent = LEVEL_HINTS[S.level];
@@ -1665,7 +1698,7 @@ const SETTINGS = {
 };
 function renderSettings(){
   const box = $("settings"); box.innerHTML = "";
-  SETTINGS[G.mode].filter(s => G.mode !== "act" || (S.actPics ? !s.words : !s.pics)).forEach(s => {
+  SETTINGS[G.mode].filter(s => G.mode !== "act" || !(s.words && S.actCards === "pics" || s.pics && S.actCards === "words")).forEach(s => {
     if (s.type === "toggle") {
       const row = document.createElement("div"); row.className = "setting";
       row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
@@ -1727,9 +1760,12 @@ $("startGame").onclick = () => {
     const err = teamCheck(); if (err) { $("setupError").textContent = err; return; }
   }
   if (G.mode === "act") {
-    G.pics = S.actPics;
-    G.pool = G.pics ? S.picPacks.filter(p => PICS[p]).flatMap(p => PICS[p]) : [...S.packs.flatMap(p => PACKS[p]), ...parseCustom()];
-    if (!G.pool.length) { $("setupError").textContent = G.pics ? "Pick at least one picture pack." : "Pick at least one word pack or add your own words."; return; }
+    const c = S.actCards, words = [...S.packs.flatMap(p => PACKS[p] || []), ...parseCustom()], pics = S.picPacks.flatMap(p => PICS[p] || []);
+    G.picIdx = c === "pics" ? S.players.map((_, i) => i) : c === "mix" ? S.players.map((n, i) => i).filter(i => S.picPlayers.includes(picKey(S.players[i]))) : [];
+    if (c !== "pics" && !words.length) { $("setupError").textContent = "Pick at least one word pack or add your own words."; return; }
+    if (c !== "words" && !pics.length) { $("setupError").textContent = "Pick at least one picture pack."; return; }
+    if (c === "mix" && !G.picIdx.length) { $("setupError").textContent = "Pick who gets picture cards (under Cards)."; return; }
+    G.pool = c === "pics" ? pics : words; G.picPool = pics;
   } else if (G.mode === "taboo") {
     G.pool = TABOO[S.level];
   } else if (G.mode === "spy") {
@@ -1755,7 +1791,7 @@ $("startGame").onclick = () => {
 /* ---------- Shared game flow ---------- */
 function newGame(){
   G.gameOver = false;   // a new game (or round/board) starts: it can be saved again
-  G.scores = S.players.map(() => 0); G.deck = freshDeck(G.pool);
+  G.scores = S.players.map(() => 0); G.deck = freshDeck(G.pool); G.picDeck = G.picPool && G.picPool.length ? freshDeck(G.picPool) : [];
   G.teamOn = teamPlay(G.mode); G.teams = G.teamOn ? makeTeams() : null;
   randomStart(G.teams); G.round = 1; G.turn = 0; G.seq = turnSeq(1, G.teams); G.missed = []; toPass();
 }
@@ -1785,7 +1821,7 @@ function renderScores(el, highlight){
 function toPass(){
   $("passRound").textContent = `Round ${G.round} of ${S.rounds}`;
   $("passName").textContent = name(cur());
-  if (G.mode === "act" && G.pics) {   // picture mode: a colored circle with their initial, for kids who can't read their name
+  if (G.mode === "act" && picTurn()) {   // picture cards: a colored circle with their initial, for kids who can't read their name
     const a = document.createElement("span"); a.className = "pass-avatar"; a.setAttribute("aria-hidden", "true");
     a.textContent = [...name(cur())][0].toUpperCase(); a.style.background = G.teamOn ? `var(--t${teamOfPlayer(cur())}-edge)` : KID_COLORS[cur() % KID_COLORS.length];
     $("passName").prepend(a);
@@ -1796,13 +1832,13 @@ function toPass(){
       ? `${TEAMS[k]}: you’re acting for your team. Keep the screen to yourself.`
       : `${TEAMS[k]}: you’re describing for your team. ${TEAMS[1 - k]}, watch the screen and tap Buzz on a forbidden word.`;
   } else $("passNote").textContent = G.mode === "act" ? "You’re acting. Keep the screen to yourself." : "You’re describing. Keep the screen to yourself.";
-  if (G.mode === "act" && G.pics) $("passNote").textContent = (G.teamOn ? TEAMS[teamOfPlayer(cur())] + ": your turn! " : "Your turn! ") + "Act out the picture. No talking.";
+  if (G.mode === "act" && picTurn()) $("passNote").textContent = (G.teamOn ? TEAMS[teamOfPlayer(cur())] + ": your turn! " : "Your turn! ") + "Act out the picture. No talking.";
   renderScores($("passScores"), cur());
   show("pass");
 }
 $("startTurn").onclick = () => {
   G.turnLog = [];
-  if (G.mode === "act") { G.card = 1; if (G.pics) picCountdown(); else toPick(); } else tabooStart();
+  if (G.mode === "act") { G.card = 1; if (picTurn()) picCountdown(); else toPick(); } else tabooStart();
 };
 function turnPts(){ return G.turnLog.reduce((s,r) => s + (r.got ? r.pts : r.pen ? -1 : 0), 0); }
 function signed(n){ return n < 0 ? "−" + Math.abs(n) : "+" + n; }
@@ -1823,7 +1859,11 @@ function picCountdown(){
   };
   step(3);
 }
-function nextPic(){ G.current = draw(); startCard("pic"); }
+function picTurn(){ return (G.picIdx || []).includes(cur()); }
+function nextPic(){
+  if (!G.picDeck || !G.picDeck.length) G.picDeck = freshDeck(G.picPool || []);
+  G.current = G.picDeck.pop(); if (G.current) markSeen([G.current]); startCard("pic");
+}
 function toPick(){
   G.current = draw();
   const [easy, hard] = G.current;
