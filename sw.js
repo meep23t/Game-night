@@ -1,7 +1,7 @@
 // Offline support for Game night. VERSION is set by tools/sw-version.js from the saved files (the tests check it).
 const VERSION = "v6-017d41ff";
 const CACHE = `game-night-${VERSION}`;
-const WORDS = ["act", "describe", "doodle", "range", "imposter", "spies"].map(k => `/words/${k}.js`);
+const WORDS = ["act", "pictures", "describe", "doodle", "range", "imposter", "spies"].map(k => `/words/${k}.js`);
 const PRECACHE = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-180.png", "/icons/apple-touch-icon.png", ...WORDS];
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 

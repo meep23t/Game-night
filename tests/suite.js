@@ -177,6 +177,50 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
   });
 
+  section('Act it out pictures', async AREA => {
+    try {
+      const p = await fresh(b);
+      await setPlayers(p, ['ana', 'Ben']);
+      await ev(p, () => { S.rounds = 1; S.perTurn = 2; S.picSec = 25; save(); });
+      await open(p, 'act');
+      check('Word cards by default', (await p.getAttribute('#cmWords', 'aria-pressed')) === 'true' && (await txt(p, '#packsTitle')) === 'Word packs');
+      await p.click('#cmPics');
+      check('Pictures: picture packs with an emoji on each', (await txt(p, '#packsTitle')) === 'Picture packs' && (await p.locator('#packs .chip-pic').count()) >= 6);
+      check('Pictures: no "add your own words"', await p.locator('#customWrap').isHidden());
+      const st = await txt(p, '#settings');
+      check('Pictures: one card timer instead of easy/hard', /Card timer/.test(st) && !/Easy card timer|Hard card timer/.test(st), st);
+      await p.click('#startGame');
+      check('Pass screen: colored circle with the initial', (await screen(p)) === 'pass' && (await txt(p, '#passName .pass-avatar')) === 'A');
+      await p.click('#startTurn');
+      check('Turn starts with a 3-2-1 countdown', (await screen(p)) === 'act' && (await txt(p, '#actWord')) === '3' && await p.locator('#gotBtn').isDisabled());
+      await p.clock.runFor(2500);
+      const word = await txt(p, '#actWord');
+      check('Then a picture card, no words on it', !/[a-z0-9]/i.test(word) && word.length > 0, word);
+      check('Small name under the picture for grown-ups', (await txt(p, '#actName')).length > 1);
+      check('Card timer is the picture timer', (await txt(p, '#actTime')).trim() === '25', await txt(p, '#actTime'));
+      await p.click('#gotBtn'); await p.clock.runFor(1000);
+      check('Next picture comes straight up (no easy/hard pick)', (await screen(p)) === 'act' && !(await p.locator('#gotBtn').isDisabled()));
+      await p.click('#skipBtn'); await p.clock.runFor(1500);
+      check('Summary: +1 for a picture', (await screen(p)) === 'summary' && (await txt(p, '#sumTitle')).includes('+1'), await txt(p, '#sumTitle'));
+      check('Summary lists picture and name', /\p{Extended_Pictographic}.* [a-z]/u.test(await txt(p, '#sumList')), await txt(p, '#sumList'));
+      // words mode is unchanged
+      await open(p, 'act'); await p.click('#cmWords');
+      check('Back to words: easy/hard timers and own words return', /Easy card timer/.test(await txt(p, '#settings')) && await p.locator('#customWrap').isVisible());
+      await p.click('#startGame');
+      check('Words: no circle on the pass screen', (await p.locator('#passName .pass-avatar').count()) === 0);
+      await p.click('#startTurn');
+      check('Words: still the easy/hard pick', (await screen(p)) === 'pick');
+      // no picture packs
+      await open(p, 'act'); await p.click('#cmPics');
+      await ev(p, () => { S.picPacks = []; renderPacks(); });
+      await p.click('#startGame');
+      check('No picture packs → clear error', /picture pack/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
+      check('No page errors', p.errs.length === 0, p.errs.join(' | '));
+      if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'actpics');
+      await p.context().close();
+    } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0] + ' @ line ' + (((e.stack||'').match(/suite\.js:(\d+)/)||[])[1])); }
+  });
+
   /* ================= DESCRIBE IT ================= */
   section('Describe it', async AREA => {
     try {
@@ -1386,12 +1430,12 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
   section('Word files', async AREA => {
     try {
       const p = await fresh(b);
-      check('All six word files load', await ev(p, () => ['act','describe','doodle','range','imposter','spies'].every(k => window.GN_WORDS && GN_WORDS[k])));
+      check('All six word files load', await ev(p, () => ['act','pictures','describe','doodle','range','imposter','spies'].every(k => window.GN_WORDS && GN_WORDS[k])));
       check('Games read their words from the files', await ev(p, () => PACKS === GN_WORDS.act && TABOO === GN_WORDS.describe && IMP_WORDS === GN_WORDS.imposter && TELE_WORDS === GN_WORDS.doodle && WAVE === GN_WORDS.range && SPY_L3 === GN_WORDS.spies));
       check('Word counts are intact', await ev(p, () => Object.values(PACKS).flat().length + Object.values(TABOO).flat().length + Object.values(TELE_WORDS).flat().length + Object.values(WAVE).flat().length + Object.values(IMP_WORDS).flat().length + SPY_L3.length) >= 1757);
       check('Every pack and level has words', await ev(p, () => [...Object.values(PACKS), ...Object.values(TABOO), ...Object.values(TELE_WORDS), ...Object.values(WAVE), ...Object.values(IMP_WORDS)].every(a => a.length > 0)));
       const sw = require('fs').readFileSync(require('path').join(ROOT, 'sw.js'), 'utf8');
-      check('The offline helper saves every word file', ['act','describe','doodle','range','imposter','spies'].every(k => sw.includes('"' + k + '"')) && /words/.test(sw));
+      check('The offline helper saves every word file', ['act','pictures','describe','doodle','range','imposter','spies'].every(k => sw.includes('"' + k + '"')) && /words/.test(sw));
       check('No page errors', p.errs.length === 0, p.errs.join(' | '));
       await p.context().close();
     } catch (e) { check('Section ran to completion', false, (e.message||e).split('\n')[0]); }
