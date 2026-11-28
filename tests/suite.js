@@ -185,6 +185,7 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await open(p, 'act');
       check('Word cards by default', (await p.getAttribute('#cmWords', 'aria-pressed')) === 'true' && await p.locator('#picPacksBlock').isHidden());
       await p.click('#cmPics');
+      check('Pictures: every picture pack is on by default', (await p.locator('#picPacks .chip[aria-pressed="false"]').count()) === 0);
       check('Pictures: picture packs with an emoji on each', await p.locator('#picPacksBlock').isVisible() && (await p.locator('#picPacks .chip-pic').count()) >= 6);
       check('Pictures: no word packs or "add your own words"', await p.locator('#wordPacksBlock').isHidden());
       const st = await txt(p, '#settings');
@@ -218,12 +219,15 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await ev(p, () => { S.picPacks = ['Animals']; save(); });
       // Mix: only the picked player gets pictures
       await setPlayers(p, ['Ana', 'Ben', 'Cy']);
-      await open(p, 'act'); await p.click('#cmMix');
-      check('Mix: both word and picture packs, all three timers', await p.locator('#wordPacksBlock').isVisible() && await p.locator('#picPacksBlock').isVisible() && /Easy card timer[\s\S]*Card timer/.test(await txt(p, '#settings')));
-      check('Mix: a chip for each player', (await p.locator('#picWhoChips .chip').count()) === 3);
+      await open(p, 'act'); await p.click('#cmPics');
+      check('Pictures: just two options, Words and Pictures', (await p.locator('#cardMode button').count()) === 2);
+      check('Pictures: Everyone plus a chip for each player, all on', (await p.locator('#picWhoChips .chip').count()) === 4 && (await p.locator('#picWhoChips .chip[aria-pressed="true"]').count()) === 4);
+      await p.click('#picEveryone');
+      check('Everyone off: word packs and all three timers show', await p.locator('#wordPacksBlock').isVisible() && await p.locator('#picPacksBlock').isVisible() && /Easy card timer[\s\S]*Card timer/.test(await txt(p, '#settings')));
       await p.click('#startGame');
-      check('Mix with nobody picked → asks who gets pictures', /who gets picture cards/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
+      check('Nobody picked → asks who gets pictures', /who gets picture cards/.test(await txt(p, '#setupError')) && (await screen(p)) === 'setup');
       await p.click('#picWhoChips .chip:has-text("Ben")');
+      check('Only Ben picked: Everyone is off', (await p.getAttribute('#picEveryone', 'aria-pressed')) === 'false');
       await p.click('#startGame');
       check('Mix: a reader gets the easy/hard pick', (await txt(p, '#passName')) === 'Ana' && (await p.locator('#passName .pass-avatar').count()) === 0);
       await p.click('#startTurn');
@@ -240,6 +244,11 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       await p.click('#startTurn');
       check('Mix: Cy picks easy/hard', (await screen(p)) === 'pick');
       check('Picked players are remembered by name', (await ev(p, () => S.picPlayers.join())) === 'ben');
+      // tapping a name while Everyone is on leaves the others picked
+      await open(p, 'act'); await p.click('#picEveryone');
+      check('Everyone back on: all chips on, no word packs', (await p.locator('#picWhoChips .chip[aria-pressed="true"]').count()) === 4 && await p.locator('#wordPacksBlock').isHidden());
+      await p.click('#picWhoChips .chip:has-text("Ana")');
+      check('Untap Ana: Ben and Cy keep pictures, Ana gets words', (await ev(p, () => S.picPlayers.sort().join())) === 'ben,cy' && await p.locator('#wordPacksBlock').isVisible());
       check('No page errors', p.errs.length === 0, p.errs.join(' | '));
       if (results.some(r => r.area === AREA && !r.ok)) await shotFail(p, 'actpics');
       await p.context().close();
