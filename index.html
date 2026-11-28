@@ -177,6 +177,7 @@ textarea{resize:vertical;font-size:15px}
 .icon-btn{width:44px;flex:none;border-radius:12px;border:2px solid var(--line);font-size:20px;color:var(--muted)}
 .ghost{border:2px dashed var(--line);border-radius:12px;padding:10px 14px;width:100%;color:var(--muted);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
+.seg.two{grid-template-columns:1fr 1fr}
 .chip-pic{font-size:20px;margin-right:6px;vertical-align:-2px}
 .chip{border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:15px}
 .chip[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
@@ -628,10 +629,9 @@ h3.sub{font-size:20px;margin-top:26px}
 
   <div class="block" data-for="act">
     <h2>Cards</h2>
-    <div class="seg" id="cardMode">
-      <button id="cmWords" data-cards="words">Words<small>Readers</small></button>
-      <button id="cmPics" data-cards="pics">Pictures<small>No reading</small></button>
-      <button id="cmMix" data-cards="mix">Mix<small>Some of each</small></button>
+    <div class="seg two" id="cardMode">
+      <button id="cmWords" data-cards="words">Words<small>For readers</small></button>
+      <button id="cmPics" data-cards="pics">Pictures<small>No reading needed</small></button>
     </div>
     <div id="picWho" hidden>
       <p class="hint" style="margin:14px 0 8px">Picture cards for:</p>
@@ -683,7 +683,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Skip a card or run out of time and that card scores nothing.</li>
         <li><b>Teams (needs at least 4 players):</b> teams take turns acting, only your teammates guess, and points go to your team.</li>
         <li><b>Pictures (under Cards):</b> for kids who can’t read yet. Each card is a big picture, worth 1 point, with one timer. Each turn starts with a 3-2-1 countdown, and the player’s colored circle shows whose turn it is.</li>
-        <li><b>Mix:</b> pick who gets picture cards. They get pictures on their turn, and everyone else gets word cards.</li>
+        <li>Only some players can’t read? Under Pictures, tap just their names. They get pictures on their turn, and everyone else gets word cards.</li>
       </ul>
     </details>
   </div>
@@ -1291,7 +1291,9 @@ try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 if (!Array.isArray(S.playerIds) || S.playerIds.length !== S.players.length) S.playerIds = S.players.map(() => null);
 if (S.tabooPenalty === undefined) S.tabooPenalty = true;
-for (const [k,v] of Object.entries({ actCards: S.actPics ? "pics" : "words", picPacks:["Animals","Actions","Food"], picSec:30, picPlayers:[] })) if (S[k] === undefined) S[k] = v;
+for (const [k,v] of Object.entries({ actCards: S.actPics ? "pics" : "words", picPacks:Object.keys(PICS), picSec:30, picPlayers:[], picAll:true })) if (S[k] === undefined) S[k] = v;
+if (S.picPacks.join() === "Animals,Actions,Food") S.picPacks = Object.keys(PICS);   // the first default: now every picture pack
+if (S.actCards === "mix") { S.actCards = "pics"; S.picAll = false; }   // older "Mix" option: now Pictures for some players
 delete S.actPics;
 
 const $ = id => document.getElementById(id);
@@ -1428,7 +1430,7 @@ function estimate(mode, o){
   const n = teamPlay(mode) && S.players.length >= 4 ? 2 * Math.max(...makeTeams().map(t => t.length)) : S.players.length;   // turns per round
   switch (mode) {
     case "act": {
-      const turns = n * x.rounds, words = (x.easy + x.hard) / 2, avg = x.actCards === "pics" ? x.picSec : x.actCards === "mix" ? (words + x.picSec) / 2 : words;
+      const turns = n * x.rounds, words = (x.easy + x.hard) / 2, cm = cardMode(), avg = cm === "pics" ? x.picSec : cm === "mix" ? (words + x.picSec) / 2 : words;
       return [turns * (x.perTurn * (avg * .5 + 6) + 20), turns * (x.perTurn * (avg + 6) + 20)];
     }
     case "taboo": { const t = n * x.rounds * (x.turnSec + 20); return [t, t]; }
@@ -1652,25 +1654,37 @@ function packChips(box, src, key, pics){
     box.appendChild(b);
   });
 }
+// Words: everyone reads. Pictures: picture cards for everyone, or only for the players picked ("mix").
+function picPicked(){ return S.players.map((n, i) => i).filter(i => S.players[i].trim() && (S.picAll || S.picPlayers.includes(picKey(S.players[i])))); }
+function cardMode(){
+  if (S.actCards !== "pics") return "words";
+  return S.picAll || picPicked().length === S.players.length ? "pics" : "mix";
+}
 function renderPacks(){
-  const c = S.actCards, act = G.mode === "act";
-  document.querySelectorAll("#cardMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.cards === c));
+  const c = cardMode(), act = G.mode === "act";
+  document.querySelectorAll("#cardMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.cards === S.actCards));
   if (act) { $("wordPacksBlock").hidden = c === "pics"; $("picPacksBlock").hidden = c === "words"; }
   packChips($("packs"), PACKS, "packs", false);
   packChips($("picPacks"), PICS, "picPacks", true);
   renderPicWho();
 }
 function renderPicWho(){
-  $("picWho").hidden = S.actCards !== "mix";
+  $("picWho").hidden = S.actCards !== "pics";
   const box = $("picWhoChips"); box.innerHTML = "";
+  const changed = () => { save(); $("setupError").textContent = ""; renderPacks(); renderSettings(); renderEstimate(); };
+  const all = document.createElement("button"); all.className = "chip"; all.id = "picEveryone"; all.textContent = "Everyone";
+  all.setAttribute("aria-pressed", cardMode() === "pics");
+  all.onclick = () => { const was = cardMode() === "pics"; S.picAll = !was; if (was) S.picPlayers = []; changed(); };
+  box.appendChild(all);
+  const picked = picPicked();
   S.players.forEach((nm, i) => {
     const b = document.createElement("button"); b.className = "chip"; b.textContent = nm.trim() || `Player ${i + 1}`;
-    const on = () => S.picPlayers.includes(picKey(nm)) && nm.trim() !== "";
-    b.setAttribute("aria-pressed", on());
+    b.setAttribute("aria-pressed", picked.includes(i));
     b.onclick = () => {
       const k = picKey(S.players[i]); if (!k) return;
+      if (S.picAll) { S.picAll = false; S.picPlayers = S.players.map(picKey).filter(Boolean); }   // Everyone was on: start from all of them
       S.picPlayers = S.picPlayers.includes(k) ? S.picPlayers.filter(x => x !== k) : [...S.picPlayers, k];
-      b.setAttribute("aria-pressed", on()); save(); $("setupError").textContent = "";
+      changed();
     };
     box.appendChild(b);
   });
@@ -1698,7 +1712,7 @@ const SETTINGS = {
 };
 function renderSettings(){
   const box = $("settings"); box.innerHTML = "";
-  SETTINGS[G.mode].filter(s => G.mode !== "act" || !(s.words && S.actCards === "pics" || s.pics && S.actCards === "words")).forEach(s => {
+  SETTINGS[G.mode].filter(s => G.mode !== "act" || !(s.words && cardMode() === "pics" || s.pics && cardMode() === "words")).forEach(s => {
     if (s.type === "toggle") {
       const row = document.createElement("div"); row.className = "setting";
       row.innerHTML = `<span>${s.label}<small>${s.hint}</small></span><button class="toggle" role="switch"></button>`;
@@ -1760,7 +1774,7 @@ $("startGame").onclick = () => {
     const err = teamCheck(); if (err) { $("setupError").textContent = err; return; }
   }
   if (G.mode === "act") {
-    const c = S.actCards, words = [...S.packs.flatMap(p => PACKS[p] || []), ...parseCustom()], pics = S.picPacks.flatMap(p => PICS[p] || []);
+    const c = cardMode(), words = [...S.packs.flatMap(p => PACKS[p] || []), ...parseCustom()], pics = S.picPacks.flatMap(p => PICS[p] || []);
     G.picIdx = c === "pics" ? S.players.map((_, i) => i) : c === "mix" ? S.players.map((n, i) => i).filter(i => S.picPlayers.includes(picKey(S.players[i]))) : [];
     if (c !== "pics" && !words.length) { $("setupError").textContent = "Pick at least one word pack or add your own words."; return; }
     if (c !== "words" && !pics.length) { $("setupError").textContent = "Pick at least one picture pack."; return; }
