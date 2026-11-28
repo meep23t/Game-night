@@ -192,12 +192,13 @@ async function shotFail(p, name) { try { await p.screenshot({ path: `${OUT}/fail
       check('Pictures: one card timer instead of easy/hard', /Card timer/.test(st) && !/Easy card timer|Hard card timer/.test(st), st);
       await p.click('#startGame');
       check('Pass screen: colored circle with the initial', (await screen(p)) === 'pass' && (await txt(p, '#passName .pass-avatar')) === 'A');
+      check('Pass screen: guesses that fit the picture count', /fits the picture, it counts/.test(await txt(p, '#passNote')));
       await p.click('#startTurn');
       check('Turn starts with a 3-2-1 countdown', (await screen(p)) === 'act' && (await txt(p, '#actWord')) === '3' && await p.locator('#gotBtn').isDisabled());
       await p.clock.runFor(2500);
       const word = await txt(p, '#actWord');
       check('Then a picture card, no words on it', !/[a-z0-9]/i.test(word) && word.length > 0, word);
-      check('Small name under the picture for grown-ups', (await txt(p, '#actName')).length > 1);
+      check('No text label on the picture card', !/[a-z]/i.test(await txt(p, '#actCard')), await txt(p, '#actCard'));
       check('Card timer is the picture timer', (await txt(p, '#actTime')).trim() === '25', await txt(p, '#actTime'));
       await p.click('#gotBtn'); await p.clock.runFor(1000);
       check('Next picture comes straight up (no easy/hard pick)', (await screen(p)) === 'act' && !(await p.locator('#gotBtn').isDisabled()));
