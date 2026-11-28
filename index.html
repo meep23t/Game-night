@@ -291,12 +291,10 @@ button:disabled{opacity:.4}
 .act-word{font-size:clamp(36px,11vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1.02;word-break:break-word}
 .act-time{font-size:clamp(72px,24vw,120px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;margin-top:18px;letter-spacing:-.04em}
 .act-tag{font-weight:700;font-size:15px;margin-bottom:12px;opacity:.75}
-/* Picture mode: a huge emoji instead of a word; the small name is for grown-ups */
+/* Picture mode: a huge emoji instead of a word, with no text (the picture decides what counts) */
 .act-card.pic .act-word{font-size:min(42vw,200px);line-height:1.05;letter-spacing:0}
 .act-card.pic .act-time{font-size:clamp(40px,12vw,60px);margin-top:10px}
 .act-card.count .act-word{font-size:min(48vw,220px)}
-.act-name{font-weight:700;font-size:15px;opacity:.6;margin-top:6px}
-.act-name:empty{display:none}
 .pass-avatar{display:grid;place-items:center;width:132px;height:132px;margin:4px auto 12px;border-radius:50%;color:#fff;font-size:72px;font-weight:800;box-shadow:0 6px 0 var(--shadow)}
 
 .act-card.paused .act-time{opacity:.35}
@@ -683,7 +681,7 @@ h3.sub{font-size:20px;margin-top:26px}
         <li>Tap <b>Got it</b> when someone guesses the word. Tap <b>Skip</b> to pass; a skipped word is gone for this turn.</li>
         <li>Skip a card or run out of time and that card scores nothing.</li>
         <li><b>Teams (needs at least 4 players):</b> teams take turns acting, only your teammates guess, and points go to your team.</li>
-        <li><b>Pictures (under Cards):</b> for kids who can’t read yet. Each card is a big picture, worth 1 point, with one timer. Each turn starts with a 3-2-1 countdown, and the player’s colored circle shows whose turn it is.</li>
+        <li><b>Pictures (under Cards):</b> for kids who can’t read yet. Each card is just a big picture, worth 1 point, with one timer. Any guess that fits the picture counts: for 🎤, “singing” and “microphone” are both right. Each turn starts with a 3-2-1 countdown, and the player’s colored circle shows whose turn it is.</li>
         <li><b>Mix:</b> pick who gets picture cards. They get pictures on their turn, and everyone else gets word cards.</li>
       </ul>
     </details>
@@ -847,7 +845,6 @@ h3.sub{font-size:20px;margin-top:26px}
     <div class="fill" id="fill"></div>
     <p class="act-tag" id="actTag"></p>
     <p class="act-word" id="actWord"></p>
-    <p class="act-name" id="actName"></p>
     <p class="act-time" id="actTime" aria-live="off"></p>
     <div class="flash" id="flash"></div>
   </div>
@@ -1839,7 +1836,7 @@ function toPass(){
       ? `${TEAMS[k]}: you’re acting for your team. Keep the screen to yourself.`
       : `${TEAMS[k]}: you’re describing for your team. ${TEAMS[1 - k]}, watch the screen and tap Buzz on a forbidden word.`;
   } else $("passNote").textContent = G.mode === "act" ? "You’re acting. Keep the screen to yourself." : "You’re describing. Keep the screen to yourself.";
-  if (G.mode === "act" && picTurn()) $("passNote").textContent = (G.teamOn ? TEAMS[teamOfPlayer(cur())] + ": your turn! " : "Your turn! ") + "Act out the picture. No talking.";
+  if (G.mode === "act" && picTurn()) $("passNote").textContent = (G.teamOn ? TEAMS[teamOfPlayer(cur())] + ": your turn! " : "Your turn! ") + "Act out the picture. No talking. If a guess fits the picture, it counts!";
   renderScores($("passScores"), cur());
   show("pass");
 }
@@ -1855,7 +1852,7 @@ const KID_COLORS = ["#F0588F", "#2B44D6", "#1FA874", "#FF8A1F", "#8A4DE0", "#E24
 // Picture mode: 3-2-1 with beeps, then the first card. Later cards follow straight on, with no pick screen.
 function picCountdown(){
   $("actCard").className = "card act-card pic count"; $("fill").style.transform = "scaleY(1)";
-  $("actTag").textContent = ""; $("actName").textContent = ""; $("actTime").textContent = "";
+  $("actTag").textContent = ""; $("actTime").textContent = "";
   $("actCount").textContent = name(cur()); $("pauseBtn").textContent = "Pause";
   $("gotBtn").disabled = $("skipBtn").disabled = true; T.locked = true;
   show("act");
@@ -1894,7 +1891,6 @@ function startCard(choice){
   $("actCard").className = "card act-card" + (isHard ? " is-hard" : pic ? " pic" : "");
   $("actTag").textContent = pic ? "" : isHard ? "Hard, 2 points" : "Easy, 1 point";
   $("actWord").textContent = isHard ? G.current[1] : G.current[0];
-  $("actName").textContent = pic ? G.current[1] : "";
   $("actCount").textContent = pic ? `${name(cur())} · ${G.card} of ${S.perTurn}` : `Card ${G.card} of ${S.perTurn}`;
   $("pauseBtn").textContent = "Pause";
   $("gotBtn").disabled = $("skipBtn").disabled = false;
