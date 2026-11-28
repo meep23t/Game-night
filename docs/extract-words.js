@@ -2,9 +2,9 @@
 const fs = require('fs'), path = require('path');
 const W = path.join(__dirname, '..', 'words');
 global.window = global;
-for (const f of ['act', 'describe', 'doodle', 'range', 'imposter', 'spies']) eval(fs.readFileSync(path.join(W, f + '.js'), 'utf8'));
+for (const f of ['act', 'pictures', 'describe', 'doodle', 'range', 'imposter', 'spies']) eval(fs.readFileSync(path.join(W, f + '.js'), 'utf8'));
 const G = global.GN_WORDS;
-const out = { PACKS: G.act, TABOO: G.describe, IMP: G.imposter, TELE: G.doodle, WAVE: G.range, SPY_L3: G.spies };
+const out = { PACKS: G.act, PICS: G.pictures, TABOO: G.describe, IMP: G.imposter, TELE: G.doodle, WAVE: G.range, SPY_L3: G.spies };
 // Word spies levels 1-2 are built in the app from other games' one-word entries (same rule as spyPool in index.html).
 const single = s => !/\s/.test(s);
 const pool = src => [...new Set(src.filter(single).map(w => w.toLowerCase()))];

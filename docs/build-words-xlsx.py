@@ -15,6 +15,8 @@ LV = {"1": "Level 1 (Kids)", "2": "Level 2 (Medium)", "3": "Level 3 (Tricky/Clas
 rows = []  # game, group, word, details, derived, note
 for p, cards in d["PACKS"].items():
     for e, h in cards: rows.append(("Act it out", p, e, h, False, ""))
+for p, cards in d["PICS"].items():
+    for pic, nm in cards: rows.append(("Act it out pictures", p, nm, pic, False, "Card shows only the picture"))
 for l, cards in d["TABOO"].items():
     for w, f in cards: rows.append(("Describe it", LV[l], w, "Don’t say: " + ", ".join(f), False, ""))
 for l, ws in d["TELE"].items():

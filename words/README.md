@@ -5,6 +5,7 @@ Every word in the app lives in a spreadsheet here. Edit the spreadsheets, then r
 | File in `source/` | Game | Columns |
 |---|---|---|
 | `act-it-out.csv` | Act it out | Pack, Word, Hard version |
+| `act-pictures.csv` | Act it out, Pictures mode (no reading) | Pack, Picture (one emoji), Name |
 | `describe-it.csv` | Describe it (Word bowl auto-fill uses levels 1–2) | Level, Word, Forbidden words (separate with `;`) |
 | `pass-the-doodle.csv` | Pass the doodle | Level, Word |
 | `in-the-range.csv` | In the range | Level, Left end, Right end |
@@ -15,7 +16,7 @@ Each file also has **Status** and **Notes** columns:
 - **Status:** set it to `draft` or `rejected` to keep a row out of the app. Anything else, including blank, counts as approved.
 - **Notes:** for you only. The app ignores it.
 
-A new Pack (Act it out) or Category (Imposter) shows up in the game automatically.
+A new Pack (Act it out, either file) or Category (Imposter) shows up in the game automatically.
 
 Word spies levels 1–2 have no list of their own. The game builds them from the one-word entries in Describe it, Pass the doodle and Imposter.
 
